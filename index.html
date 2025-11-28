@@ -1,57 +1,169 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Aegirson — Personal Website</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ægirson Family System</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #terminal {
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+            position: relative;
+        }
+        #terminal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 0, 0.03) 2px,
+                rgba(0, 255, 0, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        .prompt {
+            display: flex;
+            align-items: center;
+        }
+        #input {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+            flex: 1;
+        }
+        .hidden {
+            visibility: hidden;
+        }
+    </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="logo">Aegirson</h1>
-      <nav class="site-nav">
-        <a href="#about">About</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
-      </nav>
+    <div id="terminal">
+        <div id="output"></div>
+        <div class="prompt" id="prompt">
+            <span>aegirson@family:~$ </span>
+            <input type="text" id="input" autofocus>
+            <span class="blink" id="cursor">█</span>
+        </div>
     </div>
-  </header>
 
-  <main>
-    <section class="hero">
-      <div class="container">
-        <h2>Hello — I'm Aegirson</h2>
-        <p>Welcome to my personal site. I build things on the web and experiment with design and code.</p>
-        <p><a class="btn" href="#projects">See Projects</a></p>
-      </div>
-    </section>
+    <script>
+        const output = document.getElementById('output');
+        const input = document.getElementById('input');
+        const cursor = document.getElementById('cursor');
+        const prompt = document.getElementById('prompt');
 
-    <section id="about" class="container section">
-      <h3>About</h3>
-      <p>Short bio goes here. Replace this with a brief introduction about yourself, your work, and interests.</p>
-    </section>
+        const bootMessages = [
+            'Booting Ægirson Family System v1.0...',
+            '[    OK    ] Mounted root filesystem.',
+            '[    OK    ] Loaded family units: stories.service, laughter.service, adventures.service.',
+            '[    OK    ] Reached target Ægirson Family Multi-User Target.',
+            '',
+            'Welcome to the Ægirson Family Terminal!',
+            '',
+            `          ___
+         /     \\
+        |  ÆGIR  |
+         \\  SON /
+          -----
+     FAMILY SYSTEM`,
+            '',
+            'System Information:',
+            '  Hostname: aegirson-family',
+            '  Kernel: FamilyOS 6.42 (Icelandic Edition)',
+            '  Uptime: Eternal (since the first gathering)',
+            '  Users: Mom, Dad, Kids (and guests)',
+            '  Memory: Overflowing with memories',
+            '',
+            'Type "help" for commands, or just explore.',
+            ''
+        ];
 
-    <section id="projects" class="container section">
-      <h3>Projects</h3>
-      <ul class="projects-list">
-        <li>Project A — short description.</li>
-        <li>Project B — short description.</li>
-      </ul>
-    </section>
+        let messageIndex = 0;
+        let charIndex = 0;
 
-    <section id="contact" class="container section">
-      <h3>Contact</h3>
-      <p>Email: <a href="mailto:me@example.com">me@example.com</a></p>
-    </section>
-  </main>
+        function typeMessage() {
+            if (messageIndex < bootMessages.length) {
+                const message = bootMessages[messageIndex];
+                if (charIndex < message.length) {
+                    output.textContent += message[charIndex];
+                    charIndex++;
+                    setTimeout(typeMessage, 20 + Math.random() * 30); // Typing speed variation
+                } else {
+                    output.textContent += '\n';
+                    charIndex = 0;
+                    messageIndex++;
+                    setTimeout(typeMessage, 500); // Pause between messages
+                }
+            } else {
+                // Show prompt
+                prompt.classList.remove('hidden');
+                input.focus();
+                cursor.style.display = 'inline';
+            }
+        }
 
-  <footer class="site-footer">
-    <div class="container">
-      <small>&copy; <span id="year"></span> Aegirson</small>
-    </div>
-  </footer>
+        // Handle input
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = input.value;
+                output.textContent += `aegirson@family:~$ ${command}\n`;
+                if (command.toLowerCase() === 'help') {
+                    output.textContent += '  Available: ls (family photos), cat stories.txt, echo "love".\n';
+                } else if (command.toLowerCase() === 'clear') {
+                    output.textContent = '';
+                } else {
+                    output.textContent += `  Echo: ${command} executed with family flair.\n`;
+                }
+                input.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        });
 
-  <script src="scripts.js"></script>
+        // Start boot sequence
+        setTimeout(typeMessage, 500);
+
+        // Blink cursor
+        setInterval(() => {
+            if (!prompt.classList.contains('hidden')) {
+                cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+            }
+        }, 500);
+    </script>
 </body>
 </html>
