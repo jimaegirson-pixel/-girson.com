@@ -184,12 +184,20 @@
             if (e.key === 'Enter') {
                 const command = input.value;
                 output.textContent += `aegirson@family:~$ ${command}\n`;
+                const cmdLower = command.trim().toLowerCase();
+                // secret command: open secret game page
+                if (!gameActive && cmdLower.includes('secret game')) {
+                    // navigate to secret.html in the same tab
+                    location.href = 'secret.html';
+                    return;
+                }
+
                 if (gameActive) {
                     handleGameCommand(command.trim());
                 } else {
-                    if (command.toLowerCase() === 'help') {
+                    if (cmdLower === 'help') {
                         output.textContent += '  Available: ls (family photos), cat stories.txt, echo "love".\n';
-                    } else if (command.toLowerCase() === 'clear') {
+                    } else if (cmdLower === 'clear') {
                         output.textContent = '';
                     } else {
                         output.textContent += `  Echo: ${command} executed with family flair.\n`;
