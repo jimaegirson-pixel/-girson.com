@@ -9,9 +9,9 @@
             background: #000;
             color: #00ff00;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
+            font-size: 15px;
             margin: 0;
-            padding: 20px;
+            padding: 18px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -25,15 +25,16 @@
             max-width: 900px;
             height: auto;
             max-height: calc(100vh - 120px);
-            border: 2px solid #00ff00;
-            padding: 18px;
+            border: 1px solid rgba(0,255,0,0.12);
+            padding: 16px 18px;
             box-sizing: border-box;
             overflow-y: auto;
             white-space: pre-wrap;
-            line-height: 1.4;
+            line-height: 1.45;
             position: relative;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.85);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.88);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
         }
         #terminal::before {
             content: '';
@@ -127,29 +128,14 @@
 
         const bootMessages = [
             'Booting Ægirson Holding AB — Corporate Portal v1.0...',
-                '[    OK    ] Corporate registry verified.',
-                '[    OK    ] Loaded business units: investments.service, operations.service, compliance.service.',
-                '[    OK    ] Reached target: Ægirson Holding Business Target.',
-                '',
-                'Welcome to Ægirson Holding AB — Our family\'s Holding Company',
+            '[ OK ] Corporate registry verified.',
+            '[ OK ] Loading business units: Investments, Operations, Compliance.',
             '',
-                        `           ~~~~~~~~~~~~~~~~~~~~~~
-                    ~                         ~
-                 ~   ________   ________    ~
-                ~   /        \ /        \   ~
-             ~   |   ÆGIR   |   SON    |  ~
-                ~   \  HOLDING\ /  AB   /   ~
-                 ~     ---------  ----     ~
-                    ~       水 (Water)      ~
-                     ~                     ~
-                        ~~~~~~~~~~~~~~~~~~~~~~
-                         STRATEGY & INVESTMENTS`,
+            'Welcome to Ægirson Holding AB — Our family\'s Holding Company',
             '',
             'Corporate Information:',
             '  Company: Ægirson Holding AB',
             '  Registered Office: Stockholm, Sweden',
-            '  Established: Our family legacy',
-            '  Business Units: Investments, Operations, Property',
             '  Focus: Long-term value and stewardship',
             '',
             'Type "help" for commands (e.g. portfolio, contacts), or explore our holdings.',
@@ -173,12 +159,14 @@
                 if (charIndex < message.length) {
                     output.textContent += message[charIndex];
                     charIndex++;
-                    setTimeout(typeMessage, 20 + Math.random() * 30); // Typing speed variation
+                    // faster, tighter typing for snappier load
+                    setTimeout(typeMessage, 6 + Math.random() * 10);
                 } else {
                     output.textContent += '\n';
                     charIndex = 0;
                     messageIndex++;
-                    setTimeout(typeMessage, 500); // Pause between messages
+                    // shorter pause between messages
+                    setTimeout(typeMessage, 120);
                 }
             } else {
                 // Show prompt
