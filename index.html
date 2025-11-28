@@ -78,6 +78,19 @@
             visibility: hidden;
         }
 
+        .controls { margin-top: 12px; display:flex; gap:8px; }
+        .terminal-btn{
+            background: transparent;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .terminal-btn:active{ background: rgba(0,255,0,0.05) }
+
         /* Responsive tweaks */
         @media (max-width: 720px) {
             body { padding: 12px; }
@@ -100,6 +113,9 @@
             <span>aegirson@family:~$ </span>
             <input type="text" id="input" autofocus>
             <span class="blink" id="cursor">█</span>
+        </div>
+        <div id="controls" class="controls hidden">
+            <button id="playBtn" class="terminal-btn" aria-pressed="false">[PLAY A GAME]</button>
         </div>
     </div>
 
@@ -142,6 +158,14 @@
 
         let messageIndex = 0;
         let charIndex = 0;
+        // Game state
+        let gameActive = false;
+        let gameState = {
+            inventory: [],
+            safeOpened: false
+        };
+
+        const playBtn = document.createElement('div');
 
         function typeMessage() {
             if (messageIndex < bootMessages.length) {
@@ -159,6 +183,9 @@
             } else {
                 // Show prompt
                 prompt.classList.remove('hidden');
+                // Reveal play button/controls
+                const controls = document.getElementById('controls');
+                if (controls) controls.classList.remove('hidden');
                 input.focus();
                 cursor.style.display = 'inline';
             }
@@ -169,17 +196,96 @@
             if (e.key === 'Enter') {
                 const command = input.value;
                 output.textContent += `aegirson@family:~$ ${command}\n`;
-                if (command.toLowerCase() === 'help') {
-                    output.textContent += '  Available: ls (family photos), cat stories.txt, echo "love".\n';
-                } else if (command.toLowerCase() === 'clear') {
-                    output.textContent = '';
+                if (gameActive) {
+                    handleGameCommand(command.trim());
                 } else {
-                    output.textContent += `  Echo: ${command} executed with family flair.\n`;
+                    if (command.toLowerCase() === 'help') {
+                        output.textContent += '  Available: ls (family photos), cat stories.txt, echo "love".\n';
+                    } else if (command.toLowerCase() === 'clear') {
+                        output.textContent = '';
+                    } else {
+                        output.textContent += `  Echo: ${command} executed with family flair.\n`;
+                    }
                 }
                 input.value = '';
                 output.scrollTop = output.scrollHeight;
             }
         });
+
+        // Play button handler
+        const btn = document.getElementById('playBtn');
+        if (btn) {
+            btn.addEventListener('click', function(){
+                startGame();
+            });
+        }
+
+        function appendOutput(text) {
+            output.textContent += text + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function startGame(){
+            gameActive = true;
+            gameState = { inventory: [], safeOpened: false };
+            appendOutput('=== Ægirson Holdings: Mini Text Game ===');
+            appendOutput('You enter the secure office. There is a desk, a painting, and a small safe.');
+            appendOutput('Type "help" for game commands. Type "quit" or "exit" to leave the game.');
+            // focus input
+            input.focus();
+            // update button state
+            const c = document.getElementById('playBtn'); if (c) c.setAttribute('aria-pressed','true');
+        }
+
+        function handleGameCommand(cmd){
+            const c = cmd.toLowerCase();
+            if (!c) return;
+            if (c === 'help'){
+                appendOutput('Game commands: look, open safe, take docs, inventory, quit');
+                return;
+            }
+            if (c === 'look'){
+                appendOutput('You see a tidy desk with a folder, a painting on the wall, and a small locked safe.');
+                return;
+            }
+            if (c === 'open safe' || c === 'open the safe'){
+                if (gameState.safeOpened){ appendOutput('The safe is already open. Inside: a deed and a keycard.'); }
+                else { appendOutput('The safe is locked. You need a code. Maybe the painting hides a clue.'); }
+                return;
+            }
+            if (c === 'take docs' || c === 'take deed' || c === 'take the deed'){
+                if (!gameState.safeOpened){ appendOutput('You can\'t reach the deed; it is inside the locked safe.'); }
+                else {
+                    if (!gameState.inventory.includes('deed')){ gameState.inventory.push('deed'); appendOutput('You take the deed and put it in your portfolio.'); }
+                    else appendOutput('You already took the deed.');
+                }
+                return;
+            }
+            if (c === 'inventory'){
+                if (gameState.inventory.length === 0) appendOutput('You are carrying nothing.');
+                else appendOutput('Inventory: ' + gameState.inventory.join(', '));
+                return;
+            }
+            if (c === 'inspect painting' || c === 'painting'){
+                appendOutput('You inspect the painting and find a small sticky note with the code "0420".');
+                appendOutput('Try: open safe 0420');
+                return;
+            }
+            if (c.startsWith('open safe ')){
+                const parts = c.split(' ');
+                const code = parts[2] || '';
+                if (code === '0420'){ gameState.safeOpened = true; appendOutput('Safe unlocked. Inside: a deed and a keycard.'); }
+                else appendOutput('Incorrect code.');
+                return;
+            }
+            if (c === 'quit' || c === 'exit'){
+                appendOutput('Exiting game...');
+                gameActive = false;
+                const cb = document.getElementById('playBtn'); if (cb) cb.setAttribute('aria-pressed','false');
+                return;
+            }
+            appendOutput('Unknown game command. Type "help" for commands.');
+        }
 
         // Start boot sequence
         setTimeout(typeMessage, 500);
