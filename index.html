@@ -203,9 +203,9 @@
         // Play button handler
         const btn = document.getElementById('playBtn');
         if (btn) {
-            // Open the full game in a new tab/window
+            // Open the full game in the same tab
             btn.addEventListener('click', function(){
-                window.open('game.html', '_blank');
+                location.href = 'game.html';
             });
         }
 
