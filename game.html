@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ÆGIRSON CHRONICLES: The Cauldron Quest</title>
+<style>
+    :root {
+        --bg-color: #050505;
+        --term-green: #33ff33;
+        --term-dim: #1a801a;
+        --glow: 0 0 10px rgba(51, 255, 51, 0.7);
+        --scan-color: rgba(0, 0, 0, 0.5);
+    }
+    body {
+        background-color: var(--bg-color);
+        color: var(--term-green);
+        font-family: 'Courier New', Courier, monospace;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: auto; /* allow page scrolling on small screens */
+        display: flex;
+        justify-content: center;
+        text-shadow: 0 0 2px var(--term-dim);
+    }
+    /* CRT Scanline Effect */
+    .scanlines {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 4px, 3px 100%;
+        pointer-events: none;
+        z-index: 999;
+    }
+    #terminal {
+        width: 100%;
+        max-width: 800px;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    #output {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 120px; /* leave room for mobile keyboard / controls */
+        white-space: pre-wrap;
+        scrollbar-width: none; /* Firefox */
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    #output::-webkit-scrollbar { display: none; }
+    
+    .input-line {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid var(--term-dim);
+        padding-top: 10px;
+        background: var(--bg-color);
+    }
+    .prompt { margin-right: 10px; font-weight: bold; }
+    #cmd {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--term-green);
+        font-family: inherit;
+        font-size: 18px;
+        outline: none;
+        /* keep native caret for accessibility */
+    }
+    .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 18px;
+        background-color: var(--term-green);
+        animation: blink 1s step-end infinite;
+        vertical-align: text-bottom;
+        margin-left: -10px; /* Overlap input caret */
+        pointer-events: none;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* Utility Classes */
+    .highlight { color: #ccffcc; text-shadow: var(--glow); font-weight: bold; }
+    .error { color: #ff3333; }
+    .item { color: #ffff33; }
+    .room-title { border-bottom: 1px dashed var(--term-green); margin-bottom: 10px; padding-bottom: 5px; display:inline-block; font-weight:bold; letter-spacing: 2px;}
+    .ascii-art { font-size: 10px; line-height: 10px; color: var(--term-dim); margin: 10px 0; }
+    .hud { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.45); border: 1px solid var(--term-dim); padding: 6px 10px; border-radius: 6px; font-size: 13px; z-index: 20; }
+    .mobile-controls{ display:flex; gap:8px; margin-top:10px; }
+    .mobile-btn{ background: transparent; color: var(--term-green); border:1px solid var(--term-dim); padding:6px 8px; border-radius:6px; font-family:inherit; }
+    
+    /* Win Confetti */
+    .confetti { position: absolute; width: 5px; height: 5px; background: var(--term-green); animation: fall 3s linear forwards; }
+    @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+    <div id="terminal">
+    <div id="output"></div>
+    <div id="hud" class="hud" aria-hidden="false">HP: 100 | Score: 0 | Inv: 0</div>
+    <div class="input-line" id="input-area" style="display:none;">
+        <span class="prompt">ÆGIRSON_TERM></span>
+        <input type="text" id="cmd" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Game input" role="textbox">
+        <span class="cursor"></span>
+    </div>
+    <div class="mobile-controls" aria-hidden="false">
+        <button class="mobile-btn" onclick="printRoom()">Look</button>
+        <button class="mobile-btn" onclick="showInv()">Inventory</button>
+        <button class="mobile-btn" onclick="showHelp()">Help</button>
+    </div>
+</div>
+
+<script>
+/**
+ * ÆGIRSON CHRONICLES
+ * Single File Game Engine & Data
+ */
+
+// --- STATE MANAGEMENT ---
+const GAME_ID = 'AegirsonAdv_v1';
+let state = {
+    room: 'home',
+    inventory: [],
+    hp: 100,
+    score: 0,
+    visited: [],
+    flags: {
+        gameWon: false,
+        trollDead: false,
+        lanternLit: false,
+        flaskFilled: false,
+        ropeTied: false,
+        riddleSolved: false,
+        krakenDefeated: false,
+        doorOpen: false
+    }
+};
+
+const MAX_INV = 5;
+
+// --- GAME DATA ---
+
+const items = {
+    photo: { name: "Family Photo", desc: "A faded photo of Mom, Dad, and you by the Godafoss falls. Dad looks strong, Mom looks wise.", type: "misc", heal: 20 },
+    sword: { name: "Rusty Sword", desc: "An ancient Viking blade found on the shore.", type: "weapon", power: 15 },
+    lantern: { name: "Elf Lantern", desc: "Emits a magical green glow. Disperses shadows.", type: "tool" },
+    key: { name: "Iron Key", desc: "Heavy, cold iron key with a rune carved on it.", type: "tool" },
+    flask: { name: "Water Flask", desc: "A leather skin for holding water.", type: "tool" },
+    rope: { name: "Climbing Rope", desc: "Sturdy hemp rope, essential for spelunking.", type: "tool" },
+    apple: { name: "Skyr & Apple", desc: "Traditional Icelandic snack. Tasty.", type: "food", heal: 30 },
+    cauldron: { name: "Ægir's Cauldron", desc: "THE LEGENDARY ARTIFACT! It bubbles with the essence of the ocean.", type: "quest" }
+};
+
+const rooms = {
+    home: {
+        name: "Family Turf House",
+        desc: "The wooden beams creak. A fire crackles in the hearth. Outside, the wind howls.",
+        exits: { n: 'shore' },
+        items: ['photo', 'apple']
+    },
+    shore: {
+        name: "Black Sand Shore",
+        desc: "Freezing waves crash against black basalt columns. A small boat bobs in the water. To the North, an island glows faintly.",
+        exits: { s: 'home', n: 'grove' }, // n requires boat logic
+        items: ['sword']
+    },
+    grove: {
+        name: "Elf Grove",
+        desc: "The air is still and smells of honey. Hidden People (Huldufólk) eyes watch you from the moss.",
+        exits: { s: 'shore', e: 'cave' },
+        npc: 'elf',
+        items: []
+    },
+    cave: {
+        name: "Dark Troll Cave",
+        desc: "It is pitch black. The smell of rotten meat is overpowering.",
+        dark: true,
+        exits: { w: 'grove', n: 'volcano' },
+        npc: 'troll',
+        items: ['key'] // Drops key
+    },
+    volcano: {
+        name: "Volcano Slope",
+        desc: "Magma flows dangerously close. The heat is unbearable.",
+        exits: { s: 'cave', e: 'spring', u: 'ruins' },
+        items: []
+    },
+    spring: {
+        name: "Hidden Hot Spring",
+        desc: "Steam rises from the blue water. It looks revitalizing.",
+        exits: { w: 'volcano' },
+        items: ['flask']
+    },
+    ruins: {
+        name: "Ancient Ruins",
+        desc: "Crumbling stone arches stand against the sky. A heavy iron door blocks the way down.",
+        exits: { d: 'hall', d_lock: true }, // d_lock requires key
+        items: ['rope']
+    },
+    hall: {
+        name: "Ægir's Hall",
+        desc: "A magnificent underwater cavern kept dry by magic. The Sea God's throne sits empty.",
+        exits: { u: 'ruins' },
+        npc: 'kraken',
+        items: ['cauldron']
+    }
+};
+
+const enemies = {
+    troll: { name: "Stone Troll", hp: 40, dmg: 10, desc: "A massive creature of stone and moss blocks the path!", alive: true, loot: 'key' },
+    kraken: { name: "Kraken Spirit", hp: 80, dmg: 15, desc: "A spectral tentacled horror guarding the Cauldron!", alive: true, loot: null }
+};
+
+// --- ENGINE ---
+
+const out = document.getElementById('output');
+const inp = document.getElementById('cmd');
+const inpArea = document.getElementById('input-area');
+const hudEl = document.getElementById('hud');
+
+function updateHUD(){
+    if (!hudEl) return;
+    hudEl.textContent = `HP: ${state.hp} | Score: ${state.score} | Inv: ${state.inventory.length}/${MAX_INV}`;
+}
+
+// Boot Sequence
+const bootMessages = [
+    "BIOS CHECK... OK",
+    "LOADING ÆGIRSON_OS v4.2...",
+    "MOUNTING FOLKLORE DRIVERS...",
+    "CONNECTING TO ICELANDIC MAINFRAME...",
+    "SUCCESS.",
+    " ",
+    "Welcome, Heir of Ægirson.",
+    "Your family honor depends on retrieving the Cauldron.",
+    "Type 'help' for instructions."
+];
+
+async function boot() {
+    for (let msg of bootMessages) {
+        await typeLine(msg, 30);
+    }
+    loadGame(); // Try auto load
+    printRoom();
+    updateHUD();
+    inpArea.style.display = 'flex';
+    inp.focus();
+}
+
+function typeLine(text, speed = 20) {
+    return new Promise(resolve => {
+        const div = document.createElement('div');
+        out.appendChild(div);
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                div.textContent += text.charAt(i);
+                i++;
+                out.scrollTop = out.scrollHeight;
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
+}
+
+function print(text, cls = '') {
+    const div = document.createElement('div');
+    if (cls) div.className = cls;
+    div.innerHTML = text; // Allow innerHTML for styling spans
+    out.appendChild(div);
+    out.scrollTop = out.scrollHeight;
+}
+
+// --- INPUT HANDLING ---
+
+inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const val = inp.value.trim();
+        inp.value = '';
+        if (val) {
+            print(`> ${val}`, 'highlight');
+            processCommand(val);
+        }
+    }
+});
+
+// Focus keeper
+document.addEventListener('click', () => inp.focus());
+
+// --- PARSER LOGIC ---
+
+function processCommand(raw) {
+    if (state.hp <= 0 && raw.toLowerCase() !== 'restart') {
+        print("You are dead. Type 'restart' to try again.", 'error');
+        return;
+    }
+
+    const clean = raw.toLowerCase().split(' ');
+    const verb = clean[0];
+    const noun = clean.slice(1).join(' ');
+
+    // Combat Check
+    const currentRoom = rooms[state.room];
+    const enemyId = currentRoom.npc;
+    if (enemyId && enemies[enemyId] && enemies[enemyId].alive && !['attack', 'kill', 'fight', 'use', 'look', 'x', 'i', 'inventory', 'help', 'hint'].includes(verb)) {
+        print(`The ${enemies[enemyId].name} blocks your path! You must fight!`, 'error');
+        return;
+    }
+
+    switch (verb) {
+        case 'n': case 'north': move('n'); break;
+        case 's': case 'south': move('s'); break;
+        case 'e': case 'east': move('e'); break;
+        case 'w': case 'west': move('w'); break;
+        case 'u': case 'up': move('u'); break;
+        case 'd': case 'down': move('d'); break;
+        case 'go': move(clean[1]?.charAt(0)); break;
+        
+        case 'l': case 'look': case 'x': case 'examine': look(noun); break;
+        case 'i': case 'inv': case 'inventory': showInv(); break;
+        case 'get': case 'take': case 'grab': take(noun); break;
+        case 'drop': drop(noun); break;
+        case 'use': use(noun); break;
+        case 'attack': case 'fight': case 'kill': attack(noun); break;
+        case 'talk': talk(noun); break;
+        
+        case 'map': showMap(); break;
+        case 'help': showHelp(); break;
+        case 'save': saveGame(); break;
+        case 'load': manualLoad(); break;
+        case 'restart': location.reload(); break;
+        case 'clear': out.innerHTML = ''; break;
+        
+        default: print("I don't understand that command.", 'error');
+    }
+    
+    // Auto-save after meaningful turn
+    if (!['save', 'load', 'help', 'map'].includes(verb)) {
+        localStorage.setItem(GAME_ID, JSON.stringify(state));
+    }
+}
+
+// --- ACTIONS ---
+
+function move(dir) {
+    const room = rooms[state.room];
+    if (!room.exits[dir]) {
+        print("You can't go that way.");
+        return;
+    }
+
+    // Logic Checks
+    if (state.room === 'shore' && dir === 'n' && !state.inventory.includes('sword') && !state.visited.includes('grove')) {
+        print("You row the boat...");
+    }
+    
+    // Locked Door
+    if (state.room === 'ruins' && dir === 'd' && room.exits.d_lock && !state.flags.doorOpen) {
+        print("The heavy iron door is locked.", 'item');
+        return;
+    }
+
+    // Dark Room
+    const nextRoomId = room.exits[dir];
+    const nextRoom = rooms[nextRoomId];
+    if (nextRoom.dark && !state.inventory.includes('lantern')) {
+        print("It is too dark! You might be eaten by a Grue (or a Troll). You retreat.", 'error');
+        return;
+    }
+
+    // Volcano Heat
+    if (nextRoomId === 'volcano' && !state.flags.flaskFilled && !state.visited.includes('volcano')) {
+        print("The heat hits you like a hammer. You are parched!", 'error');
+        state.hp -= 10;
+        print(`HP: ${state.hp}/100`);
+    }
+
+    state.room = nextRoomId;
+    if (!state.visited.includes(nextRoomId)) {
+        state.visited.push(nextRoomId);
+        state.score += 5;
+    }
+    printRoom();
+    updateHUD();
+}
+
+function printRoom() {
+    const r = rooms[state.room];
+    print(`<br><span class="room-title">${r.name}</span>`);
+    print(r.desc);
+    
+    // Items
+    if (r.items.length > 0) {
+        const names = r.items.map(id => items[id].name).join(', ');
+        print(`You see: <span class="item">${names}</span>`);
+    }
+    
+    // NPC
+    if (r.npc && enemies[r.npc] && enemies[r.npc].alive) {
+        print(`DANGER: ${enemies[r.npc].desc}`, 'error');
+    } else if (r.npc === 'elf' && !state.flags.riddleSolved) {
+        print("A wise Elf sits on a stump, waiting to 'talk'.", 'highlight');
+    }
+    
+    print(`Exits: ${Object.keys(r.exits).filter(k => k.length === 1).join(' ').toUpperCase()}`, 'ascii-art');
+}
+
+function look(noun) {
+    if (!noun) { printRoom(); return; }
+    
+    // Check Inventory
+    const invItem = state.inventory.find(id => items[id].name.toLowerCase().includes(noun) || id === noun);
+    // Check Room
+    const roomItem = rooms[state.room].items.find(id => items[id].name.toLowerCase().includes(noun) || id === noun);
+    
+    const id = invItem || roomItem;
+    
+    if (id) {
+        print(items[id].desc);
+        if (id === 'photo') { 
+            print("You feel your family's love. HP restored."); 
+            state.hp = Math.min(100, state.hp + items.photo.heal);
+        }
+    } else if (noun.includes('elf')) {
+        print("The Elf looks timeless.");
+    } else if (noun.includes('troll')) {
+        print("Ugly. Big. Stone.");
+    } else {
+        print("You don't see that here.");
+    }
+}
+
+function take(noun) {
+    if (state.inventory.length >= MAX_INV) {
+        print("Inventory full!", 'error');
+        return;
+    }
+    
+    const r = rooms[state.room];
+    const idx = r.items.findIndex(id => items[id].name.toLowerCase().includes(noun) || id === noun);
+    
+    if (idx > -1) {
+        const itemId = r.items[idx];
+        if (itemId === 'cauldron') {
+            winGame();
+            return;
+        }
+        state.inventory.push(itemId);
+        r.items.splice(idx, 1);
+        print(`Taken: ${items[itemId].name}`);
+        state.score += 5;
+        updateHUD();
+    } else {
+        print("Can't take that.");
+    }
+}
+
+function drop(noun) {
+    const idx = state.inventory.findIndex(id => items[id].name.toLowerCase().includes(noun) || id === noun);
+    if (idx > -1) {
+        const itemId = state.inventory[idx];
+        state.inventory.splice(idx, 1);
+        rooms[state.room].items.push(itemId);
+        print(`Dropped: ${items[itemId].name}`);
+        updateHUD();
+    } else {
+        print("You don't have that.");
+    }
+}
+
+function showInv() {
+    if (state.inventory.length === 0) {
+        print("Inventory is empty.");
+    } else {
+        print("Carrying:");
+        state.inventory.forEach(id => print(`- ${items[id].name}`));
+        print(`HP: ${state.hp} | Score: ${state.score}`);
+    }
+}
+
+function use(noun) {
+    // Handling "use x on y" is complex, simplifying to "use x" contextually
+    const parts = noun.split(' ');
+    const itemKey = state.inventory.find(id => items[id].name.toLowerCase().includes(parts[0]) || id === parts[0]);
+
+    if (!itemKey) { print("You don't have that."); return; }
+
+    if (itemKey === 'apple') {
+        state.hp = Math.min(100, state.hp + items.apple.heal);
+        print("Delicious! You feel better.");
+        state.inventory = state.inventory.filter(i => i !== 'apple');
+            updateHUD();
+            return;
+    }
+
+    if (itemKey === 'flask' && state.room === 'spring') {
+        state.flags.flaskFilled = true;
+        items.flask.name = "Full Water Flask";
+        print("Flask filled with healing spring water.");
+        state.hp = 100;
+            updateHUD();
+            return;
+    }
+
+    if (itemKey === 'flask' && state.room === 'volcano') {
+        if (state.flags.flaskFilled) {
+            print("You pour water on the solidified magma path, cooling it down.");
+            state.visited.push('volcano'); // Safe now
+            items.flask.name = "Empty Flask";
+            state.flags.flaskFilled = false;
+        } else {
+            print("The flask is empty!");
+        }
+            updateHUD();
+            return;
+    }
+
+    if (itemKey === 'key' && state.room === 'ruins') {
+        state.flags.doorOpen = true;
+        print("The lock clicks. The heavy door groans open.");
+            updateHUD();
+            return;
+    }
+    
+    if (itemKey === 'rope' && state.room === 'ruins' && state.flags.doorOpen) {
+        print("You tie the rope to a sturdy pillar. You can now descend safely.");
+        state.flags.ropeTied = true;
+            updateHUD();
+            return;
+    }
+
+    print("Nothing happened.");
+}
+
+function talk(noun) {
+    if (state.room === 'grove' && !state.flags.riddleSolved) {
+        print("Elf: 'I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?' (Type 'answer [word]')");
+        // Hacky one-off riddle parser
+        state.awaitingRiddle = true;
+    } else {
+        print("No one responds.");
+    }
+}
+
+function attack(noun) {
+    const r = rooms[state.room];
+    if (!r.npc || !enemies[r.npc].alive) {
+        print("Nothing to fight here.");
+        return;
+    }
+
+    if (!state.inventory.includes('sword')) {
+        print("You try to punch it! Bad idea.", 'error');
+        state.hp -= 10;
+    } else {
+        const dmg = items.sword.power + Math.floor(Math.random() * 5);
+        enemies[r.npc].hp -= dmg;
+        print(`You slash with the sword! (${dmg} dmg)`);
+    }
+
+    // Enemy Turn
+    if (enemies[r.npc].hp > 0) {
+        const eDmg = enemies[r.npc].dmg - (Math.floor(Math.random() * 3));
+        state.hp -= eDmg;
+        print(`${enemies[r.npc].name} attacks you! (-${eDmg} HP)`, 'error');
+        print(`Your HP: ${state.hp} | Enemy HP: ${enemies[r.npc].hp}`);
+    } else {
+        print(`The ${enemies[r.npc].name} falls defeated!`, 'highlight');
+        enemies[r.npc].alive = false;
+        state.score += 20;
+        if (enemies[r.npc].loot) {
+            r.items.push(enemies[r.npc].loot);
+            print(`It dropped: ${items[enemies[r.npc].loot].name}`);
+        }
+    }
+
+    if (state.hp <= 0) die();
+    updateHUD();
+}
+
+// Special Parser for Riddle Answers
+const originalProcess = processCommand;
+processCommand = function(raw) {
+    if (state.awaitingRiddle) {
+        if (raw.toLowerCase().includes('map')) {
+            print("Elf: 'Correct. Smart for a human.'");
+            print("The Elf hands you a Lantern.");
+            state.inventory.push('lantern');
+            state.flags.riddleSolved = true;
+            state.awaitingRiddle = false;
+            return;
+        } else {
+            print("Elf: 'Incorrect.'");
+            state.awaitingRiddle = false;
+            return;
+        }
+    }
+    originalProcess(raw);
+}
+
+function die() {
+    print("VISION FADES... YOU HAVE DIED.", 'error');
+    print("Press Reload or type 'restart'.");
+    localStorage.removeItem(GAME_ID);
+}
+
+function winGame() {
+    print("YOU GRASP THE CAULDRON!", 'highlight');
+    print("Ancient power surges through you. The spirit of Ægir nods in approval.");
+    print(`FINAL SCORE: ${state.score + 50}/100`);
+    print("CONGRATULATIONS!");
+    
+    // Confetti
+    for(let i=0; i<50; i++) {
+        let c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random()*100 + 'vw';
+        c.style.animationDuration = (Math.random()*2+2) + 's';
+        document.body.appendChild(c);
+    }
+}
+
+// --- UTILS ---
+
+function showMap() {
+    // Simple text map
+    print("MAP DATA:", 'highlight');
+    print("   [Ruins] -> (down) -> [Hall]");
+    print("      ^");
+    print("      | (climb)");
+    print("  [Volcano] <-> [Spring]");
+    print("      ^");
+    print("      |");
+    print("   [Cave] <-> [Grove]");
+    print("                  ^");
+    print("                  |");
+    print("               [Shore]");
+    print("                  ^");
+    print("                  |");
+    print("                [Home]");
+}
+
+function showHelp() {
+    print("COMMANDS:", 'highlight');
+    print("- n, s, e, w, u, d: Move");
+    print("- look / l: Look around");
+    print("- i / inv: Inventory");
+    print("- take [item], drop [item]");
+    print("- use [item]");
+    print("- attack [enemy]");
+    print("- talk [npc]");
+    print("- map: Show map");
+    print("- save / load");
+}
+
+function saveGame() {
+    localStorage.setItem(GAME_ID, JSON.stringify(state));
+    print("Game Saved.");
+}
+
+function manualLoad() { loadGame(); printRoom(); }
+
+function loadGame() {
+    const saved = localStorage.getItem(GAME_ID);
+    if (saved) {
+        state = JSON.parse(saved);
+        // Restore items/enemies logic if needed, but deep copy usually works for simple objs
+    }
+}
+
+// Start
+window.onload = boot;
+
+</script>
+</body>
+</html>
