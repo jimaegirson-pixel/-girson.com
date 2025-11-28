@@ -223,6 +223,8 @@
             input.focus();
             // update button state
             const c = document.getElementById('playBtn'); if (c) c.setAttribute('aria-pressed','true');
+            // hide the play button while game is active
+            const controls = document.getElementById('controls'); if (controls) controls.classList.add('hidden');
         }
 
         function handleGameCommand(cmd){
@@ -270,6 +272,8 @@
                 appendOutput('Exiting game...');
                 gameActive = false;
                 const cb = document.getElementById('playBtn'); if (cb) cb.setAttribute('aria-pressed','false');
+                // reveal the play button again
+                const controls = document.getElementById('controls'); if (controls) controls.classList.remove('hidden');
                 return;
             }
             appendOutput('Unknown game command. Type "help" for commands.');
