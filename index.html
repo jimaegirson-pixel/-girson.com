@@ -91,7 +91,7 @@
             user-select: none;
         }
 
-        /* Glitch effect layers */
+        /* Glitch effect layers - green variations only */
         #aegir::before,
         #aegir::after {
             content: 'Æ';
@@ -100,19 +100,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.8;
+            opacity: 0.6;
         }
 
         #aegir::before {
-            color: #ff00ff;
-            text-shadow: 2px 0 #ff00ff;
+            color: #00aa00;
+            text-shadow: 2px 0 #00aa00;
             animation: glitch-1 0.3s infinite;
             clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
         }
 
         #aegir::after {
-            color: #00ffff;
-            text-shadow: -2px 0 #00ffff;
+            color: #003300;
+            text-shadow: -2px 0 #003300;
             animation: glitch-2 0.4s infinite;
             clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
         }
@@ -233,7 +233,7 @@
             }
         }
 
-        /* RGB split effect on whole screen */
+        /* Green split effect only */
         @keyframes rgb-split {
             0% {
                 text-shadow: 
@@ -243,8 +243,8 @@
             }
             25% {
                 text-shadow: 
-                    -5px 0 10px #ff00ff,
-                    5px 0 20px #00ffff,
+                    -3px 0 10px #00aa00,
+                    3px 0 20px #005500,
                     0 0 30px #00ff00;
             }
             50% {
@@ -255,8 +255,8 @@
             }
             75% {
                 text-shadow: 
-                    3px 0 10px #00ffff,
-                    -3px 0 20px #ff00ff,
+                    2px 0 10px #005500,
+                    -2px 0 20px #00aa00,
                     0 0 30px #00ff00;
             }
             100% {
@@ -302,12 +302,37 @@
             50% { opacity: 0.5; }
         }
 
+        /* Audio control button */
+        #audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 200;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        #audio-control:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
         @media (max-width: 720px) {
             #aegir {
                 font-size: 35vmin;
             }
             #company-name {
                 font-size: 3vmin;
+            }
+            #audio-control {
+                font-size: 10px;
+                padding: 8px 12px;
             }
         }
     </style>
@@ -325,7 +350,64 @@
     
     <div class="vignette"></div>
 
+    <button id="audio-control">🔊 ENABLE STATIC</button>
+
     <script>
+        // Audio context for static noise
+        let audioContext;
+        let staticNode;
+        let gainNode;
+        let isPlaying = false;
+
+        function createStaticNoise() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create buffer for white noise
+            const bufferSize = 4096;
+            staticNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            
+            staticNode.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+            };
+            
+            // Create gain node for volume control
+            gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.05; // Low volume for ambient static
+            
+            // Add some filtering to make it sound more like TV static
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 1000;
+            filter.Q.value = 0.5;
+            
+            staticNode.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+        }
+
+        function toggleStatic() {
+            const btn = document.getElementById('audio-control');
+            
+            if (!audioContext) {
+                createStaticNoise();
+            }
+            
+            if (isPlaying) {
+                audioContext.suspend();
+                btn.textContent = '🔊 ENABLE STATIC';
+                isPlaying = false;
+            } else {
+                audioContext.resume();
+                btn.textContent = '🔇 DISABLE STATIC';
+                isPlaying = true;
+            }
+        }
+
+        document.getElementById('audio-control').addEventListener('click', toggleStatic);
+
         // Add random glitch intensity spikes
         setInterval(() => {
             const aegir = document.getElementById('aegir');
