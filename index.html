@@ -5,40 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ægirson Holding AB — Family Holding Company</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: #000;
             color: #00ff00;
             font-family: 'Courier New', monospace;
-            font-size: 15px;
             margin: 0;
-            padding: 18px;
+            padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            -webkit-font-smoothing: antialiased;
-            -webkit-text-size-adjust: 100%;
-        }
-        #terminal {
-            width: 100%;
-            max-width: 900px;
-            height: auto;
-            max-height: calc(100vh - 120px);
-            border: 1px solid rgba(0,255,0,0.12);
-            padding: 16px 18px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            line-height: 1.45;
+            overflow: hidden;
             position: relative;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.88);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
         }
-        #terminal::before {
+
+        /* Scanlines effect */
+        body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -51,252 +42,310 @@
                 rgba(0, 255, 0, 0.03) 4px
             );
             pointer-events: none;
-        }
-        .blink {
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        .prompt {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        #input {
-            background: transparent;
-            border: none;
-            color: #00ff00;
-            font-family: inherit;
-            font-size: 16px; /* ensure 16px to avoid mobile zoom */
-            outline: none;
-            flex: 1 1 120px;
-            min-width: 0; /* allow input to shrink on small screens */
-        }
-        .hidden {
-            visibility: hidden;
+            z-index: 100;
+            animation: scanlines 8s linear infinite;
         }
 
-        .controls { margin-top: 12px; display:flex; gap:8px; }
-        .terminal-btn{
-            background: transparent;
-            color: #00ff00;
-            border: 1px solid #00ff00;
-            padding: 6px 10px;
-            font-family: inherit;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
         }
-        .terminal-btn:active{ background: rgba(0,255,0,0.05) }
 
-        /* Responsive tweaks */
+        /* Static noise overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 99;
+            animation: static 0.2s infinite;
+        }
+
+        @keyframes static {
+            0% { opacity: 0.03; }
+            50% { opacity: 0.06; }
+            100% { opacity: 0.03; }
+        }
+
+        /* Main container */
+        #container {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* The giant Æ */
+        #aegir {
+            font-size: 40vmin;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 
+                0 0 10px #00ff00,
+                0 0 20px #00ff00,
+                0 0 30px #00ff00;
+            position: relative;
+            animation: flicker 0.15s infinite alternate;
+            user-select: none;
+        }
+
+        /* Glitch effect layers */
+        #aegir::before,
+        #aegir::after {
+            content: 'Æ';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        #aegir::before {
+            color: #ff00ff;
+            text-shadow: 2px 0 #ff00ff;
+            animation: glitch-1 0.3s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        #aegir::after {
+            color: #00ffff;
+            text-shadow: -2px 0 #00ffff;
+            animation: glitch-2 0.4s infinite;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            10% { opacity: 0.95; }
+            20% { opacity: 1; }
+            30% { opacity: 0.98; }
+            40% { opacity: 0.92; }
+            50% { opacity: 1; }
+            60% { opacity: 0.96; }
+            70% { opacity: 1; }
+            80% { opacity: 0.94; }
+            90% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        @keyframes glitch-1 {
+            0% {
+                transform: translate(0);
+                clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            }
+            10% {
+                transform: translate(-3px, 2px);
+                clip-path: polygon(0 10%, 100% 10%, 100% 50%, 0 50%);
+            }
+            20% {
+                transform: translate(2px, -1px);
+                clip-path: polygon(0 20%, 100% 20%, 100% 60%, 0 60%);
+            }
+            30% {
+                transform: translate(-2px, 1px);
+                clip-path: polygon(0 0%, 100% 0%, 100% 40%, 0 40%);
+            }
+            40% {
+                transform: translate(3px, -2px);
+                clip-path: polygon(0 30%, 100% 30%, 100% 70%, 0 70%);
+            }
+            50% {
+                transform: translate(-1px, 2px);
+                clip-path: polygon(0 5%, 100% 5%, 100% 45%, 0 45%);
+            }
+            100% {
+                transform: translate(0);
+                clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            }
+        }
+
+        @keyframes glitch-2 {
+            0% {
+                transform: translate(0);
+                clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+            }
+            15% {
+                transform: translate(2px, -2px);
+                clip-path: polygon(0 60%, 100% 60%, 100% 95%, 0 95%);
+            }
+            25% {
+                transform: translate(-3px, 1px);
+                clip-path: polygon(0 50%, 100% 50%, 100% 90%, 0 90%);
+            }
+            35% {
+                transform: translate(1px, 2px);
+                clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+            }
+            45% {
+                transform: translate(-2px, -1px);
+                clip-path: polygon(0 55%, 100% 55%, 100% 85%, 0 85%);
+            }
+            55% {
+                transform: translate(3px, 1px);
+                clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%);
+            }
+            100% {
+                transform: translate(0);
+                clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+            }
+        }
+
+        /* Horizontal distortion bars */
+        .distortion-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(0, 255, 0, 0.3);
+            z-index: 50;
+            animation: distort 2s infinite;
+        }
+
+        .distortion-bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .distortion-bar:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+
+        .distortion-bar:nth-child(3) {
+            animation-delay: 1.4s;
+        }
+
+        @keyframes distort {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* RGB split effect on whole screen */
+        @keyframes rgb-split {
+            0% {
+                text-shadow: 
+                    0 0 10px #00ff00,
+                    0 0 20px #00ff00,
+                    0 0 30px #00ff00;
+            }
+            25% {
+                text-shadow: 
+                    -5px 0 10px #ff00ff,
+                    5px 0 20px #00ffff,
+                    0 0 30px #00ff00;
+            }
+            50% {
+                text-shadow: 
+                    0 0 10px #00ff00,
+                    0 0 20px #00ff00,
+                    0 0 30px #00ff00;
+            }
+            75% {
+                text-shadow: 
+                    3px 0 10px #00ffff,
+                    -3px 0 20px #ff00ff,
+                    0 0 30px #00ff00;
+            }
+            100% {
+                text-shadow: 
+                    0 0 10px #00ff00,
+                    0 0 20px #00ff00,
+                    0 0 30px #00ff00;
+            }
+        }
+
+        #aegir {
+            animation: flicker 0.15s infinite alternate, rgb-split 0.5s infinite;
+        }
+
+        /* Vignette effect */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 98;
+            box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Company name below */
+        #company-name {
+            position: absolute;
+            bottom: 10vh;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2vmin;
+            color: #00ff00;
+            text-align: center;
+            opacity: 0.7;
+            animation: text-flicker 0.3s infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes text-flicker {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 0.5; }
+        }
+
         @media (max-width: 720px) {
-            body { padding: 12px; }
-            #terminal { padding: 12px; max-width: 100%; max-height: calc(100vh - 100px); }
-            #terminal::before { background-size: 100% 4px; }
-            #output, #terminal { font-size: 14px; }
-            #input { font-size: 16px; }
-            .prompt span { font-size: 14px; }
-        }
-        @media (min-width: 721px) and (max-width: 1100px) {
-            body { padding: 16px; }
-            #terminal { max-width: 720px; }
+            #aegir {
+                font-size: 35vmin;
+            }
+            #company-name {
+                font-size: 3vmin;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="terminal">
-        <div id="output"></div>
-        <div class="prompt" id="prompt">
-            <span>aegirson@family:~$ </span>
-            <input type="text" id="input" autofocus>
-            <span class="blink" id="cursor">█</span>
-        </div>
-        <div id="controls" class="controls hidden">
-            <button id="playBtn" class="terminal-btn" aria-pressed="false">[PLAY A GAME]</button>
-        </div>
+    <div class="distortion-bar"></div>
+    <div class="distortion-bar"></div>
+    <div class="distortion-bar"></div>
+    
+    <div id="container">
+        <div id="aegir">Æ</div>
     </div>
 
+    <div id="company-name">ÆGIRSON HOLDING AB — STOCKHOLM</div>
+    
+    <div class="vignette"></div>
+
     <script>
-        const output = document.getElementById('output');
-        const input = document.getElementById('input');
-        const cursor = document.getElementById('cursor');
-        const prompt = document.getElementById('prompt');
-
-        const bootMessages = [
-            'Booting Ægirson Holding AB — Corporate Portal v1.0...',
-            '[ OK ] Corporate registry verified.',
-            '[ OK ] Loading business units: Investments, Operations, Compliance.',
-            '',
-            'Welcome to Ægirson Holding AB — Our family\'s Holding Company',
-            '',
-            'Corporate Information:',
-            '  Company: Ægirson Holding AB',
-            '  Registered Office: Stockholm, Sweden',
-            '  Focus: Long-term value and stewardship',
-            '',
-            'Type "help" for commands (e.g. portfolio, contacts), or explore our holdings.',
-            ''
-        ];
-
-        let messageIndex = 0;
-        let charIndex = 0;
-        // Game state
-        let gameActive = false;
-        let gameState = {
-            inventory: [],
-            safeOpened: false
-        };
-
-        const playBtn = document.createElement('div');
-
-        function typeMessage() {
-            if (messageIndex < bootMessages.length) {
-                const message = bootMessages[messageIndex];
-                if (charIndex < message.length) {
-                    output.textContent += message[charIndex];
-                    charIndex++;
-                    // faster, tighter typing for snappier load
-                    setTimeout(typeMessage, 6 + Math.random() * 10);
-                } else {
-                    output.textContent += '\n';
-                    charIndex = 0;
-                    messageIndex++;
-                    // shorter pause between messages
-                    setTimeout(typeMessage, 120);
-                }
-            } else {
-                // Show prompt
-                prompt.classList.remove('hidden');
-                // Reveal play button/controls
-                const controls = document.getElementById('controls');
-                if (controls) controls.classList.remove('hidden');
-                input.focus();
-                cursor.style.display = 'inline';
-            }
-        }
-
-        // Handle input
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const command = input.value;
-                output.textContent += `aegirson@family:~$ ${command}\n`;
-                const cmdLower = command.trim().toLowerCase();
-                // secret command: open secret game page
-                if (!gameActive && cmdLower.includes('secret game')) {
-                    // navigate to secret.html in the same tab
-                    location.href = 'secret.html';
-                    return;
-                }
-
-                if (gameActive) {
-                    handleGameCommand(command.trim());
-                } else {
-                    if (cmdLower === 'help') {
-                        output.textContent += '  Available: ls (family photos), cat stories.txt, echo "love".\n';
-                    } else if (cmdLower === 'clear') {
-                        output.textContent = '';
-                    } else {
-                        output.textContent += `  Echo: ${command} executed with family flair.\n`;
-                    }
-                }
-                input.value = '';
-                output.scrollTop = output.scrollHeight;
-            }
-        });
-
-        // Play button handler
-        const btn = document.getElementById('playBtn');
-        if (btn) {
-            // Open the full game in the same tab
-            btn.addEventListener('click', function(){
-                location.href = 'game.html';
-            });
-        }
-
-        function appendOutput(text) {
-            output.textContent += text + '\n';
-            output.scrollTop = output.scrollHeight;
-        }
-
-        function startGame(){
-            gameActive = true;
-            gameState = { inventory: [], safeOpened: false };
-            appendOutput('=== Ægirson Holdings: Mini Text Game ===');
-            appendOutput('You enter the secure office. There is a desk, a painting, and a small safe.');
-            appendOutput('Type "help" for game commands. Type "quit" or "exit" to leave the game.');
-            // focus input
-            input.focus();
-            // update button state
-            const c = document.getElementById('playBtn'); if (c) c.setAttribute('aria-pressed','true');
-            // hide the play button while game is active
-            const controls = document.getElementById('controls'); if (controls) controls.classList.add('hidden');
-        }
-
-        function handleGameCommand(cmd){
-            const c = cmd.toLowerCase();
-            if (!c) return;
-            if (c === 'help'){
-                appendOutput('Game commands: look, open safe, take docs, inventory, quit');
-                return;
-            }
-            if (c === 'look'){
-                appendOutput('You see a tidy desk with a folder, a painting on the wall, and a small locked safe.');
-                return;
-            }
-            if (c === 'open safe' || c === 'open the safe'){
-                if (gameState.safeOpened){ appendOutput('The safe is already open. Inside: a deed and a keycard.'); }
-                else { appendOutput('The safe is locked. You need a code. Maybe the painting hides a clue.'); }
-                return;
-            }
-            if (c === 'take docs' || c === 'take deed' || c === 'take the deed'){
-                if (!gameState.safeOpened){ appendOutput('You can\'t reach the deed; it is inside the locked safe.'); }
-                else {
-                    if (!gameState.inventory.includes('deed')){ gameState.inventory.push('deed'); appendOutput('You take the deed and put it in your portfolio.'); }
-                    else appendOutput('You already took the deed.');
-                }
-                return;
-            }
-            if (c === 'inventory'){
-                if (gameState.inventory.length === 0) appendOutput('You are carrying nothing.');
-                else appendOutput('Inventory: ' + gameState.inventory.join(', '));
-                return;
-            }
-            if (c === 'inspect painting' || c === 'painting'){
-                appendOutput('You inspect the painting and find a small sticky note with the code "0420".');
-                appendOutput('Try: open safe 0420');
-                return;
-            }
-            if (c.startsWith('open safe ')){
-                const parts = c.split(' ');
-                const code = parts[2] || '';
-                if (code === '0420'){ gameState.safeOpened = true; appendOutput('Safe unlocked. Inside: a deed and a keycard.'); }
-                else appendOutput('Incorrect code.');
-                return;
-            }
-            if (c === 'quit' || c === 'exit'){
-                appendOutput('Exiting game...');
-                gameActive = false;
-                const cb = document.getElementById('playBtn'); if (cb) cb.setAttribute('aria-pressed','false');
-                // reveal the play button again
-                const controls = document.getElementById('controls'); if (controls) controls.classList.remove('hidden');
-                return;
-            }
-            appendOutput('Unknown game command. Type "help" for commands.');
-        }
-
-        // Start boot sequence
-        setTimeout(typeMessage, 500);
-
-        // Blink cursor
+        // Add random glitch intensity spikes
         setInterval(() => {
-            if (!prompt.classList.contains('hidden')) {
-                cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+            const aegir = document.getElementById('aegir');
+            if (Math.random() > 0.85) {
+                aegir.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+                setTimeout(() => {
+                    aegir.style.transform = 'translate(0, 0)';
+                }, 100);
             }
-        }, 500);
+        }, 200);
+
+        // Random screen shake
+        setInterval(() => {
+            if (Math.random() > 0.9) {
+                document.body.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
+                setTimeout(() => {
+                    document.body.style.transform = 'translate(0, 0)';
+                }, 50);
+            }
+        }, 300);
     </script>
 </body>
 </html>
