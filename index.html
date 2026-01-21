@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ÆgirHUB</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Arial+Black&display=swap" rel="stylesheet">
+    <title>Ægirson Holding AB — Corporate Portal</title>
     <style>
         * {
             margin: 0;
@@ -15,185 +12,402 @@
         }
 
         body {
-            background: #000;
-            color: #fff;
-            font-family: 'Roboto Condensed', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #e8e8e8;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             overflow: hidden;
         }
 
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 100, 150, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(0, 150, 100, 0.08) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
         .logo-container {
-            display: flex;
-            align-items: center;
-            transform: scale(1.15);
-        }
-
-        .porn {
-            background: #000;
-            color: #ffa31a;
-            font-family: 'Arial Black', Arial, sans-serif;
-            font-size: 22vmin;
-            font-weight: 900;
-            padding: 3vmin 5vmin 3vmin 6vmin;
-            letter-spacing: -0.5vmin;
-            line-height: 0.82;
-            text-transform: uppercase;
             position: relative;
-            border-radius: 12px 0 0 12px;
-            -webkit-font-smoothing: antialiased;
+            z-index: 2;
+            text-align: center;
+            margin-bottom: 3rem;
         }
 
-        .hub {
-            background: #ffa31a;
-            color: #000;
-            font-family: 'Arial Black', Arial, sans-serif;
-            font-size: 22vmin;
-            font-weight: 900;
-            padding: 3vmin 6vmin 3vmin 5vmin;
-            letter-spacing: -0.4vmin;
-            line-height: 0.82;
+        .logo {
+            font-size: clamp(5rem, 15vw, 12rem);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .company-name {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: #a0a0a0;
             text-transform: uppercase;
-            border-radius: 0 12px 12px 0;
-            -webkit-font-smoothing: antialiased;
+            margin-bottom: 0.5rem;
         }
 
-        .ae {
-            font-family: 'Roboto Condensed', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.1em;
-        }
-
-        /* Small tagline / joke text */
         .tagline {
-            margin-top: 5vh;
-            color: #888;
-            font-size: 3.5vmin;
-            font-family: Arial, sans-serif;
-            letter-spacing: 0.2em;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #666;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+        }
+
+        .divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #555, transparent);
+            margin: 2rem auto;
+        }
+
+        /* Content Section */
+        .content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 8rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
+            border: 1px solid #2a2a2a;
+            padding: 3rem 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4a4a4a, transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card:hover {
+            border-color: #3a3a3a;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            color: #fff;
+            letter-spacing: 0.05em;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #999;
+            font-weight: 300;
+        }
+
+        /* Values Section */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .value-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .value-number {
+            font-size: 3rem;
+            font-weight: 200;
+            color: #4a4a4a;
+            margin-bottom: 1rem;
+        }
+
+        .value-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        /* Audio button */
-        #audio-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255, 163, 26, 0.15);
-            color: #ffa31a;
-            border: 2px solid #ffa31a;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-            z-index: 100;
+        .value-description {
+            font-size: 0.95rem;
+            color: #888;
+            line-height: 1.6;
         }
 
-        #audio-btn:hover {
-            background: #ffa31a;
-            color: #000;
+        /* Footer */
+        footer {
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+            padding: 4rem 2rem 2rem;
+            text-align: center;
         }
 
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-year {
+            font-size: 0.85rem;
+            color: #444;
+            margin-top: 2rem;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 50px;
+            border: 2px solid #3a3a3a;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            padding-top: 8px;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            width: 4px;
+            height: 8px;
+            background: #5a5a5a;
+            border-radius: 2px;
+            animation: scroll 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(15px); }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .porn, .hub {
-                font-size: 18vmin;
-                padding: 2.5vmin 4vmin;
+            .content {
+                padding: 4rem 1.5rem;
             }
-            .tagline {
-                font-size: 4vmin;
+            
+            .section {
+                margin-bottom: 5rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 2rem 1.5rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="logo-container">
+            <div class="logo">Æ</div>
+            <h1 class="company-name">Ægirson Holding AB</h1>
+            <div class="divider"></div>
+            <p class="tagline">Långsiktig värdeskapande genom generationer</p>
+        </div>
+        <div class="scroll-indicator"></div>
+    </section>
 
-    <div class="logo-container">
-        <div class="porn"><span class="ae">Æ</span>GIR</div>
-        <div class="hub">HUB</div>
+    <!-- Main Content -->
+    <div class="content">
+        <!-- About Section -->
+        <section class="section">
+            <h2 class="section-title">Vår Vision</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3 class="card-title">Innovation</h3>
+                    <p class="card-description">Vi investerar i framtidens lösningar och teknik som formar morgondagens samhälle.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌍</div>
+                    <h3 class="card-title">Hållbarhet</h3>
+                    <p class="card-description">Vårt engagemang för miljö och samhälle är centralt i alla beslut vi fattar.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🤝</div>
+                    <h3 class="card-title">Partnerskap</h3>
+                    <p class="card-description">Vi bygger långsiktiga relationer med entreprenörer och företagsledare.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section class="section">
+            <h2 class="section-title">Våra Verksamhetsområden</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">💼</div>
+                    <h3 class="card-title">Private Equity</h3>
+                    <p class="card-description">Strategiska investeringar i tillväxtbolag med stark potential och erfarna team.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏢</div>
+                    <h3 class="card-title">Fastigheter</h3>
+                    <p class="card-description">Kvalitetsfastigheter i attraktiva lägen med fokus på långsiktig värdeutveckling.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💎</div>
+                    <h3 class="card-title">Kapitalförvaltning</h3>
+                    <p class="card-description">Diversifierad portfölj med fokus på stabil avkastning och riskhantering.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Values Section -->
+        <section class="section">
+            <h2 class="section-title">Våra Värderingar</h2>
+            <div class="values-grid">
+                <div class="value-item">
+                    <div class="value-number">01</div>
+                    <h3 class="value-title">Integritet</h3>
+                    <p class="value-description">Etiskt ansvar och transparens i alla affärsrelationer</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-number">02</div>
+                    <h3 class="value-title">Excellence</h3>
+                    <p class="value-description">Strävan efter kvalitet och perfektion i varje projekt</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-number">03</div>
+                    <h3 class="value-title">Långsiktighet</h3>
+                    <p class="value-description">Generationsperspektiv i alla investeringsbeslut</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-number">04</div>
+                    <h3 class="value-title">Innovation</h3>
+                    <p class="value-description">Modig i att utforska nya möjligheter och teknologier</p>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div class="tagline">PREMIUM VIKING CONTENT • 4K • 60 FPS</div>
-
-    <button id="audio-btn">PLAY JINGLE 🔊</button>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">Ægirson</div>
+        <p class="footer-text">Ægirson Holding AB</p>
+        <p class="footer-text">Stockholm, Sweden</p>
+        <p class="footer-year">© 2026 Ægirson Holding AB. All rights reserved.</p>
+    </footer>
 
     <script>
-        // Very short Pornhub-style intro approximation (bass + impact)
-        function playJingle() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-            // Low bass drum
-            const osc1 = ctx.createOscillator();
-            osc1.type = 'sine';
-            osc1.frequency.setValueAtTime(80, ctx.currentTime);
-            osc1.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.12);
-
-            const gain1 = ctx.createGain();
-            gain1.gain.setValueAtTime(0.9, ctx.currentTime);
-            gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
-
-            osc1.connect(gain1);
-            gain1.connect(ctx.destination);
-            osc1.start();
-            osc1.stop(ctx.currentTime + 0.2);
-
-            // Quick tom / impact layer
-            const osc2 = ctx.createOscillator();
-            osc2.type = 'triangle';
-            osc2.frequency.setValueAtTime(180, ctx.currentTime);
-            osc2.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.08);
-
-            const gain2 = ctx.createGain();
-            gain2.gain.setValueAtTime(0.7, ctx.currentTime);
-            gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-
-            osc2.connect(gain2);
-            gain2.connect(ctx.destination);
-            osc2.start(ctx.currentTime + 0.03);
-            osc2.stop(ctx.currentTime + 0.18);
-
-            // Tiny high click
-            const noise = ctx.createBufferSource();
-            const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < buffer.length; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-            noise.buffer = buffer;
-
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.setValueAtTime(0.4, ctx.currentTime);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'highpass';
-            filter.frequency.value = 3000;
-
-            noise.connect(filter);
-            filter.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
-            noise.start(ctx.currentTime + 0.04);
-        }
-
-        const btn = document.getElementById('audio-btn');
-        btn.addEventListener('click', () => {
-            playJingle();
-            btn.textContent = 'JINGLE PLAYED ✓';
-            setTimeout(() => { btn.textContent = 'PLAY JINGLE 🔊'; }, 2000);
+        // Smooth scroll behavior
+        document.querySelector('.scroll-indicator')?.addEventListener('click', () => {
+            document.querySelector('.content').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Optional: auto-play once on first interaction (mobile friendly)
-        document.body.addEventListener('click', () => {
-            if (!window.hasPlayedJingle) {
-                playJingle();
-                window.hasPlayedJingle = true;
-            }
-        }, { once: true });
-    </script>
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards
+        document.querySelectorAll('.card, .value-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>
