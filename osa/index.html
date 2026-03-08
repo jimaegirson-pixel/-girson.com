@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -40,7 +39,6 @@
 
     .card { background: #fff; border-radius: 4px; box-shadow: 0 2px 40px rgba(92,52,39,0.12); overflow: hidden; margin-bottom: 24px; }
 
-    /* Two-day banner */
     .two-day-banner {
       background: linear-gradient(135deg, #c9363a, #8b1a1a);
       color: #fff;
@@ -51,7 +49,6 @@
     .two-day-banner h3 { font-size: 18px; letter-spacing: 2px; margin-bottom: 6px; }
     .two-day-banner p { font-size: 13px; opacity: 0.85; letter-spacing: 1px; }
 
-    /* Day cards inside banner */
     .day-cards { display: flex; gap: 12px; margin-top: 14px; }
     .day-card {
       flex: 1;
@@ -64,13 +61,11 @@
     .day-card .day-title { font-size: 15px; font-weight: 600; margin: 4px 0 2px; }
     .day-card .day-desc { font-size: 12px; opacity: 0.8; }
 
-    /* Chinese section */
     .chinese-section { background: #1a0f0a; color: #f5e6d3; padding: 36px 32px; text-align: center; }
     .chinese-section h2 { font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.6; margin-bottom: 24px; }
     .chinese-text { font-size: 22px; line-height: 2.2; letter-spacing: 4px; }
     .chinese-text .red { color: #e8403a; }
 
-    /* Translation */
     .translation-section { padding: 36px 32px; }
     .translation-section h2 { font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #8b5e52; margin-bottom: 24px; }
     .invitation-text { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.95; color: #3a2e2e; }
@@ -79,18 +74,23 @@
     .event-details strong { color: #5c3427; }
     .signature { text-align: right; font-style: italic; font-size: 18px; color: #8b5e52; margin-top: 20px; }
 
-    /* Gift note */
-    .gift-note {
-      background: #fff8f0;
-      border: 1px solid #e8c9a0;
+    /* Info notes row */
+    .info-notes { display: flex; gap: 14px; margin-bottom: 24px; }
+    .info-note {
+      flex: 1;
       border-radius: 4px;
-      padding: 20px 24px;
-      margin-bottom: 24px;
+      padding: 18px 20px;
       text-align: center;
     }
-    .gift-note .gift-icon { font-size: 28px; margin-bottom: 8px; }
-    .gift-note h3 { font-family: 'Playfair Display', serif; font-size: 16px; color: #5c3427; margin-bottom: 8px; }
-    .gift-note p { font-size: 14px; color: #7a6060; line-height: 1.7; }
+    .info-note .note-icon { font-size: 26px; margin-bottom: 8px; }
+    .info-note h3 { font-family: 'Playfair Display', serif; font-size: 15px; margin-bottom: 6px; }
+    .info-note p { font-size: 13px; line-height: 1.65; }
+
+    .note-gift { background: #fff8f0; border: 1px solid #e8c9a0; color: #5c3427; }
+    .note-gift p { color: #7a6060; }
+
+    .note-kids { background: #f0f5ff; border: 1px solid #b8c8e8; color: #2c3e6b; }
+    .note-kids p { color: #5a6a8a; }
 
     /* OSA form */
     .osa-section { background: #fff; border-radius: 4px; box-shadow: 0 2px 40px rgba(92,52,39,0.12); padding: 36px 32px; margin-bottom: 24px; }
@@ -118,7 +118,6 @@
     .radio-label input { display: none; }
     .radio-label.selected { background: #5c3427; color: #fff; border-color: #5c3427; }
 
-    /* Day selection */
     .day-selection { margin-bottom: 18px; display: none; }
     .day-option {
       border: 1px solid #e0d4cc; border-radius: 4px; margin-bottom: 10px;
@@ -149,8 +148,9 @@
 
     footer { text-align: center; padding: 20px; font-size: 12px; color: #b09898; letter-spacing: 1px; }
 
-    @media(max-width:480px) {
+    @media(max-width:520px) {
       .day-cards { flex-direction: column; }
+      .info-notes { flex-direction: column; }
       .chinese-section { padding: 24px 16px; }
       .translation-section, .osa-section { padding: 24px 18px; }
     }
@@ -158,7 +158,6 @@
 </head>
 <body>
 
-  <!-- Hero -->
   <div class="hero">
     <div class="hero-chinese">囍</div>
     <div class="divider-ornament"></div>
@@ -167,7 +166,6 @@
 
   <div class="container">
 
-    <!-- Two-day event banner -->
     <div class="card">
       <div class="two-day-banner">
         <h3>✨ Ett Bröllop – Två Magiska Dagar ✨</h3>
@@ -186,7 +184,6 @@
         </div>
       </div>
 
-      <!-- Chinese -->
       <div class="chinese-section">
         <h2>中文邀请函 · Kinesisk inbjudan</h2>
         <div class="chinese-text">
@@ -205,7 +202,6 @@
         </div>
       </div>
 
-      <!-- Swedish translation -->
       <div class="translation-section">
         <h2>🇸🇪 Svensk Översättning</h2>
         <div class="invitation-text">
@@ -230,13 +226,18 @@
       </div>
     </div>
 
-    <!-- Gift note -->
-    <div class="gift-note">
-      <div class="gift-icon">✈️</div>
-      <h3>Inga gåvor önskas</h3>
-      <p>Er närvaro är den finaste gåvan vi kan få.<br>
-      För er som ändå vill bidra med något tar vi tacksamt emot<br>
-      <strong>bidrag till vår bröllopsresa till Kina</strong> 🇨🇳</p>
+    <!-- Info notes: gifts + kids -->
+    <div class="info-notes">
+      <div class="info-note note-gift">
+        <div class="note-icon">✈️</div>
+        <h3>Inga gåvor önskas</h3>
+        <p>Er närvaro är den finaste gåvan vi kan få. För er som ändå vill bidra tar vi tacksamt emot <strong>bidrag till vår bröllopsresa till Kina</strong> 🇨🇳</p>
+      </div>
+      <div class="info-note note-kids">
+        <div class="note-icon">🍾</div>
+        <h3>Barnfri fest</h3>
+        <p>Vi älskar era barn av hela vårt hjärta — men denna kväll är för de vuxna att njuta fullt ut. Vi hoppas ni kan ordna barnvakt och festa loss med oss! 🥂</p>
+      </div>
     </div>
 
     <!-- OSA Form -->
@@ -278,7 +279,6 @@
           </div>
         </div>
 
-        <!-- Day selection – shown when attending -->
         <div class="day-selection" id="day-selection">
           <label>Vilken/vilka dagar deltar ni? *</label>
 
@@ -375,7 +375,6 @@
         `\nMeddelande: ${msg || 'Inget meddelande'}`
       );
 
-      // Byt ut mot er e-postadress:
       window.location.href = `mailto:linnmatsson@hotmail.com?subject=${subject}&body=${body}`;
 
       setTimeout(() => {
