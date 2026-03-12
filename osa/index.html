@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OSA – Jim & Linn Bröllop 4 juli 2026</title>
+  <title>OSA – Jim & Linn Bröllop 3–4 juli 2026</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap');
 
@@ -70,9 +70,23 @@
     .translation-section h2 { font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #8b5e52; margin-bottom: 24px; }
     .invitation-text { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.95; color: #3a2e2e; }
     .couple-names { font-size: 22px; font-weight: 600; color: #5c3427; display: block; margin: 8px 0; }
-    .event-details { background: #fdf8f2; border-left: 3px solid #c9956e; margin: 24px 0; padding: 16px 20px; font-size: 15px; line-height: 2; }
+    .event-details { background: #fdf8f2; border-left: 3px solid #c9956e; margin: 24px 0; padding: 16px 20px; font-size: 15px; line-height: 2.2; }
     .event-details strong { color: #5c3427; }
+    .event-details .detail-sub { font-size: 13px; color: #8b7070; padding-left: 4px; }
     .signature { text-align: right; font-style: italic; font-size: 18px; color: #8b5e52; margin-top: 20px; }
+
+    /* dress code chip */
+    .dress-chip {
+      display: inline-block;
+      background: #fff3e8;
+      border: 1px solid #e8c9a0;
+      color: #7a4a2a;
+      font-size: 13px;
+      border-radius: 20px;
+      padding: 5px 14px;
+      margin-top: 6px;
+      font-family: 'Lato', sans-serif;
+    }
 
     /* Info notes row */
     .info-notes { display: flex; gap: 14px; margin-bottom: 24px; }
@@ -130,6 +144,7 @@
     .day-option-label { flex: 1; }
     .day-option-label strong { display: block; font-size: 15px; color: #2c1810; }
     .day-option-label span { font-size: 13px; color: #8b7070; }
+    .day-option-label .day-meta { font-size: 12px; color: #a08080; margin-top: 3px; }
     .day-badge { background: #e8c9a0; color: #5c3427; font-size: 11px; letter-spacing: 1px; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
     .day-badge.main { background: #c9363a; color: #fff; }
 
@@ -174,12 +189,12 @@
           <div class="day-card">
             <div class="day-label">Dag 1 · Fredag 3 Juli</div>
             <div class="day-title">🪷 Buddistisk Ceremoni</div>
-            <div class="day-desc">Borlänge · Karl Johans väg 17</div>
+            <div class="day-desc">Ulvshyttan · Kl. 12:00</div>
           </div>
           <div class="day-card">
             <div class="day-label">Dag 2 · Lördag 4 Juli</div>
             <div class="day-title">💍 Vigsel & Fest</div>
-            <div class="day-desc">Borlänge · Karl Johans väg 17</div>
+            <div class="day-desc">Borlänge · Karl Johans väg 17 · Kl. 10:00</div>
           </div>
         </div>
       </div>
@@ -212,10 +227,16 @@
           <span class="couple-names">Brud: Linn Minying Matsson</span>
 
           <div class="event-details">
-            <strong>🪷 Fredag 3 juli 2026</strong> – Buddistisk Ceremoni<br>
-            <strong>💍 Lördag 4 juli 2026</strong> – Vigsel & Bröllopsfest<br>
-            <strong>📍 Plats:</strong> Borlänge, Sverige<br>
-            <strong>🏛️ Adress:</strong> Karl Johans väg 17
+            <strong>🪷 Fredag 3 juli 2026 – Buddistisk Ceremoni</strong><br>
+            <span class="detail-sub">📍 Ulvshyttan &nbsp;·&nbsp; 🕛 Kl. 12:00</span>
+            <br><br>
+            <strong>💍 Lördag 4 juli 2026 – Vigsel & Bröllopsfest</strong><br>
+            <span class="detail-sub">📍 Karl Johans väg 17, Borlänge &nbsp;·&nbsp; 🕙 Kl. 10:00</span>
+            <br><br>
+            <strong>👗 Klädsel:</strong> Somrigt och avslappnat<br>
+            <span class="detail-sub">Aktiviteter bjuds på – klä dig bekvämt!</span>
+            <br>
+            <span class="dress-chip">🌸 Somrig, skönt & avslappnad stil</span>
           </div>
 
           Er närvaro kommer att göra dessa dagar ännu mer fulländade och oförglömliga.<br><br>
@@ -287,7 +308,8 @@
               <input type="checkbox" id="chk-fre" onclick="event.stopPropagation(); toggleDay('fre')">
               <div class="day-option-label">
                 <strong>Fredag 3 juli – Buddistisk Ceremoni 🪷</strong>
-                <span>Borlänge · Karl Johans väg 17</span>
+                <span>Ulvshyttan · Kl. 12:00</span>
+                <div class="day-meta">👗 Somrig & avslappnad klädsel · Aktiviteter ingår</div>
               </div>
               <div class="day-badge">Dag 1</div>
             </div>
@@ -298,7 +320,8 @@
               <input type="checkbox" id="chk-lor" onclick="event.stopPropagation(); toggleDay('lor')">
               <div class="day-option-label">
                 <strong>Lördag 4 juli – Vigsel & Bröllopsfest 💍</strong>
-                <span>Borlänge · Karl Johans väg 17</span>
+                <span>Karl Johans väg 17, Borlänge · Kl. 10:00</span>
+                <div class="day-meta">👗 Somrig & avslappnad klädsel · Aktiviteter ingår</div>
               </div>
               <div class="day-badge main">Dag 2</div>
             </div>
@@ -365,8 +388,8 @@
       const msg = document.getElementById('message').value.trim();
 
       let dagar = [];
-      if (days.fre) dagar.push('Fredag 3 juli (Buddistisk Ceremoni)');
-      if (days.lor) dagar.push('Lördag 4 juli (Vigsel & Fest)');
+      if (days.fre) dagar.push('Fredag 3 juli – Buddistisk Ceremoni (Ulvshyttan, kl. 12:00)');
+      if (days.lor) dagar.push('Lördag 4 juli – Vigsel & Fest (Karl Johans väg 17, Borlänge, kl. 10:00)');
 
       const subject = encodeURIComponent(`OSA Bröllop Jim & Linn – ${name}`);
       const body = encodeURIComponent(
