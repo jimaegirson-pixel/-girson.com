@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>GYM_PIGS Stimulus Calculator</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #020617;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --soft: #f1f5f9;
+      --dark: #0f172a;
+      --green: #16a34a;
+      --lime: #65a30d;
+      --yellow: #ca8a04;
+      --orange: #ea580c;
+      --red: #dc2626;
+      --blue: #2563eb;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      font-family: "Courier New", "Lucida Console", Monaco, monospace;
+      background:
+        linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+        radial-gradient(circle at top left, rgba(244, 114, 182, 0.11), transparent 34%),
+        var(--bg);
+      background-size: 8px 8px, 8px 8px, auto, auto;
+      color: var(--text);
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(100%, 480px);
+      margin: 0 auto;
+      min-height: 100svh;
+      padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom));
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding-top: 6px;
+      margin: -6px -4px 12px;
+      background: linear-gradient(to bottom, rgba(248, 250, 252, 0.98) 75%, rgba(248, 250, 252, 0));
+      backdrop-filter: blur(14px);
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #d9f99d;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: inset 0 0 0 1px rgba(217, 249, 157, 0.18);
+    }
+
+    .pig-logo {
+      width: 22px;
+      height: 22px;
+      image-rendering: pixelated;
+      flex: none;
+      filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.22));
+    }
+
+    .reset {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      background: white;
+      color: #334155;
+      border-radius: 14px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0 rgba(15, 23, 42, 0.08);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .zone-card {
+      margin-top: 12px;
+      border-radius: 24px;
+      padding: 16px;
+      border: 1px solid;
+      transition: background 180ms ease, border 180ms ease, color 180ms ease;
+    }
+
+    .zone-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .zone-title {
+      font-size: 31px;
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .zone-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.66);
+      font-size: 22px;
+      font-weight: 950;
+      flex: none;
+    }
+
+    .zone-copy {
+      margin-top: 8px;
+      color: inherit;
+      opacity: 0.86;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .cards { display: grid; gap: 12px; }
+
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.055);
+      padding: 16px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .label {
+      font-size: 15px;
+      font-weight: 950;
+      letter-spacing: -0.01em;
+    }
+
+    .hint {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .value {
+      min-width: 58px;
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      background: var(--dark);
+      color: white;
+      border-radius: 15px;
+      padding: 0 11px;
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      outline: none;
+      touch-action: pan-y;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--dark);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.28);
+      border: 3px solid white;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 30px;
+      height: 30px;
+      border: 3px solid white;
+      border-radius: 999px;
+      background: var(--dark);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.28);
+    }
+
+    .limits {
+      display: flex;
+      justify-content: space-between;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 900;
+      margin-top: 10px;
+    }
+
+    .effort-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .effort-button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: #475569;
+      border-radius: 13px;
+      padding: 0 2px;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .effort-button.active {
+      color: white;
+      border-color: transparent;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 13px;
+      min-height: 118px;
+    }
+
+    .mini-title {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .mini-value {
+      font-size: 21px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      font-weight: 950;
+    }
+
+    .mini-copy {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .bar-shell {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e2e8f0;
+      margin-top: 10px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 40%;
+      border-radius: 999px;
+      transition: width 180ms ease, background 180ms ease;
+    }
+
+    .warning {
+      display: none;
+      border-radius: 20px;
+      border: 1px solid;
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+
+    .warning strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+    .explain {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .explain p { margin: 0; }
+    .explain p + p { margin-top: 9px; }
+
+    .footer-note {
+      padding: 4px 4px 0;
+      color: #94a3b8;
+      font-size: 11px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .tone-undertraining { background: #fefce8; border-color: #fef08a; color: #854d0e; }
+    .tone-maintaining { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .tone-gaining { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .tone-gainmaxxing { background: #ecfdf5; border-color: #86efac; color: #14532d; }
+    .tone-wasteful { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+    .tone-risk { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+    .fill-undertraining { background: var(--yellow); }
+    .fill-maintaining { background: var(--blue); }
+    .fill-gaining { background: var(--green); }
+    .fill-gainmaxxing { background: var(--lime); }
+    .fill-wasteful { background: var(--orange); }
+    .fill-risk { background: var(--red); }
+
+    .bg-red { background: var(--red) !important; }
+    .bg-orange { background: var(--orange) !important; }
+    .bg-yellow { background: #eab308 !important; color: #111827 !important; }
+    .bg-lime { background: var(--lime) !important; }
+    .bg-green { background: var(--green) !important; }
+    .bg-slate { background: #475569 !important; }
+
+    @media (min-width: 700px) {
+      .app { width: min(100% - 32px, 760px); }
+      .hero { padding: 20px; }
+      .cards { grid-template-columns: 1fr 1fr; }
+      .result-wide, .controls-wide { grid-column: 1 / -1; }
+      h1 { font-size: 36px; }
+      .zone-title { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="top">
+      <div class="hero">
+        <div class="brand">
+          <div class="pill" aria-label="GYM_PIGS">
+            <svg class="pig-logo" viewBox="0 0 16 16" role="img" aria-label="Pixel pig logo" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+              <rect width="16" height="16" fill="transparent"/>
+              <rect x="4" y="3" width="8" height="2" fill="#f9a8d4"/>
+              <rect x="3" y="5" width="10" height="6" fill="#f472b6"/>
+              <rect x="2" y="6" width="2" height="3" fill="#f9a8d4"/>
+              <rect x="12" y="6" width="2" height="3" fill="#f9a8d4"/>
+              <rect x="5" y="7" width="6" height="4" fill="#fbcfe8"/>
+              <rect x="6" y="8" width="1" height="1" fill="#0f172a"/>
+              <rect x="9" y="8" width="1" height="1" fill="#0f172a"/>
+              <rect x="5" y="5" width="2" height="1" fill="#0f172a"/>
+              <rect x="10" y="5" width="2" height="1" fill="#0f172a"/>
+              <rect x="4" y="2" width="2" height="2" fill="#f472b6"/>
+              <rect x="10" y="2" width="2" height="2" fill="#f472b6"/>
+            </svg>
+            <span>GYM_PIGS</span>
+          </div>
+          <button class="reset" id="resetBtn">Reset</button>
+        </div>
+        <h1>GYM_PIGS</h1>
+        <p class="subtitle">Pixel gym calculator. Numbers stay internal; output is shown as training zones.</p>
+
+        <div class="zone-card tone-gaining" id="zoneCard">
+          <div class="zone-label">
+            <div class="zone-title" id="zoneTitle">Gaining</div>
+            <div class="zone-icon" id="zoneIcon">↗</div>
+          </div>
+          <div class="zone-copy" id="zoneCopy">Productive dose without excessive quality loss.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards">
+      <div class="card controls-wide">
+        <div class="section-title">
+          <div>
+            <div class="label">Sets per session</div>
+            <div class="hint">More sets increase dose, but later sets can become waste.</div>
+          </div>
+          <div class="value" id="setsValue">5</div>
+        </div>
+        <input id="setsSlider" type="range" min="1" max="8" step="1" value="5" />
+        <div class="limits"><span>1</span><span>8</span></div>
+      </div>
+
+      <div class="card controls-wide">
+        <div class="section-title">
+          <div>
+            <div class="label">Reps per set</div>
+            <div class="hint">1–15 only. Higher reps do not automatically score better.</div>
+          </div>
+          <div class="value" id="repsValue">4</div>
+        </div>
+        <input id="repsSlider" type="range" min="1" max="15" step="1" value="4" />
+        <div class="limits"><span>1</span><span>15</span></div>
+      </div>
+
+      <div class="card controls-wide">
+        <div class="section-title">
+          <div>
+            <div class="label">Sessions per muscle / week</div>
+            <div class="hint">Frequency distributes dose and reduces time without stimulus.</div>
+          </div>
+          <div class="value" id="frequencyValue">3×</div>
+        </div>
+        <input id="frequencySlider" type="range" min="1" max="8" step="1" value="3" />
+        <div class="limits"><span>1×</span><span>8×</span></div>
+      </div>
+
+      <div class="card controls-wide">
+        <div class="section-title">
+          <div>
+            <div class="label">Effort / RIR</div>
+            <div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div>
+          </div>
+          <div class="value" id="effortValue">2 RIR</div>
+        </div>
+        <input id="effortSlider" type="range" min="0" max="6" step="1" value="3" />
+        <div class="effort-grid" id="effortGrid"></div>
+      </div>
+
+      <div class="card result-wide">
+        <div class="summary-grid">
+          <div class="mini">
+            <div class="mini-title">Session quality</div>
+            <div class="mini-value" id="qualityLabel">High</div>
+            <div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div>
+            <div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div>
+          </div>
+
+          <div class="mini">
+            <div class="mini-title">Recovery cost</div>
+            <div class="mini-value" id="recoveryLabel">Moderate</div>
+            <div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div>
+            <div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div>
+          </div>
+
+          <div class="mini">
+            <div class="mini-title">Tension reps</div>
+            <div class="mini-value" id="tensionLabel">Load-qualified</div>
+            <div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div>
+          </div>
+
+          <div class="mini">
+            <div class="mini-title">Dose character</div>
+            <div class="mini-value" id="doseLabel">Productive</div>
+            <div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning tone-wasteful result-wide" id="junkWarning">
+        <strong>Junk-volume warning</strong>
+        Some selected sets fall below the QF floor. Reduce sets or use lower-fatigue effort.
+      </div>
+
+      <div class="warning tone-risk result-wide" id="failureWarning">
+        <strong>Failure warning</strong>
+        Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.
+      </div>
+
+      <div class="card result-wide explain">
+        <p id="modelExplanation">Actual reps are converted into effective high-tension reps. Extra reps above the high-tension window add fatigue, not automatic stimulus.</p>
+        <p>Internal model uses quality decay, effort decay, frequency, and net weekly exposure. Numeric stimulus values are intentionally hidden.</p>
+      </div>
+    </section>
+
+    <div class="footer-note">GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.</div>
+  </main>
+
+  <script>
+    const MAX_SETS = 8;
+    const ATROPHY_LOSS_PER_DAY_AFTER_48H = 0.32;
+
+    const BASE_STIM_BY_EFFECTIVE_REPS = {
+      0: 0.00,
+      1: 2.00,
+      2: 3.95,
+      3: 5.80,
+      4: 7.50,
+      5: 9.00
+    };
+
+    const BASE_DC_BY_ACTUAL_REPS = {
+      1: 0.003,
+      2: 0.006,
+      3: 0.010,
+      4: 0.016,
+      5: 0.024
+    };
+
+    const EFFORT_OPTIONS = [
+      { key: "failure", label: "Failure", short: "FAIL", dcMultiplier: 3.5, tone: "red" },
+      { key: "0", label: "0 RIR", short: "0", dcMultiplier: 3.5, tone: "red" },
+      { key: "1", label: "1 RIR", short: "1", dcMultiplier: 1.8, tone: "orange" },
+      { key: "2", label: "2 RIR", short: "2", dcMultiplier: 1.0, tone: "green" },
+      { key: "3", label: "3 RIR", short: "3", dcMultiplier: 0.7, tone: "lime" },
+      { key: "4", label: "4 RIR", short: "4", dcMultiplier: 0.5, tone: "yellow" },
+      { key: "5", label: "5 RIR", short: "5", dcMultiplier: 0.3, tone: "slate" }
+    ];
+
+    const state = {
+      sets: 5,
+      reps: 4,
+      frequency: 3,
+      effortIndex: 3
+    };
+
+    const el = {
+      resetBtn: document.getElementById("resetBtn"),
+      setsSlider: document.getElementById("setsSlider"),
+      repsSlider: document.getElementById("repsSlider"),
+      frequencySlider: document.getElementById("frequencySlider"),
+      effortSlider: document.getElementById("effortSlider"),
+      setsValue: document.getElementById("setsValue"),
+      repsValue: document.getElementById("repsValue"),
+      frequencyValue: document.getElementById("frequencyValue"),
+      effortValue: document.getElementById("effortValue"),
+      effortGrid: document.getElementById("effortGrid"),
+      zoneCard: document.getElementById("zoneCard"),
+      zoneTitle: document.getElementById("zoneTitle"),
+      zoneIcon: document.getElementById("zoneIcon"),
+      zoneCopy: document.getElementById("zoneCopy"),
+      qualityLabel: document.getElementById("qualityLabel"),
+      qualityBar: document.getElementById("qualityBar"),
+      qualityCopy: document.getElementById("qualityCopy"),
+      recoveryLabel: document.getElementById("recoveryLabel"),
+      recoveryBar: document.getElementById("recoveryBar"),
+      recoveryCopy: document.getElementById("recoveryCopy"),
+      tensionLabel: document.getElementById("tensionLabel"),
+      tensionCopy: document.getElementById("tensionCopy"),
+      doseLabel: document.getElementById("doseLabel"),
+      doseCopy: document.getElementById("doseCopy"),
+      junkWarning: document.getElementById("junkWarning"),
+      failureWarning: document.getElementById("failureWarning"),
+      modelExplanation: document.getElementById("modelExplanation")
+    };
+
+    function round(value, digits = 2) {
+      return Number.isFinite(value) ? Number(value.toFixed(digits)) : 0;
+    }
+
+    function qfFloorForFrequency(frequency) {
+      if (frequency <= 3) return 0.75;
+      if (frequency >= 7) return 0.85;
+      return 0.75 + ((frequency - 3) / 4) * 0.1;
+    }
+
+    function qfForSet(setNumber, dc) {
+      return Math.max(0, 1 - dc * ((setNumber * (setNumber - 1)) / 2));
+    }
+
+    function getBaseDcByActualReps(reps) {
+      if (reps <= 5) return BASE_DC_BY_ACTUAL_REPS[reps];
+      const extraReps = reps - 5;
+      return 0.024 + 0.0045 * Math.pow(extraReps, 1.25);
+    }
+
+    function getNumericRir(effort) {
+      if (effort.key === "failure") return 0;
+      return Number(effort.key);
+    }
+
+    function getEffectiveHighTensionReps(actualReps, numericRir) {
+      const estimatedRM = actualReps + numericRir;
+      if (estimatedRM <= 6) return Math.min(actualReps, 5);
+      return Math.max(0, Math.min(actualReps, 5 - numericRir));
+    }
+
+    function weeklyAtrophyLossEvenSpacing(frequency) {
+      const daysBetweenStimuli = 7 / frequency;
+      const atrophyDaysPerGap = Math.max(0, daysBetweenStimuli - 2);
+      return atrophyDaysPerGap * ATROPHY_LOSS_PER_DAY_AFTER_48H * frequency;
+    }
+
+    function calculateModel() {
+      const effort = EFFORT_OPTIONS[state.effortIndex];
+      const numericRir = getNumericRir(effort);
+      const estimatedRM = state.reps + numericRir;
+      const effectiveReps = getEffectiveHighTensionReps(state.reps, numericRir);
+      const baseStim = BASE_STIM_BY_EFFECTIVE_REPS[effectiveReps];
+      const baseDc = getBaseDcByActualReps(state.reps);
+      const dc = baseDc * effort.dcMultiplier;
+      const qfFloor = qfFloorForFrequency(state.frequency);
+
+      const rows = Array.from({ length: MAX_SETS }, (_, index) => {
+        const setNumber = index + 1;
+        const qf = qfForSet(setNumber, dc);
+        const selected = setNumber <= state.sets;
+        const valid = selected && qf >= qfFloor;
+        return {
+          setNumber,
+          qf,
+          setStim: baseStim * qf,
+          selected,
+          valid
+        };
+      });
+
+      const selectedRows = rows.filter(row => row.selected);
+      const validRows = selectedRows.filter(row => row.valid);
+      const junkRows = selectedRows.filter(row => !row.valid);
+      const sessionStimRaw = selectedRows.reduce((sum, row) => sum + row.setStim, 0);
+      const sessionStimValid = validRows.reduce((sum, row) => sum + row.setStim, 0);
+      const weeklyStim = sessionStimValid * state.frequency;
+      const atrophyLoss = weeklyAtrophyLossEvenSpacing(state.frequency);
+      const netWeeklyAU = Math.max(0, weeklyStim - atrophyLoss);
+      const avgQF = selectedRows.length ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / selectedRows.length : 0;
+      const junkRatio = selectedRows.length ? junkRows.length / selectedRows.length : 0;
+
+      return {
+        effort,
+        numericRir,
+        estimatedRM,
+        effectiveReps,
+        baseStim,
+        baseDc,
+        dc,
+        qfFloor,
+        rows,
+        validRows,
+        junkRows,
+        sessionStimRaw,
+        sessionStimValid,
+        weeklyStim,
+        atrophyLoss,
+        netWeeklyAU,
+        avgQF,
+        junkRatio
+      };
+    }
+
+    function classifyZone(model) {
+      if (model.effectiveReps === 0 || model.netWeeklyAU < 12) {
+        return {
+          key: "undertraining",
+          title: "Undertraining",
+          icon: "↓",
+          copy: "Dose is too low to reliably drive progress. Increase effort, frequency, or useful sets."
+        };
+      }
+
+      if (model.netWeeklyAU < 24) {
+        return {
+          key: "maintaining",
+          title: "Maintaining",
+          icon: "→",
+          copy: "Enough to hold ground, but likely below a growth dose."
+        };
+      }
+
+      if (model.junkRatio >= 0.35 || (model.effort.key === "failure" && state.frequency >= 3 && state.sets >= 2)) {
+        return {
+          key: "wasteful",
+          title: "Wasteful",
+          icon: "!",
+          copy: "The weekly dose is high, but too much comes with quality loss or excessive fatigue."
+        };
+      }
+
+      if (model.netWeeklyAU >= 85 && model.avgQF >= 0.82) {
+        return {
+          key: "gainmaxxing",
+          title: "Gainmaxxing",
+          icon: "↑",
+          copy: "High productive exposure while staying inside the quality floor."
+        };
+      }
+
+      return {
+        key: "gaining",
+        title: "Gaining",
+        icon: "↗",
+        copy: model.netWeeklyAU < 45
+          ? "Minimum growth dose: enough to gain if exercise quality and progression are present."
+          : "Productive dose without excessive quality loss."
+      };
+    }
+
+    function classifyQuality(model) {
+      if (model.junkRatio > 0) return ["Degraded", "Some selected sets are below the quality floor.", 42, "wasteful"];
+      if (model.avgQF >= 0.9) return ["High", "Most selected sets stay useful.", 88, "gaining"];
+      if (model.avgQF >= 0.82) return ["Moderate", "Usable, but close to the quality floor.", 66, "maintaining"];
+      return ["Low", "Dose is being bought with too much decay.", 34, "wasteful"];
+    }
+
+    function recoveryEffortCost(effort) {
+      const effortCostByKey = {
+        failure: 6.5,
+        "0": 5.0,
+        "1": 3.8,
+        "2": 2.5,
+        "3": 1.6,
+        "4": 0.9,
+        "5": 0.4
+      };
+
+      return effortCostByKey[effort.key];
+    }
+
+    function recoveryCostScore(model) {
+      return recoveryEffortCost(model.effort) * state.sets * Math.sqrt(state.frequency) * Math.pow(state.reps / 4, 0.65);
+    }
+
+    function classifyRecovery(model) {
+      const cost = recoveryCostScore(model);
+
+      if (cost >= 42) return ["Extreme", "Recovery cost is likely the limiting factor.", 100, "risk"];
+      if (cost >= 25) return ["High", "Use only if Set 1 performance stays stable.", 78, "wasteful"];
+      if (cost >= 10) return ["Moderate", "Recovery cost is controlled.", 52, "maintaining"];
+      return ["Low", "Low fatigue cost; dose may be conservative.", 28, "undertraining"];
+    }
+
+    function classifyDose(model, zone) {
+      if (zone.key === "undertraining") return ["Too low", "Raise frequency first if quality remains intact."];
+      if (zone.key === "maintaining") return ["Maintenance", "Enough to preserve, not a strong growth push."];
+      if (zone.key === "gainmaxxing") return ["Aggressive", "High productive exposure without relying on junk volume."];
+      if (zone.key === "wasteful") return ["Messy", "Reduce sets or avoid repeated failure work."];
+      if (model.netWeeklyAU < 45) return ["Minimum growth", "Enough to gain, but not a strong growth push."];
+      return ["Productive", "Good weekly exposure without relying on junk volume."];
+    }
+
+    function renderEffortButtons() {
+      el.effortGrid.innerHTML = "";
+      EFFORT_OPTIONS.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "effort-button";
+        button.textContent = option.short;
+        button.addEventListener("click", () => {
+          state.effortIndex = index;
+          el.effortSlider.value = index;
+          render();
+        });
+        el.effortGrid.appendChild(button);
+      });
+    }
+
+    function setToneClass(node, base, toneKey) {
+      node.className = `${base} tone-${toneKey}`;
+    }
+
+    function setFillClass(node, toneKey, width) {
+      node.className = `bar-fill fill-${toneKey}`;
+      node.style.width = `${Math.max(4, Math.min(100, width))}%`;
+    }
+
+    function render() {
+      const model = calculateModel();
+      const zone = classifyZone(model);
+      const [qualityLabel, qualityCopy, qualityWidth, qualityTone] = classifyQuality(model);
+      const [recoveryLabel, recoveryCopy, recoveryWidth, recoveryTone] = classifyRecovery(model);
+      const [doseLabel, doseCopy] = classifyDose(model, zone);
+
+      el.setsValue.textContent = state.sets;
+      el.repsValue.textContent = state.reps;
+      el.frequencyValue.textContent = `${state.frequency}×`;
+      el.effortValue.textContent = model.effort.label;
+      el.effortValue.className = `value bg-${model.effort.tone}`;
+
+      Array.from(el.effortGrid.children).forEach((button, index) => {
+        const option = EFFORT_OPTIONS[index];
+        button.className = index === state.effortIndex ? `effort-button active bg-${option.tone}` : "effort-button";
+      });
+
+      setToneClass(el.zoneCard, "zone-card", zone.key);
+      el.zoneTitle.textContent = zone.title;
+      el.zoneIcon.textContent = zone.icon;
+      el.zoneCopy.textContent = zone.copy;
+
+      el.qualityLabel.textContent = qualityLabel;
+      el.qualityCopy.textContent = qualityCopy;
+      setFillClass(el.qualityBar, qualityTone, qualityWidth);
+
+      el.recoveryLabel.textContent = recoveryLabel;
+      el.recoveryCopy.textContent = recoveryCopy;
+      setFillClass(el.recoveryBar, recoveryTone, recoveryWidth);
+
+      if (model.estimatedRM <= 6) {
+        el.tensionLabel.textContent = "Load-qualified";
+        el.tensionCopy.textContent = "All performed reps count as high-tension under the ≤6RM anchor.";
+      } else if (model.effectiveReps > 0) {
+        el.tensionLabel.textContent = "Endpoint-biased";
+        el.tensionCopy.textContent = "Only the terminal near-failure reps count as high-tension; extra reps mainly add fatigue.";
+      } else {
+        el.tensionLabel.textContent = "Too easy";
+        el.tensionCopy.textContent = "This is too far from the high-tension window for growth-oriented work.";
+      }
+
+      el.doseLabel.textContent = doseLabel;
+      el.doseCopy.textContent = doseCopy;
+
+      el.junkWarning.style.display = model.junkRows.length > 0 ? "block" : "none";
+      el.failureWarning.style.display = model.effort.key === "failure" || model.effort.key === "0" ? "block" : "none";
+
+      if (model.effort.key === "failure" && state.frequency <= 2 && state.sets <= 3) {
+        el.failureWarning.innerHTML = "<strong>Failure tactic</strong>Viable as a planned low-frequency/travel tactic, but still lower SFR than 2 RIR.";
+      } else if (model.effort.key === "failure") {
+        el.failureWarning.innerHTML = "<strong>Failure warning</strong>Repeated failure work raises fatigue faster than net stimulus. Use 2 RIR as the default target.";
+      } else {
+        el.failureWarning.innerHTML = "<strong>0 RIR warning</strong>Last-rep sets are allowed, but fatigue cost is high. 2 RIR remains the default target.";
+      }
+
+      el.modelExplanation.textContent = `Actual reps are converted into effective high-tension reps. ${state.reps} reps at ${model.effort.label} is treated as ${model.estimatedRM <= 6 ? "load-qualified" : "endpoint-biased"}; higher reps do not automatically mean higher stimulus.`;
+    }
+
+    function runSelfTest() {
+      const original = { ...state };
+      const failures = [];
+
+      for (let sets = 1; sets <= 8; sets++) {
+        for (let reps = 1; reps <= 15; reps++) {
+          for (let frequency = 1; frequency <= 8; frequency++) {
+            for (let effortIndex = 0; effortIndex < EFFORT_OPTIONS.length; effortIndex++) {
+              state.sets = sets;
+              state.reps = reps;
+              state.frequency = frequency;
+              state.effortIndex = effortIndex;
+
+              const model = calculateModel();
+              const values = [model.baseStim, model.baseDc, model.dc, model.qfFloor, model.sessionStimRaw, model.sessionStimValid, model.weeklyStim, model.netWeeklyAU, model.avgQF];
+              const invalidValues = values.some(value => !Number.isFinite(value));
+              const invalidRows = model.rows.some(row => !Number.isFinite(row.qf) || row.qf < 0 || row.qf > 1 || !Number.isFinite(row.setStim));
+              const zone = classifyZone(model);
+
+              if (invalidValues || invalidRows || !zone.title) {
+                failures.push({ sets, reps, frequency, effortIndex });
+              }
+            }
+          }
+        }
+      }
+
+      for (let sets = 1; sets <= 8; sets++) {
+        for (let frequency = 1; frequency <= 8; frequency++) {
+          state.sets = sets;
+          state.frequency = frequency;
+          state.effortIndex = 3;
+          state.reps = 5;
+          const five = calculateModel().sessionStimValid;
+          state.reps = 15;
+          const fifteen = calculateModel().sessionStimValid;
+          if (fifteen > five) failures.push({ test: "15 rep dominance", sets, frequency, five, fifteen });
+        }
+      }
+
+      state.sets = 1;
+      state.reps = 5;
+      state.frequency = 3;
+      state.effortIndex = 1; // 0 RIR
+      const oneSetZeroRirZone = classifyZone(calculateModel());
+      if (oneSetZeroRirZone.key !== "gaining") {
+        failures.push({ test: "1x5 @ 0 RIR, 3x/week should classify as gaining", zone: oneSetZeroRirZone.key });
+      }
+
+      state.sets = 5;
+      state.reps = 4;
+      state.frequency = 3;
+      state.effortIndex = 3; // 2 RIR
+      const defaultZone = classifyZone(calculateModel());
+      if (defaultZone.key !== "gainmaxxing") {
+        failures.push({ test: "default 5x4 @ 2 RIR, 3x/week should classify as gainmaxxing", zone: defaultZone.key });
+      }
+
+      state.sets = 1;
+      state.reps = 5;
+      state.frequency = 3;
+      state.effortIndex = 0; // Failure
+      const failureCost = recoveryCostScore(calculateModel());
+      state.effortIndex = 1; // 0 RIR
+      const zeroRirCost = recoveryCostScore(calculateModel());
+      if (failureCost <= zeroRirCost) {
+        failures.push({ test: "failure recovery cost must exceed 0 RIR", failureCost, zeroRirCost });
+      }
+
+      Object.assign(state, original);
+
+      if (failures.length) {
+        console.error("GYM_PIGS self-test failures:", failures);
+        throw new Error(`GYM_PIGS self-test failed: ${failures.length} issue(s).`);
+      }
+
+      console.info("GYM_PIGS self-test passed: 6720 slider combinations + high-rep dominance + minimum-growth + recovery-cost checks validated.");
+    }
+
+    el.setsSlider.addEventListener("input", event => {
+      state.sets = Number(event.target.value);
+      render();
+    });
+
+    el.repsSlider.addEventListener("input", event => {
+      state.reps = Number(event.target.value);
+      render();
+    });
+
+    el.frequencySlider.addEventListener("input", event => {
+      state.frequency = Number(event.target.value);
+      render();
+    });
+
+    el.effortSlider.addEventListener("input", event => {
+      state.effortIndex = Number(event.target.value);
+      render();
+    });
+
+    el.resetBtn.addEventListener("click", () => {
+      state.sets = 5;
+      state.reps = 4;
+      state.frequency = 3;
+      state.effortIndex = 3;
+      el.setsSlider.value = state.sets;
+      el.repsSlider.value = state.reps;
+      el.frequencySlider.value = state.frequency;
+      el.effortSlider.value = state.effortIndex;
+      render();
+    });
+
+    renderEffortButtons();
+    runSelfTest();
+    render();
+  </script>
+</body>
+</html>
