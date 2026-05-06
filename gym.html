@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>GYM_PIGS</title>
-
-  <style>
+  <title>GYM_PIGS</title>  <style>
     :root {
       --bg0: #071116;
       --bg1: #0d1b22;
@@ -318,10 +315,7 @@
       h1 { font-size: 36px; }
       .zone-title { font-size: 40px; }
     }
-  </style>
-</head>
-
-<body>
+  </style></head><body>
   <main class="app">
     <section class="top">
       <div class="panel hero">
@@ -355,51 +349,49 @@
           <div class="zone-copy" id="zoneCopy">Productive growth dose.</div>
         </div>
       </div>
-    </section>
+    </section><section class="cards">
+  <div class="card controls-wide">
+    <div class="section-title"><div><div class="label">Sets per session</div><div class="hint">More sets increase dose, but later sets can become waste.</div></div><div class="value" id="setsValue">5</div></div>
+    <input id="setsSlider" type="range" min="1" max="8" step="1" value="5" />
+    <div class="limits"><span>1</span><span>8</span></div>
+  </div>
 
-    <section class="cards">
-      <div class="card controls-wide">
-        <div class="section-title"><div><div class="label">Sets per session</div><div class="hint">More sets increase dose, but later sets can become waste.</div></div><div class="value" id="setsValue">5</div></div>
-        <input id="setsSlider" type="range" min="1" max="8" step="1" value="5" />
-        <div class="limits"><span>1</span><span>8</span></div>
-      </div>
+  <div class="card controls-wide">
+    <div class="section-title"><div><div class="label">Reps per set</div><div class="hint">1–15 only. Higher reps do not automatically score better.</div></div><div class="value" id="repsValue">5</div></div>
+    <input id="repsSlider" type="range" min="1" max="15" step="1" value="5" />
+    <div class="limits"><span>1</span><span>15</span></div>
+  </div>
 
-      <div class="card controls-wide">
-        <div class="section-title"><div><div class="label">Reps per set</div><div class="hint">1–15 only. Higher reps do not automatically score better.</div></div><div class="value" id="repsValue">5</div></div>
-        <input id="repsSlider" type="range" min="1" max="15" step="1" value="5" />
-        <div class="limits"><span>1</span><span>15</span></div>
-      </div>
+  <div class="card controls-wide">
+    <div class="section-title"><div><div class="label">Rest between sessions</div><div class="hint">How long the muscle rests before being trained again.</div></div><div class="value" id="frequencyValue">48h</div></div>
+    <input id="frequencySlider" type="range" min="0" max="3" step="1" value="1" />
+    <div class="limits"><span>24h</span><span>96h</span></div>
+    <div class="hint" id="frequencyApprox">Approx. 3.5 sessions/week</div>
+  </div>
 
-      <div class="card controls-wide">
-        <div class="section-title"><div><div class="label">Sessions per muscle / week</div><div class="hint">Frequency distributes dose and reduces time without stimulus.</div></div><div class="value" id="frequencyValue">3×</div></div>
-        <input id="frequencySlider" type="range" min="1" max="8" step="1" value="3" />
-        <div class="limits"><span>1×</span><span>8×</span></div>
-      </div>
+  <div class="card controls-wide">
+    <div class="section-title"><div><div class="label">Effort / RIR</div><div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div></div><div class="value" id="effortValue">2 RIR</div></div>
+    <input id="effortSlider" type="range" min="0" max="6" step="1" value="3" />
+    <div class="effort-grid" id="effortGrid"></div>
+  </div>
 
-      <div class="card controls-wide">
-        <div class="section-title"><div><div class="label">Effort / RIR</div><div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div></div><div class="value" id="effortValue">2 RIR</div></div>
-        <input id="effortSlider" type="range" min="0" max="6" step="1" value="3" />
-        <div class="effort-grid" id="effortGrid"></div>
-      </div>
+  <div class="card result-wide">
+    <div class="summary-grid">
+      <div class="mini"><div class="mini-title">Session quality</div><div class="mini-value" id="qualityLabel">High</div><div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div><div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div></div>
+      <div class="mini"><div class="mini-title">Recovery cost</div><div class="mini-value" id="recoveryLabel">Moderate</div><div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div><div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div></div>
+      <div class="mini"><div class="mini-title">Tension reps</div><div class="mini-value" id="tensionLabel">Load-qualified</div><div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div></div>
+      <div class="mini"><div class="mini-title">Dose character</div><div class="mini-value" id="doseLabel">Productive</div><div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div></div>
+    </div>
+  </div>
 
-      <div class="card result-wide">
-        <div class="summary-grid">
-          <div class="mini"><div class="mini-title">Session quality</div><div class="mini-value" id="qualityLabel">High</div><div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div><div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div></div>
-          <div class="mini"><div class="mini-title">Recovery cost</div><div class="mini-value" id="recoveryLabel">Moderate</div><div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div><div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div></div>
-          <div class="mini"><div class="mini-title">Tension reps</div><div class="mini-value" id="tensionLabel">Load-qualified</div><div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div></div>
-          <div class="mini"><div class="mini-title">Dose character</div><div class="mini-value" id="doseLabel">Productive</div><div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div></div>
-        </div>
-      </div>
+  <div class="warning tone-wasteful result-wide" id="junkWarning"><strong>Junk-volume warning</strong>Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.</div>
+  <div class="warning tone-risk result-wide" id="failureWarning"><strong>Failure warning</strong>Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.</div>
+  <div class="card result-wide explain"><p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p></div>
+</section>
 
-      <div class="warning tone-wasteful result-wide" id="junkWarning"><strong>Junk-volume warning</strong>Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.</div>
-      <div class="warning tone-risk result-wide" id="failureWarning"><strong>Failure warning</strong>Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.</div>
-      <div class="card result-wide explain"><p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p></div>
-    </section>
+<div class="footer-note">GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.</div>
 
-    <div class="footer-note">GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.</div>
-  </main>
-
-  <script>
+  </main>  <script>
     (() => {
       const MAX_SETS = 8;
       const ATROPHY_LOSS_PER_DAY_AFTER_48H = 0.32;
@@ -415,7 +407,14 @@
         { key: "5", label: "5 RIR", short: "5", dcMultiplier: 0.3, tone: "slate" }
       ];
 
-      const state = { sets: 5, reps: 5, frequency: 3, effortIndex: 3 };
+      const REST_OPTIONS = [
+        { hours: 24, weekly: 7, label: "24h", approx: "Approx. 7 sessions/week" },
+        { hours: 48, weekly: 3.5, label: "48h", approx: "Approx. 3.5 sessions/week" },
+        { hours: 72, weekly: 2.33, label: "72h", approx: "Approx. 2.3 sessions/week" },
+        { hours: 96, weekly: 1.75, label: "96h", approx: "Approx. 1.75 sessions/week" }
+      ];
+
+      const state = { sets: 5, reps: 5, frequency: 3.5, restIndex: 1, effortIndex: 3 };
       const el = {};
 
       function byId(id) {
@@ -425,7 +424,7 @@
       }
 
       function bindElements() {
-        ["resetBtn", "setsSlider", "repsSlider", "frequencySlider", "effortSlider", "setsValue", "repsValue", "frequencyValue", "effortValue", "effortGrid", "zoneCard", "zoneTitle", "zoneIcon", "zoneCopy", "qualityLabel", "qualityBar", "qualityCopy", "recoveryLabel", "recoveryBar", "recoveryCopy", "tensionLabel", "tensionCopy", "doseLabel", "doseCopy", "junkWarning", "failureWarning", "modelExplanation"].forEach(id => { el[id] = byId(id); });
+        ["resetBtn", "setsSlider", "repsSlider", "frequencySlider", "frequencyApprox", "effortSlider", "setsValue", "repsValue", "frequencyValue", "effortValue", "effortGrid", "zoneCard", "zoneTitle", "zoneIcon", "zoneCopy", "qualityLabel", "qualityBar", "qualityCopy", "recoveryLabel", "recoveryBar", "recoveryCopy", "tensionLabel", "tensionCopy", "doseLabel", "doseCopy", "junkWarning", "failureWarning", "modelExplanation"].forEach(id => { el[id] = byId(id); });
       }
 
       function qfFloorForFrequency(frequency) {
@@ -479,247 +478,4 @@
         const usefulWeeklySets = model.validRows.length * state.frequency;
         const moderateRecoveryCost = recoveryCost < 25;
         const highRecoveryPressure = state.frequency >= 5 && recoveryCost >= 25;
-        const extremeFrequencyPressure = state.frequency >= 7 && recoveryCost >= 18;
-        const meaningfulWeeklyDose = model.netWeeklyAU >= 24;
-
-        if (model.effectiveReps === 0 || model.netWeeklyAU < 10) {
-          return { key: "undertraining", title: "Undertraining", icon: "↓", copy: "Dose is too low to reliably drive growth. Increase useful sets, effort, or frequency." };
-        }
-
-        if ((model.junkRatio >= 0.35 && meaningfulWeeklyDose && state.frequency >= 2) || (model.effort.key === "failure" && state.frequency >= 3 && state.sets >= 2) || highRecoveryPressure || extremeFrequencyPressure) {
-          return { key: "wasteful", title: "Wasteful", icon: "!", copy: "The dose is being bought with too much fatigue or quality loss. Reduce sets, effort, or frequency." };
-        }
-
-        if (model.netWeeklyAU < 24) {
-          return { key: "maintaining", title: "Maintaining", icon: "→", copy: model.junkRatio > 0 ? "Some work is quality-capped. Enough to preserve, but not a clean growth dose." : "Enough to preserve, but not enough useful weekly exposure for a reliable growth signal." };
-        }
-
-        if (model.netWeeklyAU >= 85 && model.avgQF >= 0.82 && moderateRecoveryCost && usefulWeeklySets >= 9) {
-          return { key: "gainmaxxing", title: "Gainmaxxing", icon: "↑", copy: "Aggressive productive exposure while staying inside the quality floor." };
-        }
-
-        if (usefulWeeklySets >= 5) {
-          return { key: "gaining", title: "Gaining", icon: "↗", copy: recoveryCost >= 22 ? "Productive growth dose, but recovery is near the upper clean edge." : "Productive growth dose: enough useful weekly exposure with clean set quality." };
-        }
-
-        return { key: "gaining", title: "Gaining", icon: "↗", copy: "Minimum growth dose: enough to gain if execution and progression are consistent." };
-      }
-
-      function classifyQuality(model) {
-        if (model.junkRatio > 0) return ["Degraded", "Some selected sets are below the quality floor.", 42, "wasteful"];
-        if (model.avgQF >= 0.9) return ["High", "Most selected sets stay useful.", 88, "gaining"];
-        if (model.avgQF >= 0.82) return ["Moderate", "Usable, but close to the quality floor.", 66, "maintaining"];
-        return ["Low", "Dose is being bought with too much decay.", 34, "wasteful"];
-      }
-
-      function classifyRecovery(model) {
-        const cost = recoveryCostScore(model);
-        if (cost >= 42) return ["Extreme", "Recovery cost is likely the limiting factor.", 100, "risk"];
-        if (cost >= 28) return ["High", "Use only if Set 1 performance stays stable.", 82, "wasteful"];
-        if (cost >= 22) return ["Borderline", "Recoverable only if Set 1 performance stays stable.", 68, "wasteful"];
-        if (cost >= 10) return ["Moderate", "Recovery cost is controlled.", 52, "maintaining"];
-        return ["Low", "Low fatigue cost; dose may be conservative.", 28, "undertraining"];
-      }
-
-      function classifyDose(model, zone) {
-        const usefulWeeklySets = model.validRows.length * state.frequency;
-        if (zone.key === "undertraining") return ["Too low", "Not enough useful weekly exposure for reliable growth."];
-        if (zone.key === "maintaining") return model.junkRatio > 0 ? ["Quality-capped", "Some sets fall below the quality floor, so the week stays at maintenance."] : ["Maintenance", "Enough to hold ground, but below a reliable growth dose."];
-        if (zone.key === "gainmaxxing") return ["Aggressive growth", "High productive exposure without relying on junk volume."];
-        if (zone.key === "wasteful") return ["Poor tradeoff", "Too much fatigue or quality loss for the dose gained."];
-        if (usefulWeeklySets >= 5) return ["Productive growth", "Enough weekly exposure to drive growth while keeping set quality high."];
-        return ["Minimum growth", "Enough to gain, but execution and progression need to be consistent."];
-      }
-
-      function getTrainingExplanation(model) {
-        const loadText = model.estimatedRM <= 6 ? "Load-qualified: all performed reps count as high-tension work." : "Endpoint-biased: only the hardest final reps count as high-tension work.";
-        const qualityText = model.junkRows.length > 0 ? "Some selected sets fall below the quality floor." : "All selected sets stay above the quality floor.";
-        const frequencyText = state.frequency >= 7 ? "Very high frequency: recovery pressure is checked aggressively." : state.frequency >= 4 ? "Moderate-high frequency: weekly exposure is checked against recovery pressure." : "Low/moderate frequency: clean useful exposure is rewarded.";
-        return `${loadText} ${qualityText} ${frequencyText}`;
-      }
-
-      function setFillClass(node, toneKey, width) { node.className = `bar-fill fill-${toneKey}`; node.style.width = `${Math.max(4, Math.min(100, width))}%`; }
-
-      function renderEffortButtons() {
-        el.effortGrid.innerHTML = "";
-        EFFORT_OPTIONS.forEach((option, index) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "effort-button";
-          button.textContent = option.short;
-          button.addEventListener("click", () => { state.effortIndex = index; el.effortSlider.value = String(index); render(); });
-          el.effortGrid.appendChild(button);
-        });
-      }
-
-      function syncInputValuesFromState() {
-        el.setsSlider.value = String(state.sets);
-        el.repsSlider.value = String(state.reps);
-        el.frequencySlider.value = String(state.frequency);
-        el.effortSlider.value = String(state.effortIndex);
-      }
-
-      function render() {
-        syncInputValuesFromState();
-        const model = calculateModel();
-        const zone = classifyZone(model);
-        const [qualityLabel, qualityCopy, qualityWidth, qualityTone] = classifyQuality(model);
-        const [recoveryLabel, recoveryCopy, recoveryWidth, recoveryTone] = classifyRecovery(model);
-        const [doseLabel, doseCopy] = classifyDose(model, zone);
-
-        el.setsValue.textContent = state.sets;
-        el.repsValue.textContent = state.reps;
-        el.frequencyValue.textContent = `${state.frequency}×`;
-        el.effortValue.textContent = model.effort.label;
-        el.effortValue.className = `value bg-${model.effort.tone}`;
-
-        Array.from(el.effortGrid.children).forEach((button, index) => {
-          const option = EFFORT_OPTIONS[index];
-          button.className = index === state.effortIndex ? `effort-button active bg-${option.tone}` : "effort-button";
-        });
-
-        el.zoneCard.className = `zone-card tone-${zone.key}`;
-        el.zoneTitle.textContent = zone.title;
-        el.zoneIcon.textContent = zone.icon;
-        el.zoneCopy.textContent = zone.copy;
-        el.qualityLabel.textContent = qualityLabel;
-        el.qualityCopy.textContent = qualityCopy;
-        setFillClass(el.qualityBar, qualityTone, qualityWidth);
-        el.recoveryLabel.textContent = recoveryLabel;
-        el.recoveryCopy.textContent = recoveryCopy;
-        setFillClass(el.recoveryBar, recoveryTone, recoveryWidth);
-
-        if (model.estimatedRM <= 6) {
-          el.tensionLabel.textContent = "Load-qualified";
-          el.tensionCopy.textContent = "All performed reps count as high-tension under the ≤6RM anchor.";
-        } else if (model.effectiveReps > 0) {
-          el.tensionLabel.textContent = "Endpoint-biased";
-          el.tensionCopy.textContent = "Only the terminal near-failure reps count as high-tension.";
-        } else {
-          el.tensionLabel.textContent = "Too easy";
-          el.tensionCopy.textContent = "Too far from the high-tension window for growth-oriented work.";
-        }
-
-        el.doseLabel.textContent = doseLabel;
-        el.doseCopy.textContent = doseCopy;
-        el.junkWarning.style.display = model.junkRows.length > 0 ? "block" : "none";
-        el.failureWarning.style.display = model.effort.key === "failure" || model.effort.key === "0" ? "block" : "none";
-
-        if (model.effort.key === "failure" && state.frequency <= 2 && state.sets <= 3) {
-          el.failureWarning.innerHTML = "<strong>Failure tactic</strong>Viable as a planned low-frequency/travel tactic, but still lower SFR than 2 RIR.";
-        } else if (model.effort.key === "failure") {
-          el.failureWarning.innerHTML = "<strong>Failure warning</strong>Repeated failure work raises fatigue faster than net stimulus. Use 2 RIR as the default target.";
-        } else {
-          el.failureWarning.innerHTML = "<strong>0 RIR warning</strong>Last-rep sets are allowed, but fatigue cost is high. 2 RIR remains the default target.";
-        }
-
-        el.modelExplanation.textContent = getTrainingExplanation(model);
-      }
-
-      function attachListeners() {
-        el.setsSlider.addEventListener("input", () => { state.sets = Number(el.setsSlider.value); render(); });
-        el.repsSlider.addEventListener("input", () => { state.reps = Number(el.repsSlider.value); render(); });
-        el.frequencySlider.addEventListener("input", () => { state.frequency = Number(el.frequencySlider.value); render(); });
-        el.effortSlider.addEventListener("input", () => { state.effortIndex = Number(el.effortSlider.value); render(); });
-        el.resetBtn.addEventListener("click", () => { state.sets = 5; state.reps = 5; state.frequency = 3; state.effortIndex = 3; render(); });
-      }
-
-      function testCase(name, setup, expectedZone, expectedDoseLabel) {
-        const original = { ...state };
-        state.sets = setup.sets;
-        state.reps = setup.reps;
-        state.frequency = setup.frequency;
-        state.effortIndex = setup.effortIndex;
-        const model = calculateModel();
-        const zone = classifyZone(model);
-        const dose = classifyDose(model, zone);
-        Object.assign(state, original);
-        if (zone.key !== expectedZone || (expectedDoseLabel && dose[0] !== expectedDoseLabel)) throw new Error(`${name} failed. Got zone=${zone.key}, dose=${dose[0]}`);
-      }
-
-      function runSelfTest() {
-        const original = { ...state };
-
-        for (let sets = 1; sets <= 8; sets++) {
-          for (let reps = 1; reps <= 15; reps++) {
-            for (let frequency = 1; frequency <= 8; frequency++) {
-              for (let effortIndex = 0; effortIndex < EFFORT_OPTIONS.length; effortIndex++) {
-                state.sets = sets;
-                state.reps = reps;
-                state.frequency = frequency;
-                state.effortIndex = effortIndex;
-                const model = calculateModel();
-                const zone = classifyZone(model);
-                const values = [model.baseStim, model.baseDc, model.dc, model.qfFloor, model.sessionStimValid, model.weeklyStim, model.netWeeklyAU, model.avgQF];
-                if (values.some(value => !Number.isFinite(value))) throw new Error(`Non-finite model value at ${sets}/${reps}/${frequency}/${effortIndex}`);
-                if (model.rows.some(row => !Number.isFinite(row.qf) || row.qf < 0 || row.qf > 1 || !Number.isFinite(row.setStim))) throw new Error(`Invalid row value at ${sets}/${reps}/${frequency}/${effortIndex}`);
-                if (!zone.title) throw new Error(`Missing zone at ${sets}/${reps}/${frequency}/${effortIndex}`);
-              }
-            }
-          }
-        }
-
-        Object.assign(state, original);
-
-        testCase("1×5 @ 0 RIR, 3×/week", { sets: 1, reps: 5, frequency: 3, effortIndex: 1 }, "gaining", null);
-        testCase("2×5 @ 2 RIR, 3×/week", { sets: 2, reps: 5, frequency: 3, effortIndex: 3 }, "gaining", "Productive growth");
-        testCase("5×4 @ 2 RIR, 8×/week", { sets: 5, reps: 4, frequency: 8, effortIndex: 3 }, "wasteful", null);
-        testCase("5×5 @ Failure, 1×/week", { sets: 5, reps: 5, frequency: 1, effortIndex: 0 }, "maintaining", null);
-        testCase("5×5 @ 0 RIR, 1×/week", { sets: 5, reps: 5, frequency: 1, effortIndex: 1 }, "maintaining", null);
-        testCase("5×5 @ 1 RIR, 1×/week", { sets: 5, reps: 5, frequency: 1, effortIndex: 2 }, "maintaining", null);
-        testCase("5×5 @ 2 RIR, 1×/week", { sets: 5, reps: 5, frequency: 1, effortIndex: 3 }, "gaining", null);
-        testCase("4×5 @ 3 RIR, 1×/week", { sets: 4, reps: 5, frequency: 1, effortIndex: 4 }, "maintaining", null);
-        testCase("4×7 @ 2 RIR, 3×/week", { sets: 4, reps: 7, frequency: 3, effortIndex: 3 }, "gaining", "Productive growth");
-        testCase("8×1 @ Failure, 2×/week", { sets: 8, reps: 1, frequency: 2, effortIndex: 0 }, "gaining", "Productive growth");
-
-        for (let reps = 1; reps <= 15; reps++) {
-          for (let frequency = 1; frequency <= 8; frequency++) {
-            for (let effortIndex = 0; effortIndex < EFFORT_OPTIONS.length; effortIndex++) {
-              let previousDose = null;
-              let previousZone = null;
-              for (let sets = 1; sets <= 8; sets++) {
-                state.sets = sets;
-                state.reps = reps;
-                state.frequency = frequency;
-                state.effortIndex = effortIndex;
-                const model = calculateModel();
-                const zone = classifyZone(model);
-                const dose = classifyDose(model, zone)[0];
-                if (previousZone === "gaining" && previousDose === "Productive growth" && zone.key === "gaining" && dose === "Minimum growth") {
-                  throw new Error(`Dose wording regressed when adding sets at reps=${reps}, frequency=${frequency}, effortIndex=${effortIndex}, sets=${sets}`);
-                }
-                previousZone = zone.key;
-                previousDose = dose;
-              }
-            }
-          }
-        }
-
-        const recoveryOriginal = { ...state };
-        state.sets = 4;
-        state.reps = 7;
-        state.frequency = 3;
-        state.effortIndex = 3;
-        const recoveryLabel = classifyRecovery(calculateModel())[0];
-        Object.assign(state, recoveryOriginal);
-        if (recoveryLabel !== "Borderline") throw new Error(`4×7 @ 2 RIR, 3×/week recovery should be Borderline. Got ${recoveryLabel}`);
-
-        Object.assign(state, original);
-        console.info("GYM_PIGS self-test passed.");
-      }
-
-      function init() {
-        bindElements();
-        renderEffortButtons();
-        attachListeners();
-        render();
-        try { runSelfTest(); } catch (error) { console.error(error); }
-        render();
-      }
-
-      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
-      else init();
-    })();
-  </script>
-</body>
-</html>
+        const extremeF
