@@ -5,21 +5,23 @@
   <title>GYM_PIGS Stimulus Calculator</title>
   <style>
     :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #020617;
-      --muted: #64748b;
-      --line: #e2e8f0;
-      --soft: #f1f5f9;
-      --dark: #0f172a;
-      --green: #16a34a;
-      --lime: #65a30d;
-      --yellow: #ca8a04;
-      --orange: #ea580c;
-      --red: #dc2626;
-      --blue: #2563eb;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      --radius: 24px;
+      --bg: #1b1b3a;
+      --card: #fff4d6;
+      --text: #231942;
+      --muted: #5d5277;
+      --line: #231942;
+      --soft: #ffe9a8;
+      --dark: #231942;
+      --green: #38b764;
+      --lime: #a7f070;
+      --yellow: #ffcd75;
+      --orange: #ef7d57;
+      --red: #b13e53;
+      --blue: #3b5dc9;
+      --pink: #f675b3;
+      --cyan: #41a6f6;
+      --shadow: 6px 6px 0 #231942;
+      --radius: 0px;
     }* { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 
@@ -27,11 +29,14 @@ body {
   margin: 0;
   font-family: "Courier New", "Lucida Console", Monaco, monospace;
   background:
-    linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
-    radial-gradient(circle at top left, rgba(244, 114, 182, 0.11), transparent 34%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.035) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.035) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.035) 75%),
+    radial-gradient(circle at top left, rgba(246, 117, 179, 0.22), transparent 35%),
     var(--bg);
-  background-size: 8px 8px, 8px 8px, auto, auto;
+  background-size: 16px 16px, 16px 16px, 16px 16px, 16px 16px, auto, auto;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px, 0 0, 0 0;
   color: var(--text);
 }
 
@@ -56,11 +61,20 @@ button { cursor: pointer; }
 }
 
 .hero {
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.94);
-  border-radius: 28px;
+  border: 3px solid var(--line);
+  background: var(--card);
+  border-radius: 0;
   box-shadow: var(--shadow);
   padding: 16px;
+  position: relative;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px dashed rgba(35, 25, 66, 0.28);
+  pointer-events: none;
 }
 
 .brand {
@@ -75,16 +89,16 @@ button { cursor: pointer; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #334155;
-  background: #0f172a;
-  color: #d9f99d;
-  border-radius: 10px;
+  border: 3px solid #231942;
+  background: #3b5dc9;
+  color: #fff4d6;
+  border-radius: 0;
   padding: 7px 10px;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: inset 0 0 0 1px rgba(217, 249, 157, 0.18);
+  box-shadow: 3px 3px 0 #231942;
 }
 
 .pig-logo {
@@ -97,22 +111,30 @@ button { cursor: pointer; }
 
 .reset {
   min-height: 40px;
-  border: 1px solid var(--line);
-  background: white;
-  color: #334155;
-  border-radius: 14px;
+  border: 3px solid var(--line);
+  background: #ffcd75;
+  color: #231942;
+  border-radius: 0;
   padding: 0 12px;
   font-size: 12px;
   font-weight: 900;
+  box-shadow: 3px 3px 0 #231942;
+  text-transform: uppercase;
+}
+
+.reset:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #231942;
 }
 
 h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 30px;
   line-height: 1;
   letter-spacing: -0.03em;
   text-transform: uppercase;
-  text-shadow: 1px 1px 0 rgba(15, 23, 42, 0.08);
+  color: #231942;
+  text-shadow: 2px 2px 0 #ffcd75, 4px 4px 0 #f675b3;
 }
 
 .subtitle {
@@ -123,11 +145,12 @@ h1 {
 }
 
 .zone-card {
-  margin-top: 12px;
-  border-radius: 24px;
+  margin-top: 14px;
+  border-radius: 0;
   padding: 16px;
-  border: 1px solid;
+  border: 3px solid #231942;
   transition: background 180ms ease, border 180ms ease, color 180ms ease;
+  box-shadow: 4px 4px 0 #231942;
 }
 
 .zone-label {
@@ -168,11 +191,20 @@ h1 {
 .cards { display: grid; gap: 12px; }
 
 .card {
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.055);
+  background: var(--card);
+  border: 3px solid var(--line);
+  border-radius: 0;
+  box-shadow: var(--shadow);
   padding: 16px;
+  position: relative;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px dashed rgba(35, 25, 66, 0.18);
+  pointer-events: none;
 }
 
 .section-title {
@@ -201,43 +233,47 @@ h1 {
   min-height: 42px;
   display: grid;
   place-items: center;
-  background: var(--dark);
-  color: white;
-  border-radius: 15px;
+  background: #231942;
+  color: #fff4d6;
+  border: 3px solid #231942;
+  border-radius: 0;
   padding: 0 11px;
   font-size: 20px;
   font-weight: 950;
   letter-spacing: -0.03em;
   white-space: nowrap;
+  box-shadow: 3px 3px 0 #ef7d57;
 }
 
 input[type="range"] {
   width: 100%;
   appearance: none;
-  height: 12px;
-  background: #e2e8f0;
-  border-radius: 999px;
+  height: 14px;
+  background: #ffe9a8;
+  border: 3px solid #231942;
+  border-radius: 0;
   outline: none;
   touch-action: pan-y;
+  box-shadow: inset 3px 3px 0 rgba(35, 25, 66, 0.16);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 30px;
   height: 30px;
-  border-radius: 999px;
-  background: var(--dark);
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.28);
-  border: 3px solid white;
+  border-radius: 0;
+  background: #f675b3;
+  box-shadow: 3px 3px 0 #231942;
+  border: 3px solid #231942;
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 30px;
   height: 30px;
-  border: 3px solid white;
-  border-radius: 999px;
-  background: var(--dark);
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.28);
+  border: 3px solid #231942;
+  border-radius: 0;
+  background: #f675b3;
+  box-shadow: 3px 3px 0 #231942;
 }
 
 .limits {
@@ -258,20 +294,21 @@ input[type="range"]::-moz-range-thumb {
 
 .effort-button {
   min-height: 44px;
-  border: 1px solid var(--line);
-  background: #f8fafc;
-  color: #475569;
-  border-radius: 13px;
+  border: 3px solid var(--line);
+  background: #ffe9a8;
+  color: #231942;
+  border-radius: 0;
   padding: 0 2px;
   font-size: 11px;
   font-weight: 950;
+  box-shadow: 2px 2px 0 #231942;
 }
 
 .effort-button.active {
-  color: white;
-  border-color: transparent;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
+  color: #fff4d6;
+  border-color: #231942;
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 #231942;
 }
 
 .summary-grid {
@@ -281,11 +318,12 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .mini {
-  border: 1px solid var(--line);
-  background: #f8fafc;
-  border-radius: 20px;
+  border: 3px solid var(--line);
+  background: #ffe9a8;
+  border-radius: 0;
   padding: 13px;
   min-height: 118px;
+  box-shadow: 3px 3px 0 #231942;
 }
 
 .mini-title {
@@ -311,24 +349,26 @@ input[type="range"]::-moz-range-thumb {
 
 .bar-shell {
   width: 100%;
-  height: 12px;
-  border-radius: 999px;
+  height: 14px;
+  border-radius: 0;
   overflow: hidden;
-  background: #e2e8f0;
+  background: #fff4d6;
+  border: 3px solid #231942;
   margin-top: 10px;
 }
 
 .bar-fill {
   height: 100%;
   width: 40%;
-  border-radius: 999px;
+  border-radius: 0;
   transition: width 180ms ease, background 180ms ease;
 }
 
 .warning {
   display: none;
-  border-radius: 20px;
-  border: 1px solid;
+  border-radius: 0;
+  border: 3px solid #231942;
+  box-shadow: 4px 4px 0 #231942;
   padding: 14px;
   font-size: 13px;
   line-height: 1.45;
@@ -511,8 +551,7 @@ input[type="range"]::-moz-range-thumb {
   </div>
 
   <div class="card result-wide explain">
-    <p id="modelExplanation">Actual reps are converted into effective high-tension reps. Extra reps above the high-tension window add fatigue, not automatic stimulus.</p>
-    <p>Internal model uses quality decay, effort decay, frequency, and net weekly exposure. Numeric stimulus values are intentionally hidden.</p>
+    <p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p>
   </div>
 </section>
 
@@ -655,34 +694,4 @@ input[type="range"]::-moz-range-thumb {
       const weeklyStim = sessionStimValid * state.frequency;
       const atrophyLoss = weeklyAtrophyLossEvenSpacing(state.frequency);
       const netWeeklyAU = Math.max(0, weeklyStim - atrophyLoss);
-      const avgQF = selectedRows.length ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / selectedRows.length : 0;
-      const junkRatio = selectedRows.length ? junkRows.length / selectedRows.length : 0;
-
-      return {
-        effort,
-        numericRir,
-        estimatedRM,
-        effectiveReps,
-        baseStim,
-        baseDc,
-        dc,
-        qfFloor,
-        rows,
-        validRows,
-        junkRows,
-        sessionStimRaw,
-        sessionStimValid,
-        weeklyStim,
-        atrophyLoss,
-        netWeeklyAU,
-        avgQF,
-        junkRatio
-      };
-    }
-
-    function classifyZone(model) {
-      if (model.effectiveReps === 0 || model.netWeeklyAU < 12) {
-        return {
-          key: "undertraining",
-          title: "Undertraining",
-          icon: "↓"
+      const avgQF = selectedRows.length ? selectedRows.reduce((su
