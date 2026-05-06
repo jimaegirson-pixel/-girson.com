@@ -2,42 +2,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>GYM_PIGS Stimulus Calculator</title>
+  <title>GYM_PIGS</title>
   <style>
     :root {
-      --bg: #1b1b3a;
-      --card: #fff4d6;
-      --text: #231942;
-      --muted: #5d5277;
-      --line: #231942;
-      --soft: #ffe9a8;
-      --dark: #231942;
-      --green: #38b764;
-      --lime: #a7f070;
-      --yellow: #ffcd75;
-      --orange: #ef7d57;
-      --red: #b13e53;
-      --blue: #3b5dc9;
-      --pink: #f675b3;
-      --cyan: #41a6f6;
-      --shadow: 6px 6px 0 #231942;
-      --radius: 0px;
+      --bg0: #071116;
+      --bg1: #0d1b22;
+      --card: rgba(17, 34, 42, 0.92);
+      --card2: rgba(23, 48, 58, 0.9);
+      --text: #f4ead2;
+      --muted: #aeb9b4;
+      --line: rgba(185, 151, 91, 0.55);
+      --gold: #d6a84f;
+      --gold2: #f0d28a;
+      --ice: #7dd3fc;
+      --green: #48c774;
+      --lime: #a3e635;
+      --yellow: #eab308;
+      --orange: #f97316;
+      --red: #ef4444;
+      --blue: #38bdf8;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.34);
     }* { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font-family: "Courier New", "Lucida Console", Monaco, monospace;
-  background:
-    linear-gradient(45deg, rgba(255, 255, 255, 0.035) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.035) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.035) 75%),
-    radial-gradient(circle at top left, rgba(246, 117, 179, 0.22), transparent 35%),
-    var(--bg);
-  background-size: 16px 16px, 16px 16px, 16px 16px, 16px 16px, auto, auto;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0px, 0 0, 0 0;
+  min-height: 100svh;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(125, 211, 252, 0.18), transparent 28%),
+    radial-gradient(circle at 90% 8%, rgba(214, 168, 79, 0.16), transparent 32%),
+    linear-gradient(135deg, rgba(255,255,255,0.025) 25%, transparent 25%) 0 0 / 22px 22px,
+    linear-gradient(225deg, rgba(255,255,255,0.018) 25%, transparent 25%) 0 0 / 22px 22px,
+    linear-gradient(180deg, var(--bg1), var(--bg0));
 }
 
 button, input { font: inherit; }
@@ -45,172 +43,152 @@ button { cursor: pointer; }
 
 .app {
   width: min(100%, 480px);
-  margin: 0 auto;
   min-height: 100svh;
+  margin: 0 auto;
   padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom));
 }
 
 .top {
   position: static;
-  padding-top: 0;
-  margin: 0 0 12px;
-  background: transparent;
-  backdrop-filter: none;
+  margin-bottom: 12px;
 }
 
-.hero {
-  border: 3px solid var(--line);
-  background: var(--card);
-  border-radius: 0;
-  box-shadow: var(--shadow);
-  padding: 12px;
+.panel {
   position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(20, 43, 52, 0.98), rgba(10, 23, 29, 0.96));
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
-.hero::after {
+.panel::before {
   content: "";
   position: absolute;
-  inset: 5px;
-  border: 1px dashed rgba(35, 25, 66, 0.28);
+  inset: 0;
   pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(240, 210, 138, 0.08), transparent),
+    radial-gradient(circle at top right, rgba(125, 211, 252, 0.12), transparent 35%);
 }
+
+.panel > * { position: relative; z-index: 1; }
+
+.hero { padding: 14px; }
 
 .brand {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.pill {
+.mark {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 3px solid #231942;
-  background: #3b5dc9;
-  color: #fff4d6;
-  border-radius: 0;
+  border: 1px solid rgba(240, 210, 138, 0.5);
+  border-radius: 999px;
   padding: 7px 10px;
+  color: var(--gold2);
+  background: rgba(0, 0, 0, 0.18);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
-  box-shadow: 3px 3px 0 #231942;
 }
 
 .pig-logo {
   width: 22px;
   height: 22px;
   image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(240, 210, 138, 0.28));
   flex: none;
-  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.22));
 }
 
 .reset {
-  min-height: 40px;
-  border: 3px solid var(--line);
-  background: #ffcd75;
-  color: #231942;
-  border-radius: 0;
-  padding: 0 12px;
+  min-height: 38px;
+  border: 1px solid rgba(240, 210, 138, 0.5);
+  border-radius: 999px;
+  padding: 0 13px;
+  background: rgba(240, 210, 138, 0.12);
+  color: var(--gold2);
   font-size: 12px;
   font-weight: 900;
-  box-shadow: 3px 3px 0 #231942;
-  text-transform: uppercase;
 }
 
-.reset:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 #231942;
-}
+.reset:active { transform: scale(0.98); }
 
 h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 28px;
   line-height: 1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  color: #231942;
-  text-shadow: 2px 2px 0 #ffcd75, 4px 4px 0 #f675b3;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  text-shadow: 0 0 22px rgba(125, 211, 252, 0.28);
 }
 
 .subtitle {
-  display: none;
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .zone-card {
-  margin-top: 10px;
-  border-radius: 0;
-  padding: 12px;
-  border: 3px solid #231942;
-  transition: background 180ms ease, border 180ms ease, color 180ms ease;
-  box-shadow: 4px 4px 0 #231942;
+  margin-top: 12px;
+  border-radius: 24px;
+  border: 1px solid;
+  padding: 13px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 .zone-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .zone-title {
-  font-size: 25px;
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: 29px;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   font-weight: 950;
-  text-transform: uppercase;
 }
 
 .zone-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.66);
+  flex: none;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.22);
   font-size: 22px;
   font-weight: 950;
-  flex: none;
 }
 
 .zone-copy {
-  margin-top: 7px;
+  margin-top: 8px;
   color: inherit;
-  opacity: 0.86;
+  opacity: 0.88;
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.38;
 }
 
-.cards { display: grid; gap: 12px; }
+.cards {
+  display: grid;
+  gap: 12px;
+}
 
 .card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
   background: var(--card);
-  border: 3px solid var(--line);
-  border-radius: 0;
-  box-shadow: var(--shadow);
-  padding: 16px;
-  position: relative;
-}
-
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border: 1px dashed rgba(35, 25, 66, 0.18);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.card > *, .hero > * {
-  position: relative;
-  z-index: 1;
-}
-
-input[type="range"], button {
-  position: relative;
-  z-index: 2;
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.07);
+  padding: 15px;
 }
 
 .section-title {
@@ -223,7 +201,7 @@ input[type="range"], button {
 
 .label {
   font-size: 15px;
-  font-weight: 950;
+  font-weight: 900;
   letter-spacing: -0.01em;
 }
 
@@ -235,60 +213,73 @@ input[type="range"], button {
 }
 
 .value {
-  min-width: 58px;
-  min-height: 42px;
+  min-width: 60px;
+  min-height: 40px;
   display: grid;
   place-items: center;
-  background: #231942;
-  color: #fff4d6;
-  border: 3px solid #231942;
-  border-radius: 0;
+  border: 1px solid rgba(240, 210, 138, 0.5);
+  border-radius: 14px;
   padding: 0 11px;
-  font-size: 20px;
+  background: rgba(0,0,0,0.22);
+  color: var(--gold2);
+  font-size: 19px;
   font-weight: 950;
-  letter-spacing: -0.03em;
   white-space: nowrap;
-  box-shadow: 3px 3px 0 #ef7d57;
 }
 
 input[type="range"] {
   width: 100%;
+  height: 36px;
+  margin: 0;
   appearance: none;
-  height: 14px;
-  background: #ffe9a8;
-  border: 3px solid #231942;
-  border-radius: 0;
-  outline: none;
+  background: transparent;
   touch-action: pan-y;
-  box-shadow: inset 3px 3px 0 rgba(35, 25, 66, 0.16);
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(125,211,252,0.35), rgba(240,210,138,0.42));
+  border: 1px solid rgba(240, 210, 138, 0.36);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.35);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 30px;
   height: 30px;
-  border-radius: 0;
-  background: #f675b3;
-  box-shadow: 3px 3px 0 #231942;
-  border: 3px solid #231942;
+  margin-top: -10px;
+  border-radius: 12px;
+  border: 2px solid var(--gold2);
+  background: linear-gradient(145deg, #f4ead2, #d6a84f);
+  box-shadow: 0 0 0 3px rgba(214,168,79,0.15), 0 6px 16px rgba(0,0,0,0.35);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(125,211,252,0.35), rgba(240,210,138,0.42));
+  border: 1px solid rgba(240, 210, 138, 0.36);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.35);
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 30px;
   height: 30px;
-  border: 3px solid #231942;
-  border-radius: 0;
-  background: #f675b3;
-  box-shadow: 3px 3px 0 #231942;
+  border-radius: 12px;
+  border: 2px solid var(--gold2);
+  background: linear-gradient(145deg, #f4ead2, #d6a84f);
+  box-shadow: 0 0 0 3px rgba(214,168,79,0.15), 0 6px 16px rgba(0,0,0,0.35);
 }
 
 .limits {
   display: flex;
   justify-content: space-between;
-  color: #94a3b8;
+  color: rgba(244, 234, 210, 0.48);
   font-size: 11px;
-  font-weight: 900;
-  margin-top: 10px;
+  font-weight: 800;
+  margin-top: 2px;
 }
 
 .effort-grid {
@@ -299,22 +290,21 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .effort-button {
-  min-height: 44px;
-  border: 3px solid var(--line);
-  background: #ffe9a8;
-  color: #231942;
-  border-radius: 0;
+  min-height: 43px;
+  border: 1px solid rgba(240, 210, 138, 0.38);
+  border-radius: 14px;
   padding: 0 2px;
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
   font-size: 11px;
   font-weight: 950;
-  box-shadow: 2px 2px 0 #231942;
 }
 
 .effort-button.active {
-  color: #fff4d6;
-  border-color: #231942;
-  transform: translate(2px, 2px);
-  box-shadow: 0 0 0 #231942;
+  color: #061014;
+  background: var(--gold2);
+  border-color: var(--gold2);
+  box-shadow: 0 0 18px rgba(240, 210, 138, 0.28);
 }
 
 .summary-grid {
@@ -324,25 +314,24 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .mini {
-  border: 3px solid var(--line);
-  background: #ffe9a8;
-  border-radius: 0;
+  min-height: 116px;
+  border: 1px solid rgba(240, 210, 138, 0.28);
+  border-radius: 22px;
+  background: rgba(255,255,255,0.055);
   padding: 13px;
-  min-height: 118px;
-  box-shadow: 3px 3px 0 #231942;
 }
 
 .mini-title {
-  color: #64748b;
+  color: var(--gold2);
   font-size: 12px;
   font-weight: 900;
   margin-bottom: 8px;
 }
 
 .mini-value {
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.05;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
   font-weight: 950;
 }
 
@@ -355,26 +344,24 @@ input[type="range"]::-moz-range-thumb {
 
 .bar-shell {
   width: 100%;
-  height: 14px;
-  border-radius: 0;
+  height: 10px;
+  border-radius: 999px;
   overflow: hidden;
-  background: #fff4d6;
-  border: 3px solid #231942;
+  background: rgba(0,0,0,0.28);
   margin-top: 10px;
 }
 
 .bar-fill {
   height: 100%;
   width: 40%;
-  border-radius: 0;
+  border-radius: 999px;
   transition: width 180ms ease, background 180ms ease;
 }
 
 .warning {
   display: none;
-  border-radius: 0;
-  border: 3px solid #231942;
-  box-shadow: 4px 4px 0 #231942;
+  border: 1px solid;
+  border-radius: 22px;
   padding: 14px;
   font-size: 13px;
   line-height: 1.45;
@@ -389,23 +376,20 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1.55;
 }
 
-.explain p { margin: 0; }
-.explain p + p { margin-top: 9px; }
-
 .footer-note {
-  padding: 4px 4px 0;
-  color: #94a3b8;
+  padding: 8px 4px 0;
+  color: rgba(244, 234, 210, 0.48);
   font-size: 11px;
   line-height: 1.45;
   text-align: center;
 }
 
-.tone-undertraining { background: #fefce8; border-color: #fef08a; color: #854d0e; }
-.tone-maintaining { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
-.tone-gaining { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
-.tone-gainmaxxing { background: #ecfdf5; border-color: #86efac; color: #14532d; }
-.tone-wasteful { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
-.tone-risk { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.tone-undertraining { background: rgba(234, 179, 8, 0.18); border-color: rgba(234,179,8,0.65); color: #fde68a; }
+.tone-maintaining { background: rgba(56, 189, 248, 0.18); border-color: rgba(56,189,248,0.65); color: #bae6fd; }
+.tone-gaining { background: rgba(72, 199, 116, 0.18); border-color: rgba(72,199,116,0.65); color: #bbf7d0; }
+.tone-gainmaxxing { background: rgba(163, 230, 53, 0.22); border-color: rgba(163,230,53,0.7); color: #ecfccb; }
+.tone-wasteful { background: rgba(249, 115, 22, 0.20); border-color: rgba(249,115,22,0.7); color: #fed7aa; }
+.tone-risk { background: rgba(239, 68, 68, 0.20); border-color: rgba(239,68,68,0.7); color: #fecaca; }
 
 .fill-undertraining { background: var(--yellow); }
 .fill-maintaining { background: var(--blue); }
@@ -414,20 +398,19 @@ input[type="range"]::-moz-range-thumb {
 .fill-wasteful { background: var(--orange); }
 .fill-risk { background: var(--red); }
 
-.bg-red { background: var(--red) !important; }
-.bg-orange { background: var(--orange) !important; }
-.bg-yellow { background: #eab308 !important; color: #111827 !important; }
-.bg-lime { background: var(--lime) !important; }
-.bg-green { background: var(--green) !important; }
-.bg-slate { background: #475569 !important; }
+.bg-red { background: var(--red) !important; color: #fff !important; }
+.bg-orange { background: var(--orange) !important; color: #fff !important; }
+.bg-yellow { background: var(--yellow) !important; color: #1b1204 !important; }
+.bg-lime { background: var(--lime) !important; color: #071116 !important; }
+.bg-green { background: var(--green) !important; color: #071116 !important; }
+.bg-slate { background: #64748b !important; color: #fff !important; }
 
 @media (min-width: 700px) {
   .app { width: min(100% - 32px, 760px); }
-  .hero { padding: 20px; }
   .cards { grid-template-columns: 1fr 1fr; }
   .result-wide, .controls-wide { grid-column: 1 / -1; }
   h1 { font-size: 36px; }
-  .zone-title { font-size: 42px; }
+  .zone-title { font-size: 40px; }
 }
 
   </style>
@@ -435,9 +418,9 @@ input[type="range"]::-moz-range-thumb {
 <body>
   <main class="app">
     <section class="top">
-      <div class="hero">
+      <div class="panel hero">
         <div class="brand">
-          <div class="pill" aria-label="GYM_PIGS">
+          <div class="mark" aria-label="GYM_PIGS">
             <svg class="pig-logo" viewBox="0 0 16 16" role="img" aria-label="Pixel pig logo" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
               <rect width="16" height="16" fill="transparent"/>
               <rect x="4" y="3" width="8" height="2" fill="#f9a8d4"/>
@@ -445,24 +428,25 @@ input[type="range"]::-moz-range-thumb {
               <rect x="2" y="6" width="2" height="3" fill="#f9a8d4"/>
               <rect x="12" y="6" width="2" height="3" fill="#f9a8d4"/>
               <rect x="5" y="7" width="6" height="4" fill="#fbcfe8"/>
-              <rect x="6" y="8" width="1" height="1" fill="#0f172a"/>
-              <rect x="9" y="8" width="1" height="1" fill="#0f172a"/>
-              <rect x="5" y="5" width="2" height="1" fill="#0f172a"/>
-              <rect x="10" y="5" width="2" height="1" fill="#0f172a"/>
+              <rect x="6" y="8" width="1" height="1" fill="#071116"/>
+              <rect x="9" y="8" width="1" height="1" fill="#071116"/>
+              <rect x="5" y="5" width="2" height="1" fill="#071116"/>
+              <rect x="10" y="5" width="2" height="1" fill="#071116"/>
               <rect x="4" y="2" width="2" height="2" fill="#f472b6"/>
               <rect x="10" y="2" width="2" height="2" fill="#f472b6"/>
             </svg>
             <span>GYM_PIGS</span>
           </div>
-          <button class="reset" id="resetBtn">Reset</button>
-        </div>
-        <h1>GYM_PIGS</h1>
-        <p class="subtitle">Pixel gym calculator. Numbers stay internal; output is shown as training zones.</p><div class="zone-card tone-gaining" id="zoneCard">
+          <button class="reset" id="resetBtn" type="button">Reset</button>
+        </div><h1>GYM_PIGS</h1>
+    <p class="subtitle">Viking 3000 dose oracle. Numbers stay internal; output is shown as training zones.</p>
+
+    <div class="zone-card tone-gaining" id="zoneCard">
       <div class="zone-label">
         <div class="zone-title" id="zoneTitle">Gaining</div>
         <div class="zone-icon" id="zoneIcon">↗</div>
       </div>
-      <div class="zone-copy" id="zoneCopy">Productive dose without excessive quality loss.</div>
+      <div class="zone-copy" id="zoneCopy">Productive growth dose.</div>
     </div>
   </div>
 </section>
@@ -548,7 +532,7 @@ input[type="range"]::-moz-range-thumb {
 
   <div class="warning tone-wasteful result-wide" id="junkWarning">
     <strong>Junk-volume warning</strong>
-    Some selected sets fall below the QF floor. Reduce sets or use lower-fatigue effort.
+    Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.
   </div>
 
   <div class="warning tone-risk result-wide" id="failureWarning">
@@ -567,22 +551,8 @@ input[type="range"]::-moz-range-thumb {
     const MAX_SETS = 8;
     const ATROPHY_LOSS_PER_DAY_AFTER_48H = 0.32;
 
-    const BASE_STIM_BY_EFFECTIVE_REPS = {
-      0: 0.00,
-      1: 2.00,
-      2: 3.95,
-      3: 5.80,
-      4: 7.50,
-      5: 9.00
-    };
-
-    const BASE_DC_BY_ACTUAL_REPS = {
-      1: 0.003,
-      2: 0.006,
-      3: 0.010,
-      4: 0.016,
-      5: 0.024
-    };
+    const BASE_STIM_BY_EFFECTIVE_REPS = { 0: 0, 1: 2, 2: 3.95, 3: 5.8, 4: 7.5, 5: 9 };
+    const BASE_DC_BY_ACTUAL_REPS = { 1: 0.003, 2: 0.006, 3: 0.01, 4: 0.016, 5: 0.024 };
 
     const EFFORT_OPTIONS = [
       { key: "failure", label: "Failure", short: "FAIL", dcMultiplier: 3.5, tone: "red" },
@@ -594,45 +564,23 @@ input[type="range"]::-moz-range-thumb {
       { key: "5", label: "5 RIR", short: "5", dcMultiplier: 0.3, tone: "slate" }
     ];
 
-    const state = {
-      sets: 5,
-      reps: 4,
-      frequency: 3,
-      effortIndex: 3
-    };
+    const state = { sets: 5, reps: 4, frequency: 3, effortIndex: 3 };
 
-    const el = {
-      resetBtn: document.getElementById("resetBtn"),
-      setsSlider: document.getElementById("setsSlider"),
-      repsSlider: document.getElementById("repsSlider"),
-      frequencySlider: document.getElementById("frequencySlider"),
-      effortSlider: document.getElementById("effortSlider"),
-      setsValue: document.getElementById("setsValue"),
-      repsValue: document.getElementById("repsValue"),
-      frequencyValue: document.getElementById("frequencyValue"),
-      effortValue: document.getElementById("effortValue"),
-      effortGrid: document.getElementById("effortGrid"),
-      zoneCard: document.getElementById("zoneCard"),
-      zoneTitle: document.getElementById("zoneTitle"),
-      zoneIcon: document.getElementById("zoneIcon"),
-      zoneCopy: document.getElementById("zoneCopy"),
-      qualityLabel: document.getElementById("qualityLabel"),
-      qualityBar: document.getElementById("qualityBar"),
-      qualityCopy: document.getElementById("qualityCopy"),
-      recoveryLabel: document.getElementById("recoveryLabel"),
-      recoveryBar: document.getElementById("recoveryBar"),
-      recoveryCopy: document.getElementById("recoveryCopy"),
-      tensionLabel: document.getElementById("tensionLabel"),
-      tensionCopy: document.getElementById("tensionCopy"),
-      doseLabel: document.getElementById("doseLabel"),
-      doseCopy: document.getElementById("doseCopy"),
-      junkWarning: document.getElementById("junkWarning"),
-      failureWarning: document.getElementById("failureWarning"),
-      modelExplanation: document.getElementById("modelExplanation")
-    };
+    const el = {};
 
-    function round(value, digits = 2) {
-      return Number.isFinite(value) ? Number(value.toFixed(digits)) : 0;
+    function byId(id) {
+      const node = document.getElementById(id);
+      if (!node) throw new Error(`Missing element: ${id}`);
+      return node;
+    }
+
+    function bindElements() {
+      [
+        "resetBtn", "setsSlider", "repsSlider", "frequencySlider", "effortSlider", "setsValue", "repsValue",
+        "frequencyValue", "effortValue", "effortGrid", "zoneCard", "zoneTitle", "zoneIcon", "zoneCopy",
+        "qualityLabel", "qualityBar", "qualityCopy", "recoveryLabel", "recoveryBar", "recoveryCopy",
+        "tensionLabel", "tensionCopy", "doseLabel", "doseCopy", "junkWarning", "failureWarning", "modelExplanation"
+      ].forEach(id => { el[id] = byId(id); });
     }
 
     function qfFloorForFrequency(frequency) {
@@ -647,13 +595,11 @@ input[type="range"]::-moz-range-thumb {
 
     function getBaseDcByActualReps(reps) {
       if (reps <= 5) return BASE_DC_BY_ACTUAL_REPS[reps];
-      const extraReps = reps - 5;
-      return 0.024 + 0.0045 * Math.pow(extraReps, 1.25);
+      return 0.024 + 0.0045 * Math.pow(reps - 5, 1.25);
     }
 
     function getNumericRir(effort) {
-      if (effort.key === "failure") return 0;
-      return Number(effort.key);
+      return effort.key === "failure" ? 0 : Number(effort.key);
     }
 
     function getEffectiveHighTensionReps(actualReps, numericRir) {
@@ -668,6 +614,14 @@ input[type="range"]::-moz-range-thumb {
       return atrophyDaysPerGap * ATROPHY_LOSS_PER_DAY_AFTER_48H * frequency;
     }
 
+    function recoveryEffortCost(effort) {
+      return { failure: 6.5, "0": 5, "1": 3.8, "2": 2.5, "3": 1.6, "4": 0.9, "5": 0.4 }[effort.key];
+    }
+
+    function recoveryCostScore(model) {
+      return recoveryEffortCost(model.effort) * state.sets * Math.sqrt(state.frequency) * Math.pow(state.reps / 4, 0.65);
+    }
+
     function calculateModel() {
       const effort = EFFORT_OPTIONS[state.effortIndex];
       const numericRir = getNumericRir(effort);
@@ -678,26 +632,22 @@ input[type="range"]::-moz-range-thumb {
       const dc = baseDc * effort.dcMultiplier;
       const qfFloor = qfFloorForFrequency(state.frequency);
 
-      const rows = Array.from({ length: MAX_SETS }, (_, index) => {
-        const setNumber = index + 1;
+      const rows = Array.from({ length: MAX_SETS }, (_, i) => {
+        const setNumber = i + 1;
         const qf = qfForSet(setNumber, dc);
         const selected = setNumber <= state.sets;
         const valid = selected && qf >= qfFloor;
-        return {
-          setNumber,
-          qf,
-          setStim: baseStim * qf,
-          selected,
-          valid
-        };
+        return { setNumber, qf, selected, valid, setStim: baseStim * qf };
       });
 
       const selectedRows = rows.filter(row => row.selected);
       const validRows = selectedRows.filter(row => row.valid);
       const junkRows = selectedRows.filter(row => !row.valid);
-      const sessionStimRaw = selectedRows.reduce((sum, row) => sum + row.setStim, 0);
       const sessionStimValid = validRows.reduce((sum, row) => sum + row.setStim, 0);
       const weeklyStim = sessionStimValid * state.frequency;
       const atrophyLoss = weeklyAtrophyLossEvenSpacing(state.frequency);
       const netWeeklyAU = Math.max(0, weeklyStim - atrophyLoss);
-      const avgQF = selectedRows.length ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / 
+      const avgQF = selectedRows.length ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / selectedRows.length : 0;
+      const junkRatio = selectedRows.length ? junkRows.length / selectedRows.length : 0;
+
+      return { effort, numericRir, estimatedRM, effectiveReps, baseStim, baseDc, dc, qfFloor, rows, validRows, junkRows, sessionStimValid, weeklyStim, atrophyLoss, netWeeklyAU, avgQF, junk
