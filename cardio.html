@@ -314,6 +314,73 @@
     .stimulus.strong { color: var(--warn); } /* Amber pluses mean strong focused stimulus. */
     .stimulus.high { color: var(--warn); } /* Amber high state means strong stimulus, while recovery risk is handled by Plan Fit. */
 
+    .intensity-grid { /* Grid holding per-minute intensity and total session load meters. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: 1fr 1fr; /* Places the two meters next to each other. */
+      gap: 12px; /* Adds space between the two meters. */
+      margin-top: 12px; /* Adds space above the meter row. */
+    } /* Ends intensity grid styling. */
+
+    .intensity-card { /* Styles each intensity/load meter card. */
+      border-radius: 20px; /* Rounds the intensity card. */
+      padding: 16px; /* Adds internal spacing. */
+      background: #f4f4ee; /* Uses the same neutral card background as score cards. */
+      border: 1px solid var(--line); /* Adds subtle border. */
+      min-width: 0; /* Prevents overflow in the two-column grid. */
+    } /* Ends intensity card styling. */
+
+    .intensity-top { /* Styles the top row of the intensity meter. */
+      display: flex; /* Places label and percent side by side. */
+      justify-content: space-between; /* Pushes percent to the right. */
+      align-items: baseline; /* Aligns text nicely. */
+      gap: 12px; /* Adds space between left and right sides. */
+      margin-bottom: 10px; /* Adds space below the top row. */
+    } /* Ends intensity top styling. */
+
+    .intensity-title { /* Styles the small intensity label. */
+      color: var(--muted); /* Uses muted text color. */
+      font-size: .72rem; /* Keeps the label compact. */
+      text-transform: uppercase; /* Matches score-card label style. */
+      letter-spacing: .08em; /* Adds letter spacing. */
+      font-weight: 800; /* Makes the label bold. */
+    } /* Ends intensity title styling. */
+
+    .intensity-label { /* Styles the main intensity category. */
+      font-size: 1.15rem; /* Makes the category readable. */
+      font-weight: 950; /* Makes the category bold. */
+      letter-spacing: -.03em; /* Slightly tightens text. */
+      margin-top: 2px; /* Adds a little spacing from the title. */
+    } /* Ends intensity label styling. */
+
+    .intensity-value { /* Styles the numeric intensity percentage. */
+      font-weight: 950; /* Makes the percentage bold. */
+      font-size: 1.25rem; /* Makes the percentage prominent. */
+      font-variant-numeric: tabular-nums; /* Keeps changing numbers stable. */
+    } /* Ends intensity value styling. */
+
+    .intensity-track { /* Styles the meter track. */
+      height: 12px; /* Sets meter height. */
+      border-radius: 999px; /* Makes the meter pill-shaped. */
+      background: #deded4; /* Sets empty track color. */
+      overflow: hidden; /* Clips fill to rounded track. */
+      border: 1px solid var(--line); /* Adds subtle track border. */
+    } /* Ends intensity track styling. */
+
+    .intensity-fill { /* Styles the meter fill. */
+      height: 100%; /* Makes fill span full track height. */
+      width: 0%; /* Default fill width before JavaScript update. */
+      border-radius: 999px; /* Rounds fill ends. */
+      transition: width .25s ease; /* Smooths fill movement. */
+      background: linear-gradient(90deg, var(--z2), var(--z3), var(--z4), var(--z5)); /* Uses zone colors to communicate rising intensity. */
+    } /* Ends intensity fill styling. */
+
+    .intensity-text { /* Styles the intensity explanation. */
+      margin: 10px 0 0; /* Adds space above explanation text. */
+      color: var(--muted); /* Uses muted text color. */
+      font-size: .82rem; /* Keeps text compact. */
+      line-height: 1.4; /* Improves readability. */
+    } /* Ends intensity text styling. */
+
     .coach { /* Styles the black coaching panel. */
       margin-top: 18px; /* Adds space above coach panel. */
       border-radius: 22px; /* Rounds coach panel corners. */
@@ -435,6 +502,11 @@
       .score { padding: 13px; border-radius: 16px; } /* Compacts score cards. */
       .score .big { font-size: 1.65rem; } /* Compacts large score numbers. */
       .score .small { font-size: .74rem; } /* Compacts score explanations. */
+      .intensity-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; } /* Keeps both intensity meters side by side on phones. */
+      .intensity-card { padding: 13px; border-radius: 16px; } /* Compacts intensity meter cards. */
+      .intensity-label { font-size: 1rem; } /* Compacts intensity category on phones. */
+      .intensity-value { font-size: 1.08rem; } /* Compacts intensity percentage on phones. */
+      .intensity-text { font-size: .74rem; } /* Compacts intensity explanation on phones. */
       .coach { padding: 14px; border-radius: 18px; gap: 8px; margin-top: 12px; } /* Compacts coach panel. */
       .coach h3 { font-size: .95rem; margin-bottom: 6px; } /* Compacts coach headings. */
       .coach p, .coach li { font-size: .82rem; line-height: 1.45; } /* Compacts coach body text. */
@@ -480,6 +552,13 @@
       .score .label { font-size: .52rem; letter-spacing: .04em; } /* Prevents score labels from wrapping badly. */
       .score .big { font-size: 1.28rem; } /* Keeps score values prominent but compact. */
       .score .small { font-size: .6rem; line-height: 1.25; } /* Keeps score subtitles readable. */
+      .intensity-grid { grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; } /* Keeps both meters side by side on Pixel 9a. */
+      .intensity-card { padding: 9px 7px; border-radius: 13px; } /* Compacts intensity meter cards for Pixel 9a. */
+      .intensity-title { font-size: .52rem; letter-spacing: .04em; } /* Compacts intensity title for Pixel 9a. */
+      .intensity-label { font-size: .85rem; } /* Compacts intensity label for Pixel 9a. */
+      .intensity-value { font-size: .95rem; } /* Compacts intensity value for Pixel 9a. */
+      .intensity-track { height: 9px; } /* Compacts intensity track for Pixel 9a. */
+      .intensity-text { font-size: .62rem; line-height: 1.25; } /* Compacts intensity text for Pixel 9a. */
       .coach { padding: 12px; border-radius: 16px; } /* Compacts coaching panel. */
       .coach p, .coach li { font-size: .76rem; } /* Makes coaching text fit better. */
     } /* Ends Pixel 9a-specific viewport tuning. */
@@ -522,15 +601,15 @@
             </div> <!-- Ends beginner criteria card. -->
             <div class="criteria-card"> <!-- Intermediate criteria card. -->
               <strong>Intermediate</strong> <!-- Intermediate label. -->
-              <span>6–16 weeks consistent · 90–180 min/week · can repeat 1–3 min hard efforts</span> <!-- Intermediate criteria. -->
+              <span>6–16 weeks consistent · 75–240 min/week · can repeat 1–3 min hard efforts</span> <!-- Intermediate criteria. -->
             </div> <!-- Ends intermediate criteria card. -->
             <div class="criteria-card"> <!-- Trained criteria card. -->
               <strong>Trained / Advanced</strong> <!-- Trained label. -->
-              <span>4+ months structured · 180–360 min/week · can repeat 3–4 min Z4 blocks</span> <!-- Trained criteria. -->
+              <span>4+ months structured · 150–420 min/week · can repeat 3–4 min Z4 blocks</span> <!-- Trained criteria. -->
             </div> <!-- Ends trained criteria card. -->
             <div class="criteria-card"> <!-- Elite criteria card. -->
               <strong>Elite / Competitive</strong> <!-- Elite label. -->
-              <span>Long-term structured training · 360+ min/week · high intensity does not disrupt the week</span> <!-- Elite criteria. -->
+              <span>Long-term structured training · 300+ min/week · high intensity does not disrupt the week</span> <!-- Elite criteria. -->
             </div> <!-- Ends elite criteria card. -->
           </div> <!-- Ends criteria grid. -->
         </details> <!-- Ends expandable criteria guide. -->
@@ -595,7 +674,7 @@
           <div id="gateBadge" class="gate-badge">—</div> <!-- JavaScript updates the gate status badge. -->
         </div> <!-- Ends gate message. -->
 
-        <h2>2. Target distribution per session</h2> <!-- Zone distribution heading. -->
+        <h2>3. Target work distribution per session</h2> <!-- Zone distribution heading. -->
         <div class="zone-stack" id="zoneStack"></div> <!-- JavaScript inserts colored zone bar here. -->
 
         <div class="tables"> <!-- Two tables wrapper. -->
@@ -633,6 +712,36 @@
           </div> <!-- Ends VO2 score card. -->
         </div> <!-- Ends weekly score card grid. -->
 
+        <div class="intensity-grid"> <!-- Two-meter row for per-minute density and total session load. -->
+          <div class="intensity-card"> <!-- Per-minute intensity-density meter card. -->
+            <div class="intensity-top"> <!-- Top row for per-minute intensity label and value. -->
+              <div> <!-- Left side of per-minute meter. -->
+                <div class="intensity-title">Per-minute intensity</div> <!-- Small per-minute intensity title. -->
+                <div class="intensity-label" id="intensityLabel">—</div> <!-- JavaScript inserts per-minute intensity category. -->
+              </div> <!-- Ends left side of per-minute meter. -->
+              <div class="intensity-value" id="intensityValue">—</div> <!-- JavaScript inserts per-minute intensity percentage. -->
+            </div> <!-- Ends per-minute intensity top row. -->
+            <div class="intensity-track"> <!-- Per-minute intensity meter track. -->
+              <div class="intensity-fill" id="intensityFill"></div> <!-- JavaScript sets per-minute meter fill width. -->
+            </div> <!-- Ends per-minute intensity meter track. -->
+            <p class="intensity-text" id="intensityText">—</p> <!-- JavaScript inserts per-minute intensity explanation. -->
+          </div> <!-- Ends per-minute intensity meter card. -->
+
+          <div class="intensity-card"> <!-- Total session load meter card. -->
+            <div class="intensity-top"> <!-- Top row for session load label and value. -->
+              <div> <!-- Left side of session load meter. -->
+                <div class="intensity-title">Session load</div> <!-- Small session load title. -->
+                <div class="intensity-label" id="sessionLoadLabel">—</div> <!-- JavaScript inserts session load category. -->
+              </div> <!-- Ends left side of session load meter. -->
+              <div class="intensity-value" id="sessionLoadValue">—</div> <!-- JavaScript inserts session load percentage. -->
+            </div> <!-- Ends session load top row. -->
+            <div class="intensity-track"> <!-- Session load meter track. -->
+              <div class="intensity-fill" id="sessionLoadFill"></div> <!-- JavaScript sets session load meter fill width. -->
+            </div> <!-- Ends session load meter track. -->
+            <p class="intensity-text" id="sessionLoadText">—</p> <!-- JavaScript inserts session load explanation. -->
+          </div> <!-- Ends total session load meter card. -->
+        </div> <!-- Ends two-meter intensity/load row. -->
+
         <div class="coach"> <!-- Coaching explanation panel. -->
           <div> <!-- Left coaching column. -->
             <h3>What this plan is saying</h3> <!-- Coaching explanation heading. -->
@@ -659,25 +768,25 @@
     const levels = { /* Defines training-status presets. */
       beginner: { /* Beginner/deconditioned preset. */
         name: 'Beginner / deconditioned', /* User-facing preset name. */
-        desc: 'Z2/Z3 first, with tiny Z4 touches if recoverable.', /* Preset explanation. */
+        desc: 'Build consistency: Z2/Z3 first, tiny Z4 if recoverable.', /* Preset explanation. */
         hardPct: 0.16, hardMin: 2, hardMax: 12, z5Share: 0.02, z3Pct: 0.28, z1Pct: 0.16, /* Beginner dose parameters: Z2/Z3 dominant with small Z4 exposure. */
         gateMin: 1.5, gateStrong: 4, loadMin: 30, loadMax: 120, hardCeiling: 0.36, z5Ceiling: 0.05 /* Beginner plan-fit thresholds. */
       }, /* Ends beginner preset. */
       intermediate: { /* Intermediate preset. */
         name: 'Intermediate', /* User-facing preset name. */
-        desc: 'Most recreational athletes underdose real Z4 work.', /* Preset explanation. */
+        desc: 'Consistent training; ready for repeatable Z3/Z4 work.', /* Preset explanation. */
         hardPct: 0.28, hardMin: 7, hardMax: 30, z5Share: 0.16, z3Pct: 0.18, z1Pct: 0.12, /* Intermediate dose parameters. */
         gateMin: 5, gateStrong: 9, loadMin: 75, loadMax: 240, hardCeiling: 0.42, z5Ceiling: 0.10 /* Intermediate plan-fit thresholds. */
       }, /* Ends intermediate preset. */
       trained: { /* Trained/advanced preset. */
         name: 'Trained / advanced', /* User-facing preset name. */
-        desc: 'Enough base to tolerate meaningful Z4/Z5 volume.', /* Preset explanation. */
+        desc: 'Structured training with repeatable Z4/Z5 tolerance.', /* Preset explanation. */
         hardPct: 0.30, hardMin: 10, hardMax: 45, z5Share: 0.22, z3Pct: 0.16, z1Pct: 0.10, /* Trained dose parameters. */
         gateMin: 7, gateStrong: 12, loadMin: 150, loadMax: 420, hardCeiling: 0.45, z5Ceiling: 0.14 /* Trained plan-fit thresholds. */
       }, /* Ends trained preset. */
       elite: { /* Elite preset. */
         name: 'Elite', /* User-facing preset name. */
-        desc: 'High volume still needs hard work, but most time is support volume.', /* Preset explanation. */
+        desc: 'High volume, structured intensity, planned recovery.', /* Preset explanation. */
         hardPct: 0.24, hardMin: 12, hardMax: 70, z5Share: 0.28, z3Pct: 0.10, z1Pct: 0.08, /* Elite dose parameters. */
         gateMin: 10, gateStrong: 18, loadMin: 300, loadMax: 700, hardCeiling: 0.42, z5Ceiling: 0.18 /* Elite plan-fit thresholds. */
       } /* Ends elite preset. */
@@ -687,26 +796,26 @@
       balanced: { /* Balanced focus profile. */
         name: 'All 3 balanced', /* User-facing focus name. */
         desc: 'Build MITO, CARDIAC, and VO2 together.', /* Focus explanation. */
-        hardMult: 1.00, z3Mult: 1.00, z5Shift: 0.00, /* Balanced multipliers do not shift the base plan. */
+        hardMult: 1.00, hardMaxMult: 1.00, z3Mult: 1.00, z5Shift: 0.00, /* Balanced multipliers do not shift the base plan. */
         z2Floor: 0.18, z3Floor: 0.10, hardFloor: 0.12 /* Maintenance floors for balanced mode. */
       }, /* Ends balanced focus. */
       mito: { /* MITO focus profile. */
         name: 'MITO focus', /* User-facing focus name. */
         desc: 'More Z2/Z3, but hard work stays at maintenance.', /* Focus explanation. */
-        hardMult: 0.72, z3Mult: 1.15, z5Shift: -0.04, /* Reduces hard share while increasing Z3 support. */
-        z2Floor: 0.42, z3Floor: 0.12, hardFloor: 0.08 /* Keeps hard work alive while emphasizing Z2. */
+        hardMult: 0.55, hardMaxMult: 0.75, z3Mult: 1.30, z5Shift: -0.06, /* Strongly reduces hard share while increasing Z2/Z3 base work. */
+        z2Floor: 0.50, z3Floor: 0.15, hardFloor: 0.06 /* Keeps hard work alive while emphasizing base work. */
       }, /* Ends MITO focus. */
       cardiac: { /* CARDIAC focus profile. */
         name: 'CARDIAC focus', /* User-facing focus name. */
         desc: 'More Z3/Z4 for stroke-volume stimulus.', /* Focus explanation. */
-        hardMult: 1.10, z3Mult: 1.35, z5Shift: -0.05, /* Increases Z3/Z4 emphasis and slightly reduces Z5 share. */
-        z2Floor: 0.18, z3Floor: 0.18, hardFloor: 0.14 /* Maintains MITO and VO2 while emphasizing cardiac work. */
+        hardMult: 1.25, hardMaxMult: 1.25, z3Mult: 1.45, z5Shift: -0.04, /* Increases Z3/Z4 emphasis while keeping Z5 controlled. */
+        z2Floor: 0.18, z3Floor: 0.20, hardFloor: 0.16 /* Maintains MITO and VO2 while emphasizing cardiac work. */
       }, /* Ends CARDIAC focus. */
       vo2: { /* VO2max focus profile. */
         name: 'VO2max focus', /* User-facing focus name. */
         desc: 'More Z4/Z5, while base stays alive.', /* Focus explanation. */
-        hardMult: 1.35, z3Mult: 0.85, z5Shift: 0.08, /* Increases hard share and Z5 fraction. */
-        z2Floor: 0.16, z3Floor: 0.08, hardFloor: 0.18 /* Keeps MITO/CARDIAC maintenance while emphasizing VO2. */
+        hardMult: 1.55, hardMaxMult: 1.45, z3Mult: 0.75, z5Shift: 0.12, /* Increases hard share and Z5 fraction for VO2 focus. */
+        z2Floor: 0.16, z3Floor: 0.08, hardFloor: 0.20 /* Keeps MITO/CARDIAC maintenance while emphasizing VO2. */
       } /* Ends VO2 focus. */
     }; /* Ends focus profile object. */
 
@@ -763,7 +872,7 @@
       const baseHardPct = l.hardPct + shortFactor * 0.14 - longFactor * 0.12; /* Adjusts hard-work share by session length. */
       const dynamicHardPct = baseHardPct * f.hardMult; /* Applies the focus-specific hard-work multiplier. */
       const hardFloor = Math.max(l.hardMin, workTotal * f.hardFloor); /* Creates a minimum Z4/Z5 maintenance floor. */
-      const hardWeekly = clamp(workTotal * dynamicHardPct, hardFloor, l.hardMax); /* Calculates weekly Z4/Z5 work with min/max limits. */
+      const hardWeekly = clamp(workTotal * dynamicHardPct, hardFloor, l.hardMax * (f.hardMaxMult || 1)); /* Calculates weekly Z4/Z5 work with focus-sensitive min/max limits. */
       const z5MinShare = currentLevel === 'beginner' ? 0 : 0.04; /* Beginners do not need mandatory Z5. */
       const z5MaxShare = currentLevel === 'beginner' ? 0.06 : 0.34; /* Caps beginner Z5 to tiny exposure only. */
       const dynamicZ5Share = clamp(l.z5Share + f.z5Shift + shortFactor * 0.04 - longFactor * 0.05, z5MinShare, z5MaxShare); /* Calculates how much hard work becomes Z5. */
@@ -822,17 +931,17 @@
 
     function getStimulusDisplay(system, weeklyScore, weeklyWork, level, focusKey, sessions) { /* Converts raw engine scores into user-friendly symbols. */
       const maintenanceDose = { /* Defines practical weekly maintenance targets by system and level. */
-        beginner:     { mito: 35,  cardiac: 12,  vo2: 6  }, /* Beginner weekly maintenance targets. */
-        intermediate: { mito: 90,  cardiac: 34,  vo2: 22 }, /* Intermediate weekly maintenance targets. */
-        trained:      { mito: 160, cardiac: 60,  vo2: 35 }, /* Trained weekly maintenance targets. */
-        elite:        { mito: 275, cardiac: 100, vo2: 55 }  /* Elite weekly maintenance targets. */
+        beginner:     { mito: 35,  cardiac: 14,  vo2: 8  }, /* Beginner weekly maintenance targets. */
+        intermediate: { mito: 90,  cardiac: 50,  vo2: 28 }, /* Intermediate weekly maintenance targets. */
+        trained:      { mito: 160, cardiac: 85,  vo2: 48 }, /* Trained weekly maintenance targets. */
+        elite:        { mito: 275, cardiac: 135, vo2: 75 }  /* Elite weekly maintenance targets. */
       }; /* Ends weekly maintenance target object. */
 
       const focusMult = { /* Defines how much each focus raises the target for its primary system. */
-        balanced: { mito: 1.35, cardiac: 1.25, vo2: 1.20 }, /* Balanced asks all systems to be productive, not necessarily maximal. */
-        mito:     { mito: 1.65, cardiac: 0.85, vo2: 0.80 }, /* MITO focus raises base target and lowers maintenance-only systems. */
-        cardiac:  { mito: 0.90, cardiac: 1.55, vo2: 0.90 }, /* CARDIAC focus raises cardiac target. */
-        vo2:      { mito: 0.85, cardiac: 0.95, vo2: 1.65 }  /* VO2 focus raises VO2 target. */
+        balanced: { mito: 1.00, cardiac: 1.00, vo2: 1.00 }, /* Balanced asks all systems to reach productive range. */
+        mito:     { mito: 1.25, cardiac: 0.75, vo2: 0.55 }, /* MITO focus raises base target and keeps non-target systems at maintenance. */
+        cardiac:  { mito: 0.80, cardiac: 1.25, vo2: 0.75 }, /* CARDIAC focus raises cardiac target. */
+        vo2:      { mito: 0.75, cardiac: 0.80, vo2: 1.25 }  /* VO2 focus raises VO2 target. */
       }; /* Ends focus multiplier object. */
 
       const scoreCaps = { mito: 80, cardiac: 75, vo2: 65 }; /* Canonical per-session score caps. */
@@ -853,10 +962,12 @@
         }
       }; /* Ends copy object. */
 
+      const focusTarget = { mito: 'mito', cardiac: 'cardiac', vo2: 'vo2' }[focusKey]; /* Maps each focus to its primary system. */
+      const isTargetSystem = focusKey === 'balanced' ? false : system === focusTarget; /* Checks whether this card is the selected focus target. */
       if (ratio < 0.55) return { symbol: '−', className: 'under', label: 'Underdosed', text: copy[system].under }; /* Red minus means not enough. */
       if (ratio < 0.90) return { symbol: '+', className: 'maintain', label: 'Maintenance', text: copy[system].maintain }; /* Grey plus means maintenance only. */
-      if (ratio < 2.00) return { symbol: '++', className: 'productive', label: 'Productive', text: copy[system].productive }; /* Two pluses means productive. */
-      return { symbol: '+++', className: 'strong', label: 'Strong', text: copy[system].strong }; /* Three pluses is reserved for clearly emphasized stimulus. */
+      if (isTargetSystem && ratio >= 1.25) return { symbol: '+++', className: 'strong', label: 'Strong', text: copy[system].strong }; /* Three pluses appears only for the selected focus target. */
+      return { symbol: '++', className: 'productive', label: 'Productive', text: copy[system].productive }; /* Two pluses means productive stimulus. */
     } /* Ends getStimulusDisplay function. */
 
     function renderStimulus(system, display) { /* Renders a symbolic stimulus card. */
@@ -865,6 +976,38 @@
       big.className = `big stimulus ${display.className}`; /* Applies color-coded status class. */
       document.getElementById(`${system}Sub`).textContent = `${display.label} · ${display.text}`; /* Inserts human-readable interpretation. */
     } /* Ends renderStimulus function. */
+
+    function getIntensityDisplay(session, duration) { /* Converts zone distribution into a per-minute intensity-density meter. */
+      const intensityPct = duration > 0 ? clamp(((session.z2 * 0.10) + (session.z3 * 0.45) + (session.z4 * 0.80) + (session.z5 * 1.00)) / duration * 100, 0, 100) : 0; /* Calculates practical per-minute session intensity using zone-weighted recovery cost. */
+      if (intensityPct < 22) return { pct: intensityPct, label: 'Easy / base-heavy', text: 'Mostly lower-intensity support work per minute. Weekly load is handled by Plan Fit.' }; /* Low intensity explanation. */
+      if (intensityPct < 35) return { pct: intensityPct, label: 'Moderate', text: 'Moderate per-minute density. Enough harder work to create stimulus while preserving support volume.' }; /* Moderate intensity explanation. */
+      if (intensityPct < 50) return { pct: intensityPct, label: 'High', text: 'High per-minute density. Strong stimulus, but recovery and repeatability matter.' }; /* High intensity explanation. */
+      if (intensityPct < 68) return { pct: intensityPct, label: 'Very high', text: 'Very intensity-dense per minute. Useful for focus blocks, but match it to recovery capacity.' }; /* Very high intensity explanation. */
+      return { pct: intensityPct, label: 'Extreme', text: 'Extremely intensity-dense per minute. This should be rare or reserved for highly prepared users.' }; /* Extreme intensity explanation. */
+    } /* Ends getIntensityDisplay function. */
+
+    function getSessionLoadDisplay(session) { /* Converts zone distribution into a total session-load meter. */
+      const weightedLoad = (session.z2 * 0.10) + (session.z3 * 0.45) + (session.z4 * 0.80) + (session.z5 * 1.00); /* Calculates total weighted session stress. */
+      const loadPct = clamp((weightedLoad / 45) * 100, 0, 100); /* Normalizes session load against a 45-minute reference session. */
+      if (loadPct < 25) return { pct: loadPct, label: 'Light', text: 'Low total stress for one session. Usually easy to recover from.' }; /* Light session-load explanation. */
+      if (loadPct < 45) return { pct: loadPct, label: 'Moderate', text: 'Moderate total session stress. Repeatable for most users at the right level.' }; /* Moderate session-load explanation. */
+      if (loadPct < 65) return { pct: loadPct, label: 'High', text: 'High total session stress. Recovery and weekly spacing start to matter.' }; /* High session-load explanation. */
+      if (loadPct < 85) return { pct: loadPct, label: 'Very high', text: 'Very high session stress. Best used when recovery is strong and planned.' }; /* Very high session-load explanation. */
+      return { pct: loadPct, label: 'Extreme', text: 'Extreme session stress. This should be rare or reserved for highly prepared users.' }; /* Extreme session-load explanation. */
+    } /* Ends getSessionLoadDisplay function. */
+
+    function renderIntensityMeter(session, duration) { /* Renders both per-minute intensity and total session-load meters. */
+      const display = getIntensityDisplay(session, duration); /* Gets per-minute intensity category and percentage. */
+      const load = getSessionLoadDisplay(session); /* Gets total session-load category and percentage. */
+      document.getElementById('intensityLabel').textContent = display.label; /* Updates per-minute intensity category. */
+      document.getElementById('intensityValue').textContent = `${Math.round(display.pct)}%`; /* Updates per-minute intensity percentage. */
+      document.getElementById('intensityFill').style.width = `${display.pct}%`; /* Updates per-minute meter fill width. */
+      document.getElementById('intensityText').textContent = display.text; /* Updates per-minute intensity explanation. */
+      document.getElementById('sessionLoadLabel').textContent = load.label; /* Updates session-load category. */
+      document.getElementById('sessionLoadValue').textContent = `${Math.round(load.pct)}%`; /* Updates session-load percentage. */
+      document.getElementById('sessionLoadFill').style.width = `${load.pct}%`; /* Updates session-load meter fill width. */
+      document.getElementById('sessionLoadText').textContent = load.text; /* Updates session-load explanation. */
+    } /* Ends renderIntensityMeter function. */
 
     function assessPlanFit(duration, sessions, level, plan, hardSession, hardWeekly, hardPct) { /* Evaluates whether the plan fits the selected level and focus. */
       const weeklyWork = duration * sessions; /* Calculates total productive weekly work. */
@@ -961,6 +1104,7 @@
       renderStimulus('mito', getStimulusDisplay('mito', wScore.mito, duration * sessions, currentLevel, currentFocus, sessions)); /* Renders MITO as a user-friendly symbol. */
       renderStimulus('cardiac', getStimulusDisplay('cardiac', wScore.cardiac, duration * sessions, currentLevel, currentFocus, sessions)); /* Renders CARDIAC as a user-friendly symbol. */
       renderStimulus('vo2', getStimulusDisplay('vo2', wScore.vo2, duration * sessions, currentLevel, currentFocus, sessions)); /* Renders VO2 as a user-friendly symbol. */
+      renderIntensityMeter(plan.session, duration); /* Renders the intensity-density meter below the system cards. */
       const badge = document.getElementById('gateBadge'); /* Gets gate badge element. */
       const title = document.getElementById('gateTitle'); /* Gets gate title element. */
       const text = document.getElementById('gateText'); /* Gets gate text element. */
@@ -986,8 +1130,8 @@
     } /* Ends update function. */
 
     function renderStack(session, duration) { /* Renders the horizontal colored zone bar. */
-      document.getElementById('zoneStack').innerHTML = zones.map(z => { /* Converts each zone into a bar segment. */
-        const minutes = session[z.key]; /* Gets per-session minutes for this zone. */
+      document.getElementById('zoneStack').innerHTML = zones.filter(z => z.key !== 'z1').map(z => { /* Converts productive zones only into bar segments. Z1 is overhead, not work. */
+        const minutes = session[z.key]; /* Gets per-session minutes for this productive zone. */
         const pct = minutes / duration * 100; /* Calculates this zone's percentage of productive work time. */
         return `<div class="seg ${z.key}" style="width:${pct}%" title="${z.label}: ${fmtTime(minutes, z.key)}">${pct >= 8 ? z.short : ''}</div>`; /* Returns segment HTML with label if wide enough. */
       }).join(''); /* Inserts all segments into the bar. */
