@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>GYM_PIGS</title>  <style>
+  <title>GYM_PIGS</title>
+
+  <style>
     :root {
       --bg0: #071116;
       --bg1: #0d1b22;
@@ -315,7 +318,10 @@
       h1 { font-size: 36px; }
       .zone-title { font-size: 40px; }
     }
-  </style></head><body>
+  </style>
+</head>
+
+<body>
   <main class="app">
     <section class="top">
       <div class="panel hero">
@@ -349,49 +355,52 @@
           <div class="zone-copy" id="zoneCopy">Productive growth dose.</div>
         </div>
       </div>
-    </section><section class="cards">
-  <div class="card controls-wide">
-    <div class="section-title"><div><div class="label">Sets per session</div><div class="hint">More sets increase dose, but later sets can become waste.</div></div><div class="value" id="setsValue">5</div></div>
-    <input id="setsSlider" type="range" min="1" max="8" step="1" value="5" />
-    <div class="limits"><span>1</span><span>8</span></div>
-  </div>
+    </section>
 
-  <div class="card controls-wide">
-    <div class="section-title"><div><div class="label">Reps per set</div><div class="hint">1–15 only. Higher reps do not automatically score better.</div></div><div class="value" id="repsValue">5</div></div>
-    <input id="repsSlider" type="range" min="1" max="15" step="1" value="5" />
-    <div class="limits"><span>1</span><span>15</span></div>
-  </div>
+    <section class="cards">
+      <div class="card controls-wide">
+        <div class="section-title"><div><div class="label">Sets per session</div><div class="hint">More sets increase dose, but later sets can become waste.</div></div><div class="value" id="setsValue">5</div></div>
+        <input id="setsSlider" type="range" min="1" max="8" step="1" value="5" />
+        <div class="limits"><span>1</span><span>8</span></div>
+      </div>
 
-  <div class="card controls-wide">
-    <div class="section-title"><div><div class="label">Rest between sessions</div><div class="hint">How long the muscle rests before being trained again.</div></div><div class="value" id="frequencyValue">48h</div></div>
-    <input id="frequencySlider" type="range" min="0" max="3" step="1" value="1" />
-    <div class="limits"><span>24h</span><span>96h</span></div>
-    <div class="hint" id="frequencyApprox">Approx. 3.5 sessions/week</div>
-  </div>
+      <div class="card controls-wide">
+        <div class="section-title"><div><div class="label">Reps per set</div><div class="hint">1–15 only. Higher reps do not automatically score better.</div></div><div class="value" id="repsValue">5</div></div>
+        <input id="repsSlider" type="range" min="1" max="15" step="1" value="5" />
+        <div class="limits"><span>1</span><span>15</span></div>
+      </div>
 
-  <div class="card controls-wide">
-    <div class="section-title"><div><div class="label">Effort / RIR</div><div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div></div><div class="value" id="effortValue">2 RIR</div></div>
-    <input id="effortSlider" type="range" min="0" max="6" step="1" value="3" />
-    <div class="effort-grid" id="effortGrid"></div>
-  </div>
+      <div class="card controls-wide">
+        <div class="section-title"><div><div class="label">Rest between sessions</div><div class="hint">How long the muscle rests before being trained again.</div></div><div class="value" id="frequencyValue">48h</div></div>
+        <input id="frequencySlider" type="range" min="0" max="3" step="1" value="1" />
+        <div class="limits"><span>24h</span><span>96h</span></div>
+        <div class="hint" id="frequencyApprox">Approx. 3.5 sessions/week</div>
+      </div>
 
-  <div class="card result-wide">
-    <div class="summary-grid">
-      <div class="mini"><div class="mini-title">Session quality</div><div class="mini-value" id="qualityLabel">High</div><div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div><div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div></div>
-      <div class="mini"><div class="mini-title">Recovery cost</div><div class="mini-value" id="recoveryLabel">Moderate</div><div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div><div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div></div>
-      <div class="mini"><div class="mini-title">Tension reps</div><div class="mini-value" id="tensionLabel">Load-qualified</div><div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div></div>
-      <div class="mini"><div class="mini-title">Dose character</div><div class="mini-value" id="doseLabel">Productive</div><div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div></div>
-    </div>
-  </div>
+      <div class="card controls-wide">
+        <div class="section-title"><div><div class="label">Effort / RIR</div><div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div></div><div class="value" id="effortValue">2 RIR</div></div>
+        <input id="effortSlider" type="range" min="0" max="6" step="1" value="3" />
+        <div class="effort-grid" id="effortGrid"></div>
+      </div>
 
-  <div class="warning tone-wasteful result-wide" id="junkWarning"><strong>Junk-volume warning</strong>Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.</div>
-  <div class="warning tone-risk result-wide" id="failureWarning"><strong>Failure warning</strong>Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.</div>
-  <div class="card result-wide explain"><p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p></div>
-</section>
+      <div class="card result-wide">
+        <div class="summary-grid">
+          <div class="mini"><div class="mini-title">Session quality</div><div class="mini-value" id="qualityLabel">High</div><div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div><div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div></div>
+          <div class="mini"><div class="mini-title">Recovery cost</div><div class="mini-value" id="recoveryLabel">Moderate</div><div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div><div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div></div>
+          <div class="mini"><div class="mini-title">Tension reps</div><div class="mini-value" id="tensionLabel">Load-qualified</div><div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div></div>
+          <div class="mini"><div class="mini-title">Dose character</div><div class="mini-value" id="doseLabel">Productive</div><div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div></div>
+        </div>
+      </div>
 
-<div class="footer-note">GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.</div>
+      <div class="warning tone-wasteful result-wide" id="junkWarning"><strong>Junk-volume warning</strong>Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.</div>
+      <div class="warning tone-risk result-wide" id="failureWarning"><strong>Failure warning</strong>Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.</div>
+      <div class="card result-wide explain"><p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p></div>
+    </section>
 
-  </main>  <script>
+    <div class="footer-note">GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.</div>
+  </main>
+
+  <script>
     (() => {
       const MAX_SETS = 8;
       const ATROPHY_LOSS_PER_DAY_AFTER_48H = 0.32;
@@ -476,6 +485,4 @@
       function classifyZone(model) {
         const recoveryCost = recoveryCostScore(model);
         const usefulWeeklySets = model.validRows.length * state.frequency;
-        const moderateRecoveryCost = recoveryCost < 25;
-        const highRecoveryPressure = state.frequency >= 5 && recoveryCost >= 25;
-        const extremeF
+        co
