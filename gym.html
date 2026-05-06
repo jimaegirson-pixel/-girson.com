@@ -9,14 +9,10 @@
     :root {
       --bg0: #071116;
       --bg1: #0d1b22;
-      --card: rgba(17, 34, 42, 0.94);
-      --card2: rgba(23, 48, 58, 0.94);
       --text: #f4ead2;
       --muted: #aeb9b4;
       --line: rgba(185, 151, 91, 0.58);
-      --gold: #d6a84f;
       --gold2: #f0d28a;
-      --ice: #7dd3fc;
       --green: #48c774;
       --lime: #a3e635;
       --yellow: #eab308;
@@ -26,13 +22,8 @@
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.34);
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
 
     body {
       margin: 0;
@@ -47,14 +38,8 @@
         linear-gradient(180deg, var(--bg1), var(--bg0));
     }
 
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
 
     .app {
       width: min(100%, 480px);
@@ -63,12 +48,9 @@
       padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom));
     }
 
-    .top {
-      margin-bottom: 12px;
-    }
+    .top { margin-bottom: 12px; }
 
-    .panel,
-    .card {
+    .panel, .card {
       position: relative;
       overflow: hidden;
       border: 1px solid var(--line);
@@ -77,8 +59,7 @@
       box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.08);
     }
 
-    .panel::before,
-    .card::before {
+    .panel::before, .card::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -88,15 +69,8 @@
         radial-gradient(circle at top right, rgba(125, 211, 252, 0.10), transparent 35%);
     }
 
-    .panel > *,
-    .card > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero {
-      padding: 14px;
-    }
+    .panel > *, .card > * { position: relative; z-index: 1; }
+    .hero { padding: 14px; }
 
     .brand {
       display: flex;
@@ -139,9 +113,7 @@
       font-weight: 900;
     }
 
-    .reset:active {
-      transform: scale(0.98);
-    }
+    .reset:active { transform: scale(0.98); }
 
     h1 {
       margin: 0;
@@ -202,14 +174,8 @@
       line-height: 1.38;
     }
 
-    .cards {
-      display: grid;
-      gap: 12px;
-    }
-
-    .card {
-      padding: 15px;
-    }
+    .cards { display: grid; gap: 12px; }
+    .card { padding: 15px; }
 
     .section-title {
       display: flex;
@@ -219,18 +185,8 @@
       margin-bottom: 12px;
     }
 
-    .label {
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: -0.01em;
-    }
-
-    .hint {
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
+    .label { font-size: 15px; font-weight: 900; letter-spacing: -0.01em; }
+    .hint { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.35; }
 
     .value {
       min-width: 60px;
@@ -305,26 +261,9 @@
       padding: 13px;
     }
 
-    .mini-title {
-      color: var(--gold2);
-      font-size: 12px;
-      font-weight: 900;
-      margin-bottom: 8px;
-    }
-
-    .mini-value {
-      font-size: 20px;
-      line-height: 1.05;
-      letter-spacing: -0.035em;
-      font-weight: 950;
-    }
-
-    .mini-copy {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
+    .mini-title { color: var(--gold2); font-size: 12px; font-weight: 900; margin-bottom: 8px; }
+    .mini-value { font-size: 20px; line-height: 1.05; letter-spacing: -0.035em; font-weight: 950; }
+    .mini-copy { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.35; }
 
     .bar-shell {
       width: 100%;
@@ -335,12 +274,7 @@
       margin-top: 10px;
     }
 
-    .bar-fill {
-      height: 100%;
-      width: 40%;
-      border-radius: 999px;
-      transition: width 160ms ease, background 160ms ease;
-    }
+    .bar-fill { height: 100%; width: 40%; border-radius: 999px; transition: width 160ms ease, background 160ms ease; }
 
     .warning {
       display: none;
@@ -352,61 +286,16 @@
       font-weight: 750;
     }
 
-    .warning strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
+    .warning strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .explain { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .footer-note { padding: 8px 4px 0; color: rgba(244, 234, 210, 0.48); font-size: 11px; line-height: 1.45; text-align: center; }
 
-    .explain {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .footer-note {
-      padding: 8px 4px 0;
-      color: rgba(244, 234, 210, 0.48);
-      font-size: 11px;
-      line-height: 1.45;
-      text-align: center;
-    }
-
-    .tone-undertraining {
-      background: rgba(234, 179, 8, 0.18);
-      border-color: rgba(234,179,8,0.65);
-      color: #fde68a;
-    }
-
-    .tone-maintaining {
-      background: rgba(56, 189, 248, 0.18);
-      border-color: rgba(56,189,248,0.65);
-      color: #bae6fd;
-    }
-
-    .tone-gaining {
-      background: rgba(72, 199, 116, 0.18);
-      border-color: rgba(72,199,116,0.65);
-      color: #bbf7d0;
-    }
-
-    .tone-gainmaxxing {
-      background: rgba(163, 230, 53, 0.22);
-      border-color: rgba(163,230,53,0.7);
-      color: #ecfccb;
-    }
-
-    .tone-wasteful {
-      background: rgba(249, 115, 22, 0.20);
-      border-color: rgba(249,115,22,0.7);
-      color: #fed7aa;
-    }
-
-    .tone-risk {
-      background: rgba(239, 68, 68, 0.20);
-      border-color: rgba(239,68,68,0.7);
-      color: #fecaca;
-    }
+    .tone-undertraining { background: rgba(234, 179, 8, 0.18); border-color: rgba(234,179,8,0.65); color: #fde68a; }
+    .tone-maintaining { background: rgba(56, 189, 248, 0.18); border-color: rgba(56,189,248,0.65); color: #bae6fd; }
+    .tone-gaining { background: rgba(72, 199, 116, 0.18); border-color: rgba(72,199,116,0.65); color: #bbf7d0; }
+    .tone-gainmaxxing { background: rgba(163, 230, 53, 0.22); border-color: rgba(163,230,53,0.7); color: #ecfccb; }
+    .tone-wasteful { background: rgba(249, 115, 22, 0.20); border-color: rgba(249,115,22,0.7); color: #fed7aa; }
+    .tone-risk { background: rgba(239, 68, 68, 0.20); border-color: rgba(239,68,68,0.7); color: #fecaca; }
 
     .fill-undertraining { background: var(--yellow); }
     .fill-maintaining { background: var(--blue); }
@@ -423,26 +312,11 @@
     .bg-slate { background: #64748b !important; color: #fff !important; }
 
     @media (min-width: 700px) {
-      .app {
-        width: min(100% - 32px, 760px);
-      }
-
-      .cards {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .result-wide,
-      .controls-wide {
-        grid-column: 1 / -1;
-      }
-
-      h1 {
-        font-size: 36px;
-      }
-
-      .zone-title {
-        font-size: 40px;
-      }
+      .app { width: min(100% - 32px, 760px); }
+      .cards { grid-template-columns: 1fr 1fr; }
+      .result-wide, .controls-wide { grid-column: 1 / -1; }
+      h1 { font-size: 36px; }
+      .zone-title { font-size: 40px; }
     }
   </style>
 </head>
@@ -469,13 +343,10 @@
             </svg>
             <span>GYM_PIGS</span>
           </div>
-
           <button class="reset" id="resetBtn" type="button">Reset</button>
         </div>
-
         <h1>GYM_PIGS</h1>
         <p class="subtitle">Viking 3000 dose oracle. Numbers stay internal; output is shown as training zones.</p>
-
         <div class="zone-card tone-gaining" id="zoneCard">
           <div class="zone-label">
             <div class="zone-title" id="zoneTitle">Gaining</div>
@@ -488,125 +359,52 @@
 
     <section class="cards">
       <div class="card controls-wide">
-        <div class="section-title">
-          <div>
-            <div class="label">Sets per session</div>
-            <div class="hint">More sets increase dose, but later sets can become waste.</div>
-          </div>
-          <div class="value" id="setsValue">5</div>
-        </div>
+        <div class="section-title"><div><div class="label">Sets per session</div><div class="hint">More sets increase dose, but later sets can become waste.</div></div><div class="value" id="setsValue">5</div></div>
         <input id="setsSlider" type="range" min="1" max="8" step="1" value="5" />
         <div class="limits"><span>1</span><span>8</span></div>
       </div>
 
       <div class="card controls-wide">
-        <div class="section-title">
-          <div>
-            <div class="label">Reps per set</div>
-            <div class="hint">1–15 only. Higher reps do not automatically score better.</div>
-          </div>
-          <div class="value" id="repsValue">5</div>
-        </div>
+        <div class="section-title"><div><div class="label">Reps per set</div><div class="hint">1–15 only. Higher reps do not automatically score better.</div></div><div class="value" id="repsValue">5</div></div>
         <input id="repsSlider" type="range" min="1" max="15" step="1" value="5" />
         <div class="limits"><span>1</span><span>15</span></div>
       </div>
 
       <div class="card controls-wide">
-        <div class="section-title">
-          <div>
-            <div class="label">Sessions per muscle / week</div>
-            <div class="hint">Frequency distributes dose and reduces time without stimulus.</div>
-          </div>
-          <div class="value" id="frequencyValue">3×</div>
-        </div>
+        <div class="section-title"><div><div class="label">Sessions per muscle / week</div><div class="hint">Frequency distributes dose and reduces time without stimulus.</div></div><div class="value" id="frequencyValue">3×</div></div>
         <input id="frequencySlider" type="range" min="1" max="8" step="1" value="3" />
         <div class="limits"><span>1×</span><span>8×</span></div>
       </div>
 
       <div class="card controls-wide">
-        <div class="section-title">
-          <div>
-            <div class="label">Effort / RIR</div>
-            <div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div>
-          </div>
-          <div class="value" id="effortValue">2 RIR</div>
-        </div>
+        <div class="section-title"><div><div class="label">Effort / RIR</div><div class="hint">Failure is modeled, but lower SFR than 2 RIR.</div></div><div class="value" id="effortValue">2 RIR</div></div>
         <input id="effortSlider" type="range" min="0" max="6" step="1" value="3" />
         <div class="effort-grid" id="effortGrid"></div>
       </div>
 
       <div class="card result-wide">
         <div class="summary-grid">
-          <div class="mini">
-            <div class="mini-title">Session quality</div>
-            <div class="mini-value" id="qualityLabel">High</div>
-            <div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div>
-            <div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div>
-          </div>
-
-          <div class="mini">
-            <div class="mini-title">Recovery cost</div>
-            <div class="mini-value" id="recoveryLabel">Moderate</div>
-            <div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div>
-            <div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div>
-          </div>
-
-          <div class="mini">
-            <div class="mini-title">Tension reps</div>
-            <div class="mini-value" id="tensionLabel">Load-qualified</div>
-            <div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div>
-          </div>
-
-          <div class="mini">
-            <div class="mini-title">Dose character</div>
-            <div class="mini-value" id="doseLabel">Productive</div>
-            <div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div>
-          </div>
+          <div class="mini"><div class="mini-title">Session quality</div><div class="mini-value" id="qualityLabel">High</div><div class="bar-shell"><div class="bar-fill fill-gaining" id="qualityBar"></div></div><div class="mini-copy" id="qualityCopy">Most selected sets stay useful.</div></div>
+          <div class="mini"><div class="mini-title">Recovery cost</div><div class="mini-value" id="recoveryLabel">Moderate</div><div class="bar-shell"><div class="bar-fill fill-maintaining" id="recoveryBar"></div></div><div class="mini-copy" id="recoveryCopy">Recovery cost is controlled.</div></div>
+          <div class="mini"><div class="mini-title">Tension reps</div><div class="mini-value" id="tensionLabel">Load-qualified</div><div class="mini-copy" id="tensionCopy">All reps are counted as high-tension.</div></div>
+          <div class="mini"><div class="mini-title">Dose character</div><div class="mini-value" id="doseLabel">Productive</div><div class="mini-copy" id="doseCopy">Good weekly exposure without relying on junk volume.</div></div>
         </div>
       </div>
 
-      <div class="warning tone-wasteful result-wide" id="junkWarning">
-        <strong>Junk-volume warning</strong>
-        Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.
-      </div>
-
-      <div class="warning tone-risk result-wide" id="failureWarning">
-        <strong>Failure warning</strong>
-        Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.
-      </div>
-
-      <div class="card result-wide explain">
-        <p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p>
-      </div>
+      <div class="warning tone-wasteful result-wide" id="junkWarning"><strong>Junk-volume warning</strong>Some selected sets fall below the quality floor. Reduce sets or use lower-fatigue effort.</div>
+      <div class="warning tone-risk result-wide" id="failureWarning"><strong>Failure warning</strong>Failure can be used as a planned low-frequency tactic, but it is not the model-optimal way to maximize net stimulus.</div>
+      <div class="card result-wide explain"><p id="modelExplanation">Useful work is judged by set quality, effort cost, frequency, and recovery pressure.</p></div>
     </section>
 
-    <div class="footer-note">
-      GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.
-    </div>
+    <div class="footer-note">GYM_PIGS v1. 1–15 reps only. Failure is modeled for comparison; 2 RIR remains the default target.</div>
   </main>
 
   <script>
     (() => {
       const MAX_SETS = 8;
       const ATROPHY_LOSS_PER_DAY_AFTER_48H = 0.32;
-
-      const BASE_STIM_BY_EFFECTIVE_REPS = {
-        0: 0,
-        1: 2.00,
-        2: 3.95,
-        3: 5.80,
-        4: 7.50,
-        5: 9.00
-      };
-
-      const BASE_DC_BY_ACTUAL_REPS = {
-        1: 0.003,
-        2: 0.006,
-        3: 0.010,
-        4: 0.016,
-        5: 0.024
-      };
-
+      const BASE_STIM_BY_EFFECTIVE_REPS = { 0: 0, 1: 2.00, 2: 3.95, 3: 5.80, 4: 7.50, 5: 9.00 };
+      const BASE_DC_BY_ACTUAL_REPS = { 1: 0.003, 2: 0.006, 3: 0.010, 4: 0.016, 5: 0.024 };
       const EFFORT_OPTIONS = [
         { key: "failure", label: "Failure", short: "FAIL", dcMultiplier: 3.5, tone: "red" },
         { key: "0", label: "0 RIR", short: "0", dcMultiplier: 3.5, tone: "red" },
@@ -617,13 +415,7 @@
         { key: "5", label: "5 RIR", short: "5", dcMultiplier: 0.3, tone: "slate" }
       ];
 
-      const state = {
-        sets: 5,
-        reps: 5,
-        frequency: 3,
-        effortIndex: 3
-      };
-
+      const state = { sets: 5, reps: 5, frequency: 3, effortIndex: 3 };
       const el = {};
 
       function byId(id) {
@@ -633,37 +425,7 @@
       }
 
       function bindElements() {
-        [
-          "resetBtn",
-          "setsSlider",
-          "repsSlider",
-          "frequencySlider",
-          "effortSlider",
-          "setsValue",
-          "repsValue",
-          "frequencyValue",
-          "effortValue",
-          "effortGrid",
-          "zoneCard",
-          "zoneTitle",
-          "zoneIcon",
-          "zoneCopy",
-          "qualityLabel",
-          "qualityBar",
-          "qualityCopy",
-          "recoveryLabel",
-          "recoveryBar",
-          "recoveryCopy",
-          "tensionLabel",
-          "tensionCopy",
-          "doseLabel",
-          "doseCopy",
-          "junkWarning",
-          "failureWarning",
-          "modelExplanation"
-        ].forEach(id => {
-          el[id] = byId(id);
-        });
+        ["resetBtn", "setsSlider", "repsSlider", "frequencySlider", "effortSlider", "setsValue", "repsValue", "frequencyValue", "effortValue", "effortGrid", "zoneCard", "zoneTitle", "zoneIcon", "zoneCopy", "qualityLabel", "qualityBar", "qualityCopy", "recoveryLabel", "recoveryBar", "recoveryCopy", "tensionLabel", "tensionCopy", "doseLabel", "doseCopy", "junkWarning", "failureWarning", "modelExplanation"].forEach(id => { el[id] = byId(id); });
       }
 
       function qfFloorForFrequency(frequency) {
@@ -672,55 +434,17 @@
         return 0.75 + ((frequency - 3) / 4) * 0.10;
       }
 
-      function qfForSet(setNumber, dc) {
-        return Math.max(0, 1 - dc * ((setNumber * (setNumber - 1)) / 2));
-      }
-
-      function getBaseDcByActualReps(reps) {
-        if (reps <= 5) return BASE_DC_BY_ACTUAL_REPS[reps];
-        return 0.024 + 0.0045 * Math.pow(reps - 5, 1.25);
-      }
-
-      function getNumericRir(effort) {
-        return effort.key === "failure" ? 0 : Number(effort.key);
-      }
-
+      function qfForSet(setNumber, dc) { return Math.max(0, 1 - dc * ((setNumber * (setNumber - 1)) / 2)); }
+      function getBaseDcByActualReps(reps) { return reps <= 5 ? BASE_DC_BY_ACTUAL_REPS[reps] : 0.024 + 0.0045 * Math.pow(reps - 5, 1.25); }
+      function getNumericRir(effort) { return effort.key === "failure" ? 0 : Number(effort.key); }
       function getEffectiveHighTensionReps(actualReps, numericRir) {
         const estimatedRM = actualReps + numericRir;
-
-        if (estimatedRM <= 6) {
-          return Math.min(actualReps, 5);
-        }
-
+        if (estimatedRM <= 6) return Math.min(actualReps, 5);
         return Math.max(0, Math.min(actualReps, 5 - numericRir));
       }
-
-      function weeklyAtrophyLossEvenSpacing(frequency) {
-        const daysBetweenStimuli = 7 / frequency;
-        const atrophyDaysPerGap = Math.max(0, daysBetweenStimuli - 2);
-        return atrophyDaysPerGap * ATROPHY_LOSS_PER_DAY_AFTER_48H * frequency;
-      }
-
-      function recoveryEffortCost(effort) {
-        const table = {
-          failure: 6.5,
-          "0": 5.0,
-          "1": 3.8,
-          "2": 2.5,
-          "3": 1.6,
-          "4": 0.9,
-          "5": 0.4
-        };
-
-        return table[effort.key];
-      }
-
-      function recoveryCostScore(model) {
-        return recoveryEffortCost(model.effort)
-          * state.sets
-          * Math.sqrt(state.frequency)
-          * Math.pow(state.reps / 4, 0.65);
-      }
+      function weeklyAtrophyLossEvenSpacing(frequency) { return Math.max(0, (7 / frequency) - 2) * ATROPHY_LOSS_PER_DAY_AFTER_48H * frequency; }
+      function recoveryEffortCost(effort) { return { failure: 6.5, "0": 5.0, "1": 3.8, "2": 2.5, "3": 1.6, "4": 0.9, "5": 0.4 }[effort.key]; }
+      function recoveryCostScore(model) { return recoveryEffortCost(model.effort) * state.sets * Math.sqrt(state.frequency) * Math.pow(state.reps / 4, 0.65); }
 
       function calculateModel() {
         const effort = EFFORT_OPTIONS[state.effortIndex];
@@ -731,500 +455,32 @@
         const baseDc = getBaseDcByActualReps(state.reps);
         const dc = baseDc * effort.dcMultiplier;
         const qfFloor = qfFloorForFrequency(state.frequency);
-
         const rows = Array.from({ length: MAX_SETS }, (_, index) => {
           const setNumber = index + 1;
           const qf = qfForSet(setNumber, dc);
           const selected = setNumber <= state.sets;
           const valid = selected && qf >= qfFloor;
-
-          return {
-            setNumber,
-            qf,
-            selected,
-            valid,
-            setStim: baseStim * qf
-          };
+          return { setNumber, qf, selected, valid, setStim: baseStim * qf };
         });
-
         const selectedRows = rows.filter(row => row.selected);
         const validRows = selectedRows.filter(row => row.valid);
         const junkRows = selectedRows.filter(row => !row.valid);
-
         const sessionStimValid = validRows.reduce((sum, row) => sum + row.setStim, 0);
         const weeklyStim = sessionStimValid * state.frequency;
         const atrophyLoss = weeklyAtrophyLossEvenSpacing(state.frequency);
         const netWeeklyAU = Math.max(0, weeklyStim - atrophyLoss);
-
-        const avgQF = selectedRows.length
-          ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / selectedRows.length
-          : 0;
-
-        const junkRatio = selectedRows.length
-          ? junkRows.length / selectedRows.length
-          : 0;
-
-        return {
-          effort,
-          numericRir,
-          estimatedRM,
-          effectiveReps,
-          baseStim,
-          baseDc,
-          dc,
-          qfFloor,
-          rows,
-          selectedRows,
-          validRows,
-          junkRows,
-          sessionStimValid,
-          weeklyStim,
-          atrophyLoss,
-          netWeeklyAU,
-          avgQF,
-          junkRatio
-        };
+        const avgQF = selectedRows.length ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / selectedRows.length : 0;
+        const junkRatio = selectedRows.length ? junkRows.length / selectedRows.length : 0;
+        return { effort, numericRir, estimatedRM, effectiveReps, baseStim, baseDc, dc, qfFloor, rows, selectedRows, validRows, junkRows, sessionStimValid, weeklyStim, atrophyLoss, netWeeklyAU, avgQF, junkRatio };
       }
 
       function classifyZone(model) {
         const recoveryCost = recoveryCostScore(model);
         const usefulWeeklySets = model.validRows.length * state.frequency;
-        const highQuality = model.junkRatio === 0 && model.avgQF >= 0.85;
         const moderateRecoveryCost = recoveryCost < 25;
         const highRecoveryPressure = state.frequency >= 5 && recoveryCost >= 25;
         const extremeFrequencyPressure = state.frequency >= 7 && recoveryCost >= 18;
         const meaningfulWeeklyDose = model.netWeeklyAU >= 24;
 
         if (model.effectiveReps === 0 || model.netWeeklyAU < 10) {
-          return {
-            key: "undertraining",
-            title: "Undertraining",
-            icon: "↓",
-            copy: "Dose is too low to reliably drive growth. Increase useful sets, effort, or frequency."
-          };
-        }
-
-        if (
-          (model.junkRatio >= 0.35 && meaningfulWeeklyDose && state.frequency >= 2) ||
-          (model.effort.key === "failure" && state.frequency >= 3 && state.sets >= 2) ||
-          highRecoveryPressure ||
-          extremeFrequencyPressure
-        ) {
-          return {
-            key: "wasteful",
-            title: "Wasteful",
-            icon: "!",
-            copy: "The dose is being bought with too much fatigue or quality loss. Reduce sets, effort, or frequency."
-          };
-        }
-
-        if (model.netWeeklyAU < 24) {
-          return {
-            key: "maintaining",
-            title: "Maintaining",
-            icon: "→",
-            copy: model.junkRatio > 0
-              ? "Some work is quality-capped. Enough to preserve, but not a clean growth dose."
-              : "Enough to preserve, but not enough useful weekly exposure for a reliable growth signal."
-          };
-        }
-
-        if (
-          model.netWeeklyAU >= 85 &&
-          model.avgQF >= 0.82 &&
-          moderateRecoveryCost &&
-          usefulWeeklySets >= 9
-        ) {
-          return {
-            key: "gainmaxxing",
-            title: "Gainmaxxing",
-            icon: "↑",
-            copy: "Aggressive productive exposure while staying inside the quality floor."
-          };
-        }
-
-        if (highQuality && recoveryCost < 18 && usefulWeeklySets >= 5) {
-          return {
-            key: "gaining",
-            title: "Gaining",
-            icon: "↗",
-            copy: "Productive growth dose: enough useful weekly exposure with clean set quality."
-          };
-        }
-
-        return {
-          key: "gaining",
-          title: "Gaining",
-          icon: "↗",
-          copy: "Minimum growth dose: enough to gain if execution and progression are consistent."
-        };
-      }
-
-      function classifyQuality(model) {
-        if (model.junkRatio > 0) {
-          return ["Degraded", "Some selected sets are below the quality floor.", 42, "wasteful"];
-        }
-
-        if (model.avgQF >= 0.9) {
-          return ["High", "Most selected sets stay useful.", 88, "gaining"];
-        }
-
-        if (model.avgQF >= 0.82) {
-          return ["Moderate", "Usable, but close to the quality floor.", 66, "maintaining"];
-        }
-
-        return ["Low", "Dose is being bought with too much decay.", 34, "wasteful"];
-      }
-
-      function classifyRecovery(model) {
-        const cost = recoveryCostScore(model);
-
-        if (cost >= 42) {
-          return ["Extreme", "Recovery cost is likely the limiting factor.", 100, "risk"];
-        }
-
-        if (cost >= 25) {
-          return ["High", "Use only if Set 1 performance stays stable.", 78, "wasteful"];
-        }
-
-        if (cost >= 10) {
-          return ["Moderate", "Recovery cost is controlled.", 52, "maintaining"];
-        }
-
-        return ["Low", "Low fatigue cost; dose may be conservative.", 28, "undertraining"];
-      }
-
-      function classifyDose(model, zone) {
-        const usefulWeeklySets = model.validRows.length * state.frequency;
-        const cleanQuality = model.junkRatio === 0 && model.avgQF >= 0.85;
-
-        if (zone.key === "undertraining") {
-          return ["Too low", "Not enough useful weekly exposure for reliable growth."];
-        }
-
-        if (zone.key === "maintaining") {
-          return model.junkRatio > 0
-            ? ["Quality-capped", "Some sets fall below the quality floor, so the week stays at maintenance."]
-            : ["Maintenance", "Enough to hold ground, but below a reliable growth dose."];
-        }
-
-        if (zone.key === "gainmaxxing") {
-          return ["Aggressive growth", "High productive exposure without relying on junk volume."];
-        }
-
-        if (zone.key === "wasteful") {
-          return ["Poor tradeoff", "Too much fatigue or quality loss for the dose gained."];
-        }
-
-        if (cleanQuality && usefulWeeklySets >= 5) {
-          return ["Productive growth", "Enough weekly exposure to drive growth while keeping set quality high."];
-        }
-
-        return ["Minimum growth", "Enough to gain, but execution and progression need to be consistent."];
-      }
-
-      function getTrainingExplanation(model) {
-        const loadText = model.estimatedRM <= 6
-          ? "Load-qualified: all performed reps count as high-tension work."
-          : "Endpoint-biased: only the hardest final reps count as high-tension work.";
-
-        const qualityText = model.junkRows.length > 0
-          ? "Some selected sets fall below the quality floor."
-          : "All selected sets stay above the quality floor.";
-
-        const frequencyText = state.frequency >= 7
-          ? "Very high frequency: recovery pressure is checked aggressively."
-          : state.frequency >= 4
-            ? "Moderate-high frequency: weekly exposure is checked against recovery pressure."
-            : "Low/moderate frequency: clean useful exposure is rewarded.";
-
-        return `${loadText} ${qualityText} ${frequencyText}`;
-      }
-
-      function setFillClass(node, toneKey, width) {
-        node.className = `bar-fill fill-${toneKey}`;
-        node.style.width = `${Math.max(4, Math.min(100, width))}%`;
-      }
-
-      function renderEffortButtons() {
-        el.effortGrid.innerHTML = "";
-
-        EFFORT_OPTIONS.forEach((option, index) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "effort-button";
-          button.textContent = option.short;
-
-          button.addEventListener("click", () => {
-            state.effortIndex = index;
-            el.effortSlider.value = String(index);
-            render();
-          });
-
-          el.effortGrid.appendChild(button);
-        });
-      }
-
-      function syncInputValuesFromState() {
-        el.setsSlider.value = String(state.sets);
-        el.repsSlider.value = String(state.reps);
-        el.frequencySlider.value = String(state.frequency);
-        el.effortSlider.value = String(state.effortIndex);
-      }
-
-      function render() {
-        syncInputValuesFromState();
-
-        const model = calculateModel();
-        const zone = classifyZone(model);
-
-        const [qualityLabel, qualityCopy, qualityWidth, qualityTone] = classifyQuality(model);
-        const [recoveryLabel, recoveryCopy, recoveryWidth, recoveryTone] = classifyRecovery(model);
-        const [doseLabel, doseCopy] = classifyDose(model, zone);
-
-        el.setsValue.textContent = state.sets;
-        el.repsValue.textContent = state.reps;
-        el.frequencyValue.textContent = `${state.frequency}×`;
-        el.effortValue.textContent = model.effort.label;
-        el.effortValue.className = `value bg-${model.effort.tone}`;
-
-        Array.from(el.effortGrid.children).forEach((button, index) => {
-          const option = EFFORT_OPTIONS[index];
-          button.className = index === state.effortIndex
-            ? `effort-button active bg-${option.tone}`
-            : "effort-button";
-        });
-
-        el.zoneCard.className = `zone-card tone-${zone.key}`;
-        el.zoneTitle.textContent = zone.title;
-        el.zoneIcon.textContent = zone.icon;
-        el.zoneCopy.textContent = zone.copy;
-
-        el.qualityLabel.textContent = qualityLabel;
-        el.qualityCopy.textContent = qualityCopy;
-        setFillClass(el.qualityBar, qualityTone, qualityWidth);
-
-        el.recoveryLabel.textContent = recoveryLabel;
-        el.recoveryCopy.textContent = recoveryCopy;
-        setFillClass(el.recoveryBar, recoveryTone, recoveryWidth);
-
-        if (model.estimatedRM <= 6) {
-          el.tensionLabel.textContent = "Load-qualified";
-          el.tensionCopy.textContent = "All performed reps count as high-tension under the ≤6RM anchor.";
-        } else if (model.effectiveReps > 0) {
-          el.tensionLabel.textContent = "Endpoint-biased";
-          el.tensionCopy.textContent = "Only the terminal near-failure reps count as high-tension.";
-        } else {
-          el.tensionLabel.textContent = "Too easy";
-          el.tensionCopy.textContent = "Too far from the high-tension window for growth-oriented work.";
-        }
-
-        el.doseLabel.textContent = doseLabel;
-        el.doseCopy.textContent = doseCopy;
-
-        el.junkWarning.style.display = model.junkRows.length > 0 ? "block" : "none";
-        el.failureWarning.style.display =
-          model.effort.key === "failure" || model.effort.key === "0"
-            ? "block"
-            : "none";
-
-        if (model.effort.key === "failure" && state.frequency <= 2 && state.sets <= 3) {
-          el.failureWarning.innerHTML =
-            "<strong>Failure tactic</strong>Viable as a planned low-frequency/travel tactic, but still lower SFR than 2 RIR.";
-        } else if (model.effort.key === "failure") {
-          el.failureWarning.innerHTML =
-            "<strong>Failure warning</strong>Repeated failure work raises fatigue faster than net stimulus. Use 2 RIR as the default target.";
-        } else {
-          el.failureWarning.innerHTML =
-            "<strong>0 RIR warning</strong>Last-rep sets are allowed, but fatigue cost is high. 2 RIR remains the default target.";
-        }
-
-        el.modelExplanation.textContent = getTrainingExplanation(model);
-      }
-
-      function attachListeners() {
-        el.setsSlider.addEventListener("input", () => {
-          state.sets = Number(el.setsSlider.value);
-          render();
-        });
-
-        el.repsSlider.addEventListener("input", () => {
-          state.reps = Number(el.repsSlider.value);
-          render();
-        });
-
-        el.frequencySlider.addEventListener("input", () => {
-          state.frequency = Number(el.frequencySlider.value);
-          render();
-        });
-
-        el.effortSlider.addEventListener("input", () => {
-          state.effortIndex = Number(el.effortSlider.value);
-          render();
-        });
-
-        el.resetBtn.addEventListener("click", () => {
-          state.sets = 5;
-          state.reps = 5;
-          state.frequency = 3;
-          state.effortIndex = 3;
-          render();
-        });
-      }
-
-      function testCase(name, setup, expectedZone, expectedDoseLabel) {
-        const original = { ...state };
-
-        state.sets = setup.sets;
-        state.reps = setup.reps;
-        state.frequency = setup.frequency;
-        state.effortIndex = setup.effortIndex;
-
-        const model = calculateModel();
-        const zone = classifyZone(model);
-        const dose = classifyDose(model, zone);
-
-        const okZone = zone.key === expectedZone;
-        const okDose = expectedDoseLabel ? dose[0] === expectedDoseLabel : true;
-
-        Object.assign(state, original);
-
-        if (!okZone || !okDose) {
-          throw new Error(`${name} failed. Got zone=${zone.key}, dose=${dose[0]}`);
-        }
-      }
-
-      function runSelfTest() {
-        const original = { ...state };
-
-        for (let sets = 1; sets <= 8; sets++) {
-          for (let reps = 1; reps <= 15; reps++) {
-            for (let frequency = 1; frequency <= 8; frequency++) {
-              for (let effortIndex = 0; effortIndex < EFFORT_OPTIONS.length; effortIndex++) {
-                state.sets = sets;
-                state.reps = reps;
-                state.frequency = frequency;
-                state.effortIndex = effortIndex;
-
-                const model = calculateModel();
-                const zone = classifyZone(model);
-
-                const values = [
-                  model.baseStim,
-                  model.baseDc,
-                  model.dc,
-                  model.qfFloor,
-                  model.sessionStimValid,
-                  model.weeklyStim,
-                  model.netWeeklyAU,
-                  model.avgQF
-                ];
-
-                if (values.some(value => !Number.isFinite(value))) {
-                  throw new Error(`Non-finite model value at ${sets}/${reps}/${frequency}/${effortIndex}`);
-                }
-
-                if (
-                  model.rows.some(row =>
-                    !Number.isFinite(row.qf) ||
-                    row.qf < 0 ||
-                    row.qf > 1 ||
-                    !Number.isFinite(row.setStim)
-                  )
-                ) {
-                  throw new Error(`Invalid row value at ${sets}/${reps}/${frequency}/${effortIndex}`);
-                }
-
-                if (!zone.title) {
-                  throw new Error(`Missing zone at ${sets}/${reps}/${frequency}/${effortIndex}`);
-                }
-              }
-            }
-          }
-        }
-
-        Object.assign(state, original);
-
-        testCase(
-          "1×5 @ 0 RIR, 3×/week",
-          { sets: 1, reps: 5, frequency: 3, effortIndex: 1 },
-          "gaining",
-          null
-        );
-
-        testCase(
-          "2×5 @ 2 RIR, 3×/week",
-          { sets: 2, reps: 5, frequency: 3, effortIndex: 3 },
-          "gaining",
-          "Productive growth"
-        );
-
-        testCase(
-          "5×4 @ 2 RIR, 8×/week",
-          { sets: 5, reps: 4, frequency: 8, effortIndex: 3 },
-          "wasteful",
-          null
-        );
-
-        testCase(
-          "5×5 @ Failure, 1×/week",
-          { sets: 5, reps: 5, frequency: 1, effortIndex: 0 },
-          "maintaining",
-          null
-        );
-
-        testCase(
-          "5×5 @ 0 RIR, 1×/week",
-          { sets: 5, reps: 5, frequency: 1, effortIndex: 1 },
-          "maintaining",
-          null
-        );
-
-        testCase(
-          "5×5 @ 1 RIR, 1×/week",
-          { sets: 5, reps: 5, frequency: 1, effortIndex: 2 },
-          "maintaining",
-          null
-        );
-
-        testCase(
-          "5×5 @ 2 RIR, 1×/week",
-          { sets: 5, reps: 5, frequency: 1, effortIndex: 3 },
-          "gaining",
-          null
-        );
-
-        testCase(
-          "4×5 @ 3 RIR, 1×/week",
-          { sets: 4, reps: 5, frequency: 1, effortIndex: 4 },
-          "maintaining",
-          null
-        );
-
-        console.info("GYM_PIGS self-test passed.");
-      }
-
-      function init() {
-        bindElements();
-        renderEffortButtons();
-        attachListeners();
-        render();
-
-        try {
-          runSelfTest();
-        } catch (error) {
-          console.error(error);
-        }
-
-        render();
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
-      } else {
-        init();
-      }
-    })();
-  </script>
-</body>
-</html>
+          return { key: "undertraining", title: "Undertraining", icon: "↓", copy: "Dose is too low to reliably drive growth. Increase useful sets, 
