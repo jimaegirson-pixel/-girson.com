@@ -343,6 +343,7 @@
       font-weight: 900; /* Makes the guide heading bold. */
       font-size: .84rem; /* Keeps the guide heading compact. */
       letter-spacing: -.01em; /* Slightly tightens the guide heading. */
+      list-style-position: outside; /* Keeps the disclosure arrow aligned cleanly. */
     } /* Ends guide summary styling. */
 
     .level-help p { /* Styles the guide explanation paragraph. */
@@ -397,10 +398,13 @@
       .grid { gap: 12px; } /* Reduces main grid gap. */
       .card { padding: 14px; border-radius: 20px; } /* Compacts card padding. */
       .card h2 { font-size: .95rem; margin-bottom: 10px; } /* Compacts section headings. */
-      .level-grid { grid-template-columns: 1fr; gap: 8px; margin-bottom: 14px; } /* Stacks selector buttons on phones. */
+      .level-grid { grid-template-columns: 1fr; gap: 8px; margin-bottom: 14px; } /* Stacks selector buttons on smaller phones. */
       .level { min-height: auto; padding: 12px 13px; border-radius: 16px; } /* Makes selector buttons shorter on phones. */
       .level .name { font-size: .9rem; } /* Compacts selector name. */
       .level .desc { font-size: .72rem; } /* Keeps selector description readable. */
+      .level-help { margin: -4px 0 16px; padding: 11px; border-radius: 16px; } /* Compacts help accordions. */
+      .level-help p { font-size: .75rem; margin: 8px 0; } /* Compacts help text. */
+      .criteria-card { padding: 9px; border-radius: 12px; } /* Compacts criteria cards. */
       .slider-row { margin: 17px 0; } /* Reduces slider row spacing. */
       .slider-top { margin-bottom: 6px; } /* Reduces label-to-slider gap. */
       label { font-size: .8rem; } /* Compacts form labels. */
@@ -432,6 +436,48 @@
       .formula { font-size: .72rem; } /* Compacts formula/disclaimer text. */
     } /* Ends phone breakpoint. */
 
+    @media (min-width: 390px) and (max-width: 430px) { /* Pixel 9a-targeted portrait viewport band, approximately 412 CSS px wide. */
+      .wrap { width: calc(100% - 12px); padding: 10px 0 24px; } /* Uses tighter gutters for Pixel 9a width. */
+      header { margin-bottom: 10px; } /* Reduces header-bottom space on Pixel 9a. */
+      h1 { font-size: 2.15rem; max-width: 360px; } /* Prevents the title from becoming too tall on Pixel 9a. */
+      .sub { font-size: .86rem; line-height: 1.42; } /* Keeps subtitle compact and readable. */
+      .science-note { padding: 12px; font-size: .76rem; line-height: 1.42; } /* Keeps science note from dominating the first screen. */
+      .card { padding: 12px; border-radius: 18px; } /* Uses compact Pixel 9a card spacing. */
+      .card h2 { font-size: .88rem; margin-bottom: 8px; } /* Makes section headings fit better. */
+      .level-grid { grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; } /* Keeps selectors compact in two columns on Pixel 9a. */
+      .level { padding: 10px; border-radius: 14px; min-height: 92px; } /* Keeps selector tiles touchable but compact. */
+      .level .name { font-size: .78rem; line-height: 1.15; } /* Prevents tile names from wrapping awkwardly. */
+      .level .desc { font-size: .64rem; line-height: 1.25; margin-top: 5px; } /* Keeps descriptions readable inside two-column tiles. */
+      .level-help { padding: 10px; margin: -2px 0 14px; border-radius: 14px; } /* Compacts accordion guides. */
+      .level-help summary { font-size: .78rem; } /* Compacts accordion headings. */
+      .criteria-grid { gap: 6px; } /* Reduces gap between criteria cards. */
+      .criteria-card { padding: 8px; } /* Compacts criteria cards. */
+      .criteria-card strong { font-size: .72rem; } /* Compacts criteria labels. */
+      .criteria-card span { font-size: .64rem; } /* Compacts criteria descriptions. */
+      .slider-row { margin: 13px 0; } /* Reduces slider vertical spacing. */
+      input[type=range] { min-height: 42px; padding: 9px 0; } /* Keeps sliders finger-friendly without wasting height. */
+      .summary { grid-template-columns: repeat(3, 1fr); gap: 6px; } /* Keeps three summary metrics in one row on Pixel 9a. */
+      .metric { padding: 9px 7px; border-radius: 13px; } /* Compacts summary metric cards. */
+      .metric .k { font-size: .55rem; letter-spacing: .04em; } /* Prevents summary labels from wrapping. */
+      .metric .v { font-size: 1rem; } /* Makes summary values fit in one row. */
+      .gate { padding: 12px; border-radius: 16px; } /* Compacts gate message. */
+      .gate h2 { font-size: 1rem; } /* Compacts gate title. */
+      .gate p { font-size: .78rem; line-height: 1.35; } /* Compacts gate paragraph. */
+      .zone-stack { height: 46px; } /* Makes zone bar fit nicely on Pixel 9a. */
+      .tables { gap: 8px; } /* Compacts tables area. */
+      .table-card { padding: 7px 8px 2px; } /* Compacts table cards. */
+      table { min-width: 0; width: 100%; } /* Allows tables to fit Pixel 9a without horizontal scrolling. */
+      th, td { font-size: .72rem; padding: 7px 3px; } /* Fits table text into 412px viewport. */
+      th { font-size: .56rem; } /* Compacts table headers. */
+      .scores { grid-template-columns: repeat(3, 1fr); gap: 6px; } /* Keeps three score cards in one row on Pixel 9a. */
+      .score { padding: 9px 7px; border-radius: 13px; } /* Compacts score cards. */
+      .score .label { font-size: .52rem; letter-spacing: .04em; } /* Prevents score labels from wrapping badly. */
+      .score .big { font-size: 1.28rem; } /* Keeps score values prominent but compact. */
+      .score .small { font-size: .6rem; line-height: 1.25; } /* Keeps score subtitles readable. */
+      .coach { padding: 12px; border-radius: 16px; } /* Compacts coaching panel. */
+      .coach p, .coach li { font-size: .76rem; } /* Makes coaching text fit better. */
+    } /* Ends Pixel 9a-specific viewport tuning. */
+
     @media (max-width: 380px) { /* Very small phone breakpoint. */
       .wrap { width: min(100% - 14px, 360px); } /* Uses very small gutters. */
       .card { padding: 12px; } /* Further compacts cards. */
@@ -460,7 +506,7 @@
         <h2>1. Choose training status</h2> <!-- Training status selector heading. -->
         <div class="level-grid" id="levelGrid"></div> <!-- JavaScript inserts status buttons here. -->
 
-        <details class="level-help" open> <!-- Expandable criteria guide for choosing the correct training level. -->
+        <details class="level-help"> <!-- Expandable criteria guide for choosing the correct training level. Closed by default to keep Pixel 9a layout compact. -->
           <summary>How to choose your level</summary> <!-- Clickable heading for the criteria guide. -->
           <p><strong>Use your weakest limiter.</strong> If your volume, hard-effort tolerance, or recovery fits a lower category, choose the lower level.</p> <!-- Main selection rule. -->
           <div class="criteria-grid"> <!-- Grid containing level criteria cards. -->
@@ -486,7 +532,7 @@
         <h2>2. Choose adaptation focus</h2> <!-- Adaptation focus selector heading. -->
         <div class="level-grid" id="focusGrid"></div> <!-- JavaScript inserts focus buttons here. -->
 
-        <details class="level-help" open> <!-- Expandable guide explaining the adaptation focus choices. -->
+        <details class="level-help"> <!-- Expandable guide explaining the adaptation focus choices. Closed by default to keep Pixel 9a layout compact. -->
           <summary>What do the focus options mean?</summary> <!-- Clickable heading for the focus explanation guide. -->
           <p><strong>Focus shifts emphasis, not exclusivity.</strong> The unchosen systems still receive maintenance work so one part of fitness does not degrade.</p> <!-- Main focus rule. -->
           <div class="criteria-grid"> <!-- Grid containing focus explanation cards. -->
@@ -550,14 +596,14 @@
           <div class="table-card"> <!-- Per-session table card. -->
             <h2>Per session</h2> <!-- Per-session table heading. -->
             <table> <!-- Per-session zone table. -->
-              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">% work</th></tr></thead> <!-- Per-session table header. -->
+              <thead><tr><th>Zone</th><th class="num">Time</th><th class="num">% work</th></tr></thead> <!-- Per-session table header. -->
               <tbody id="sessionTable"></tbody> <!-- JavaScript inserts per-session rows here. -->
             </table> <!-- Ends per-session table. -->
           </div> <!-- Ends per-session table card. -->
           <div class="table-card"> <!-- Weekly total table card. -->
             <h2>Weekly total</h2> <!-- Weekly table heading. -->
             <table> <!-- Weekly zone table. -->
-              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">Hours</th></tr></thead> <!-- Weekly table header. -->
+              <thead><tr><th>Zone</th><th class="num">Time</th><th class="num">Hours</th></tr></thead> <!-- Weekly table header. -->
               <tbody id="weeklyTable"></tbody> <!-- JavaScript inserts weekly rows here. -->
             </table> <!-- Ends weekly table. -->
           </div> <!-- Ends weekly table card. -->
@@ -663,7 +709,14 @@
 
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n)); /* Restricts a number between a minimum and maximum. */
     const round1 = n => Math.round(n * 10) / 10; /* Rounds a number to one decimal place. */
-    const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1); /* Formats integers without decimals and non-integers with one decimal. */
+    const fmt = n => String(Math.round(n)); /* Formats most visible values as whole numbers for practical readability. */
+    const fmtScore = n => String(Math.round(n)); /* Formats stimulus scores as whole numbers. */
+    const fmtTime = (minutes, zoneKey = '') => { /* Formats zone time for user-facing display. */
+      if (minutes < 0.05) return '0'; /* Hides meaningless near-zero values. */
+      if (zoneKey === 'z5' && minutes > 0 && minutes < 1) return `${Math.round(minutes * 60)}s`; /* Shows tiny Z5 as seconds when it is intentional. */
+      if (minutes > 0 && minutes < 1) return '<1m'; /* Shows other tiny exposures as less than one minute. */
+      return `${Math.round(minutes)}m`; /* Shows normal zone prescriptions as whole minutes. */
+    }; /* Ends zone-time formatter. */
 
     function buildLevels() { /* Builds the training-status buttons. */
       const grid = document.getElementById('levelGrid'); /* Gets the status button container. */
@@ -776,16 +829,16 @@
       document.getElementById('durationValue').textContent = duration; /* Updates visible duration value. */
       document.getElementById('sessionsValue').textContent = sessions; /* Updates visible sessions value. */
       document.getElementById('weeklyTime').textContent = `${duration * sessions}m`; /* Updates weekly productive work metric. */
-      document.getElementById('hardTime').textContent = `${fmt(round1(hardWeekly))}m`; /* Updates weekly hard-time metric. */
+      document.getElementById('hardTime').textContent = fmtTime(hardWeekly); /* Updates weekly hard-time metric. */
       document.getElementById('hardShare').textContent = `${Math.round(hardPct)}%`; /* Updates hard-share metric. */
       renderStack(plan.session, duration); /* Redraws horizontal zone distribution bar. */
       renderTables(plan, duration, sessions); /* Redraws per-session and weekly tables. */
-      document.getElementById('mitoScore').textContent = fmt(round1(wScore.mito)); /* Updates weekly MITO score. */
-      document.getElementById('cardiacScore').textContent = fmt(round1(wScore.cardiac)); /* Updates weekly CARDIAC score. */
-      document.getElementById('vo2Score').textContent = fmt(round1(wScore.vo2)); /* Updates weekly VO2 score. */
-      document.getElementById('mitoSub').textContent = `${fmt(round1(sScore.mito))} per session · duration-dominant base signal.`; /* Updates per-session MITO subtitle. */
-      document.getElementById('cardiacSub').textContent = `${fmt(round1(sScore.cardiac))} per session · sustained high-output signal.`; /* Updates per-session CARDIAC subtitle. */
-      document.getElementById('vo2Sub').textContent = `${fmt(round1(sScore.vo2))} per session · Z4/Z5 threshold-gated signal.`; /* Updates per-session VO2 subtitle. */
+      document.getElementById('mitoScore').textContent = fmtScore(wScore.mito); /* Updates weekly MITO score. */
+      document.getElementById('cardiacScore').textContent = fmtScore(wScore.cardiac); /* Updates weekly CARDIAC score. */
+      document.getElementById('vo2Score').textContent = fmtScore(wScore.vo2); /* Updates weekly VO2 score. */
+      document.getElementById('mitoSub').textContent = `${fmtScore(sScore.mito)} per session · duration-dominant base signal.`; /* Updates per-session MITO subtitle. */
+      document.getElementById('cardiacSub').textContent = `${fmtScore(sScore.cardiac)} per session · sustained high-output signal.`; /* Updates per-session CARDIAC subtitle. */
+      document.getElementById('vo2Sub').textContent = `${fmtScore(sScore.vo2)} per session · Z4/Z5 threshold-gated signal.`; /* Updates per-session VO2 subtitle. */
       const badge = document.getElementById('gateBadge'); /* Gets gate badge element. */
       const title = document.getElementById('gateTitle'); /* Gets gate title element. */
       const text = document.getElementById('gateText'); /* Gets gate text element. */
@@ -794,24 +847,24 @@
         badge.classList.add('bad'); /* Applies bad status styling. */
         badge.textContent = 'Too little Z4/Z5'; /* Sets bad status label. */
         title.textContent = 'High-output work is underdosed'; /* Sets gate title for low hard work. */
-        text.textContent = `This setup gives only ${fmt(round1(hardSession))} min Z4/Z5 per session. For ${level.name.toLowerCase()}, raise the high-output exposure toward about ${level.gateMin} min/session before making Zone 2 the main focus.`; /* Explains underdosed hard work. */
+        text.textContent = `This setup gives only ${fmtTime(hardSession)} Z4/Z5 per session. For ${level.name.toLowerCase()}, raise the high-output exposure toward about ${fmtTime(level.gateMin)} per session before making Zone 2 the main focus.`; /* Explains underdosed hard work. */
       } else if (hardSession < level.gateStrong) { /* Checks if high-output exposure meets minimum but not strong target. */
         badge.classList.add('warn'); /* Applies warning status styling. */
         badge.textContent = 'Minimum met'; /* Sets warning status label. */
         title.textContent = 'Minimum high-output exposure met'; /* Sets gate title for minimum hard work. */
-        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. This is enough exposure to justify adding some Zone 2, but the plan should still protect intensity quality.`; /* Explains minimum hard work. */
+        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. This is enough exposure to justify adding some Zone 2, but the plan should still protect intensity quality.`; /* Explains minimum hard work. */
       } else { /* Handles strong/high hard-work exposure. */
         badge.classList.add('good'); /* Applies good status styling. */
         badge.textContent = 'Ready for base volume'; /* Sets good status label. */
         title.textContent = 'Now Zone 2 volume makes more sense'; /* Sets gate title for strong hard work. */
-        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. The high-output gate is open, so additional Zone 2 now supports sustainable volume instead of hiding a missing intensity dose.`; /* Explains why Zone 2 now makes sense. */
+        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. The high-output gate is open, so additional Zone 2 now supports sustainable volume instead of hiding a missing intensity dose.`; /* Explains why Zone 2 now makes sense. */
       } /* Ends gate status logic. */
-      const z4 = fmt(round1(plan.session.z4)); /* Formats per-session Z4 minutes. */
-      const z5 = fmt(round1(plan.session.z5)); /* Formats per-session Z5 minutes. */
-      const z3 = fmt(round1(plan.session.z3)); /* Formats per-session Z3 minutes. */
-      const z2 = fmt(round1(plan.session.z2)); /* Formats per-session Z2 minutes. */
-      const z1 = fmt(round1(z1OverheadSession)); /* Formats optional per-session Z1 overhead. */
-      document.getElementById('coachText').textContent = `Focus: ${focusProfiles[currentFocus].name}. For ${sessions} × ${duration} min/week, the target is ${fmt(round1(hardWeekly))} min/week in Z4–Z5. The chosen focus shifts emphasis, but every system keeps a maintenance dose.`; /* Updates coaching explanation. */
+      const z4 = fmtTime(plan.session.z4, 'z4'); /* Formats per-session Z4 time. */
+      const z5 = fmtTime(plan.session.z5, 'z5'); /* Formats per-session Z5 time. */
+      const z3 = fmtTime(plan.session.z3, 'z3'); /* Formats per-session Z3 time. */
+      const z2 = fmtTime(plan.session.z2, 'z2'); /* Formats per-session Z2 time. */
+      const z1 = fmtTime(z1OverheadSession, 'z1'); /* Formats optional per-session Z1 overhead. */
+      document.getElementById('coachText').textContent = `Focus: ${focusProfiles[currentFocus].name}. For ${sessions} × ${duration} min/week, the target is ${fmtTime(hardWeekly)} per week in Z4–Z5. The chosen focus shifts emphasis, but every system keeps a maintenance dose.`; /* Updates coaching explanation. */
       document.getElementById('sessionShape').innerHTML = `
         <li>${z1} min optional Z1 warm-up/recovery overhead, not counted as work time</li>
         <li>${z4} min Z4 as the main VO2/cardiac work</li>
@@ -825,7 +878,7 @@
       document.getElementById('zoneStack').innerHTML = zones.map(z => { /* Converts each zone into a bar segment. */
         const minutes = session[z.key]; /* Gets per-session minutes for this zone. */
         const pct = minutes / duration * 100; /* Calculates this zone's percentage of productive work time. */
-        return `<div class="seg ${z.key}" style="width:${pct}%" title="${z.label}: ${fmt(round1(minutes))} min">${pct >= 8 ? z.short : ''}</div>`; /* Returns segment HTML with label if wide enough. */
+        return `<div class="seg ${z.key}" style="width:${pct}%" title="${z.label}: ${fmtTime(minutes, z.key)}">${pct >= 8 ? z.short : ''}</div>`; /* Returns segment HTML with label if wide enough. */
       }).join(''); /* Inserts all segments into the bar. */
     } /* Ends renderStack function. */
 
@@ -835,11 +888,11 @@
       document.getElementById('sessionTable').innerHTML = zones.map(z => { /* Builds per-session table rows. */
         const min = z.key === 'z1' ? z1OverheadSession : plan.session[z.key]; /* Uses overhead for Z1 and plan minutes for Z2–Z5. */
         const pct = z.key === 'z1' ? 'overhead' : `${Math.round(min / duration * 100)}%`; /* Labels Z1 as overhead and other zones as work percent. */
-        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${pct}</td></tr>`; /* Returns per-session row HTML. */
+        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmtTime(min, z.key)}</td><td class="num">${pct}</td></tr>`; /* Returns per-session row HTML. */
       }).join(''); /* Inserts per-session rows. */
       document.getElementById('weeklyTable').innerHTML = zones.map(z => { /* Builds weekly table rows. */
         const min = z.key === 'z1' ? z1OverheadWeekly : plan.weekly[z.key]; /* Uses weekly overhead for Z1 and plan minutes for Z2–Z5. */
-        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${(min / 60).toFixed(2)}</td></tr>`; /* Returns weekly row HTML. */
+        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmtTime(min, z.key)}</td><td class="num">${(min / 60).toFixed(1)}</td></tr>`; /* Returns weekly row HTML. */
       }).join(''); /* Inserts weekly rows. */
     } /* Ends renderTables function. */
 
