@@ -1,589 +1,859 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cardio Zone Dose Calculator</title>
-  <style>
-    :root {
-      --bg: #f7f7f2;
-      --panel: #ffffff;
-      --ink: #161616;
-      --muted: #6b6b63;
-      --line: #deded4;
-      --z1: #9ca3af;
-      --z2: #2563eb;
-      --z3: #16a34a;
-      --z4: #f97316;
-      --z5: #dc2626;
-      --good: #166534;
-      --warn: #b45309;
-      --bad: #991b1b;
-      --shadow: 0 18px 60px rgba(0,0,0,.08);
-    }
+<!DOCTYPE html> <!-- Declares this file as an HTML5 document. -->
+<html lang="en"> <!-- Opens the HTML document and sets the language to English. -->
+<head> <!-- Opens the metadata/head section. -->
+  <meta charset="UTF-8" /> <!-- Ensures the page supports standard Unicode characters. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Makes the layout scale correctly on mobile devices. -->
+  <title>Cardio Zone Dose Calculator</title> <!-- Sets the browser tab title. -->
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #fff7ed, transparent 34%), var(--bg);
-      color: var(--ink);
-      min-height: 100vh;
-    }
+  <style> /* Opens the CSS styling block. */
+    :root { /* Defines global CSS variables used throughout the design. */
+      --bg: #f7f7f2; /* Main page background color. */
+      --panel: #ffffff; /* Main panel/card background color. */
+      --ink: #161616; /* Main text color. */
+      --muted: #6b6b63; /* Secondary text color. */
+      --line: #deded4; /* Border color. */
+      --z1: #9ca3af; /* Zone 1 color: grey recovery. */
+      --z2: #2563eb; /* Zone 2 color: blue aerobic. */
+      --z3: #16a34a; /* Zone 3 color: green threshold. */
+      --z4: #f97316; /* Zone 4 color: orange VO2. */
+      --z5: #dc2626; /* Zone 5 color: red max. */
+      --good: #166534; /* Positive status text color. */
+      --warn: #b45309; /* Warning status text color. */
+      --bad: #991b1b; /* Negative status text color. */
+      --shadow: 0 18px 60px rgba(0,0,0,.08); /* Reusable soft card shadow. */
+    } /* Ends global variable definitions. */
 
-    .wrap {
-      width: min(1160px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 32px 0 54px;
-    }
+    * { box-sizing: border-box; } /* Makes width/height calculations include padding and border. */
 
-    header {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 24px;
-      align-items: end;
-      margin-bottom: 24px;
-    }
+    body { /* Styles the full page body. */
+      margin: 0; /* Removes default browser body margin. */
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; /* Sets a modern system font stack. */
+      background: radial-gradient(circle at top left, #fff7ed, transparent 34%), var(--bg); /* Adds a soft warm highlight plus base background. */
+      color: var(--ink); /* Uses the main text color. */
+      min-height: 100vh; /* Ensures the page is at least the full viewport height. */
+      -webkit-font-smoothing: antialiased; /* Improves text rendering on Safari/WebKit. */
+      text-rendering: optimizeLegibility; /* Improves font legibility where supported. */
+    } /* Ends body styling. */
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 4.2rem);
-      letter-spacing: -.06em;
-      line-height: .95;
-    }
+    button, input { font: inherit; } /* Forces form controls to use the same font as the page. */
+    button { -webkit-tap-highlight-color: transparent; } /* Removes grey tap flash on iOS buttons. */
 
-    .sub {
-      margin: 14px 0 0;
-      color: var(--muted);
-      max-width: 680px;
-      font-size: 1.02rem;
-      line-height: 1.6;
-    }
+    /* iPhone Safari fix: avoid touch-action on native range inputs. */
+    /* Safari can ignore or lock slider dragging when touch-action is forced. */
 
-    .science-note {
-      background: rgba(255,255,255,.75);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.55;
-    }
+    .wrap { /* Main page width container. */
+      width: min(1160px, calc(100% - 32px)); /* Uses max width on desktop and safe side gutters on smaller screens. */
+      margin: 0 auto; /* Centers the container horizontally. */
+      padding: 32px 0 54px; /* Adds vertical breathing room. */
+    } /* Ends main container styling. */
 
-    .science-note strong { color: var(--ink); }
+    header { /* Styles the top hero/header area. */
+      display: grid; /* Uses CSS grid for two-column desktop layout. */
+      grid-template-columns: 1.2fr .8fr; /* Gives the title column slightly more space than the note column. */
+      gap: 24px; /* Adds space between columns. */
+      align-items: end; /* Aligns both columns toward the bottom. */
+      margin-bottom: 24px; /* Adds space below the header. */
+    } /* Ends header styling. */
 
-    .grid {
-      display: grid;
-      grid-template-columns: 390px 1fr;
-      gap: 20px;
-      align-items: start;
-    }
+    h1 { /* Styles the main page title. */
+      margin: 0; /* Removes default heading margin. */
+      font-size: clamp(2rem, 4vw, 4.2rem); /* Makes the title responsive. */
+      letter-spacing: -.06em; /* Tightens title spacing for a modern look. */
+      line-height: .95; /* Makes the title compact vertically. */
+    } /* Ends h1 styling. */
 
-    .card {
-      background: rgba(255,255,255,.88);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      padding: 22px;
-      box-shadow: var(--shadow);
-    }
+    .sub { /* Styles the subtitle under the title. */
+      margin: 14px 0 0; /* Adds space above the subtitle only. */
+      color: var(--muted); /* Uses muted text color. */
+      max-width: 680px; /* Limits line length for readability. */
+      font-size: 1.02rem; /* Sets readable subtitle size. */
+      line-height: 1.6; /* Adds comfortable line spacing. */
+    } /* Ends subtitle styling. */
 
-    .card h2 {
-      margin: 0 0 14px;
-      font-size: 1.05rem;
-      letter-spacing: -.02em;
-    }
+    .science-note { /* Styles the explanatory note card in the header. */
+      background: rgba(255,255,255,.75); /* Uses a semi-transparent white card background. */
+      border: 1px solid var(--line); /* Adds a subtle border. */
+      border-radius: 22px; /* Rounds the note card corners. */
+      padding: 18px; /* Adds internal spacing. */
+      box-shadow: var(--shadow); /* Adds soft depth. */
+      color: var(--muted); /* Uses muted text color. */
+      font-size: .88rem; /* Keeps the note compact. */
+      line-height: 1.55; /* Improves readability. */
+    } /* Ends science note styling. */
 
-    .level-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+    .science-note strong { color: var(--ink); } /* Makes bold text in the note use the primary text color. */
 
-    .level {
-      border: 1px solid var(--line);
-      background: #fbfbf8;
-      border-radius: 18px;
-      padding: 12px;
-      cursor: pointer;
-      transition: .18s ease;
-      min-height: 92px;
-    }
+    .grid { /* Styles the main two-column content area. */
+      display: grid; /* Enables grid layout. */
+      grid-template-columns: 390px 1fr; /* Fixed left controls column plus flexible results column. */
+      gap: 20px; /* Adds space between columns. */
+      align-items: start; /* Aligns cards at the top. */
+    } /* Ends main grid styling. */
 
-    .level:hover { transform: translateY(-1px); border-color: #a8a89d; }
-    .level.active {
-      border-color: #111;
-      background: #111;
-      color: white;
-    }
-    .level .name { font-weight: 800; font-size: .92rem; }
-    .level .desc { color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: 6px; }
-    .level.active .desc { color: #cfcfc7; }
+    .card { /* Shared card styling. */
+      background: rgba(255,255,255,.88); /* Uses a slightly transparent white card. */
+      border: 1px solid var(--line); /* Adds a subtle border. */
+      border-radius: 28px; /* Rounds card corners. */
+      padding: 22px; /* Adds internal card spacing. */
+      box-shadow: var(--shadow); /* Adds consistent card shadow. */
+    } /* Ends shared card styling. */
 
-    .slider-row { margin: 22px 0; }
-    .slider-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 10px;
-    }
-    label { font-weight: 800; font-size: .86rem; }
-    .value { font-size: 1.4rem; font-weight: 900; letter-spacing: -.04em; }
-    input[type=range] { width: 100%; accent-color: #111; }
+    .card h2 { /* Styles section headings inside cards. */
+      margin: 0 0 14px; /* Adds space below headings. */
+      font-size: 1.05rem; /* Sets compact heading size. */
+      letter-spacing: -.02em; /* Slightly tightens heading text. */
+    } /* Ends card heading styling. */
 
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 18px;
-    }
-    .metric {
-      background: #f4f4ee;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 13px;
-    }
-    .metric .k { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; }
-    .metric .v { margin-top: 4px; font-weight: 900; font-size: 1.28rem; }
+    .level-grid { /* Grid for level and focus selection buttons. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: 1fr 1fr; /* Shows two buttons per row on desktop/tablet. */
+      gap: 10px; /* Adds spacing between buttons. */
+      margin-bottom: 20px; /* Adds spacing after each selector group. */
+    } /* Ends level grid styling. */
 
-    .hero-card {
-      overflow: hidden;
-      position: relative;
-    }
+    .level { /* Styles each selectable level/focus button. */
+      border: 1px solid var(--line); /* Adds default border. */
+      background: #fbfbf8; /* Uses light neutral background. */
+      border-radius: 18px; /* Rounds button corners. */
+      padding: 12px; /* Adds internal spacing. */
+      cursor: pointer; /* Shows clickable cursor. */
+      transition: .18s ease; /* Smooths hover/active transitions. */
+      min-height: 92px; /* Gives buttons consistent height on desktop. */
+      text-align: left; /* Keeps button text left-aligned. */
+      width: 100%; /* Makes the button fill its grid cell. */
+    } /* Ends selectable button styling. */
 
-    .gate {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: center;
-      padding: 18px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: #fbfbf8;
-      margin-bottom: 18px;
-    }
-    .gate h2 { margin: 0 0 6px; font-size: 1.4rem; letter-spacing: -.04em; }
-    .gate p { margin: 0; color: var(--muted); line-height: 1.45; }
-    .gate-badge {
-      padding: 12px 14px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: .78rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      white-space: nowrap;
-    }
-    .gate-badge.good { background: #dcfce7; color: var(--good); }
-    .gate-badge.warn { background: #ffedd5; color: var(--warn); }
-    .gate-badge.bad { background: #fee2e2; color: var(--bad); }
+    .level:hover { transform: translateY(-1px); border-color: #a8a89d; } /* Adds subtle hover lift on pointer devices. */
 
-    .zone-stack {
-      height: 64px;
-      border-radius: 20px;
-      overflow: hidden;
-      display: flex;
-      background: #e8e8dd;
-      border: 1px solid var(--line);
-      margin: 20px 0 14px;
-    }
-    .seg {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: .78rem;
-      font-weight: 900;
-      min-width: 24px;
-      transition: width .25s ease;
-    }
-    .z1 { background: var(--z1); }
-    .z2 { background: var(--z2); }
-    .z3 { background: var(--z3); }
-    .z4 { background: var(--z4); }
-    .z5 { background: var(--z5); }
+    .level.active { /* Styles the currently selected level/focus. */
+      border-color: #111; /* Uses dark border for selected state. */
+      background: #111; /* Uses dark selected background. */
+      color: white; /* Uses white selected text. */
+    } /* Ends active button styling. */
 
-    .tables {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
+    .level .name { font-weight: 800; font-size: .92rem; } /* Styles the button title. */
+    .level .desc { color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: 6px; } /* Styles the button description. */
+    .level.active .desc { color: #cfcfc7; } /* Makes selected button description readable on dark background. */
 
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 10px 6px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-      font-size: .88rem;
-    }
-    th { color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
-    td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; }
-    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; margin-right: 8px; }
+    .slider-row { margin: 22px 0; } /* Adds vertical spacing around each slider row. */
 
-    .scores {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .score {
-      border-radius: 20px;
-      padding: 16px;
-      background: #f4f4ee;
-      border: 1px solid var(--line);
-    }
-    .score .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
-    .score .big { font-size: 2rem; font-weight: 950; letter-spacing: -.06em; margin-top: 4px; }
-    .score .small { color: var(--muted); font-size: .78rem; line-height: 1.35; }
+    .slider-top { /* Styles the slider label/value row. */
+      display: flex; /* Places label and value side by side. */
+      justify-content: space-between; /* Pushes label left and value right. */
+      align-items: baseline; /* Aligns text baselines. */
+      margin-bottom: 10px; /* Adds space above the slider track. */
+    } /* Ends slider top row styling. */
 
-    .coach {
-      margin-top: 18px;
-      border-radius: 22px;
-      background: #111;
-      color: white;
-      padding: 18px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .coach h3 { margin: 0 0 8px; }
-    .coach p, .coach li { color: #d3d3ca; font-size: .9rem; line-height: 1.5; }
-    .coach ul { margin: 8px 0 0; padding-left: 18px; }
+    label { font-weight: 800; font-size: .86rem; } /* Styles slider labels. */
+    .value { font-size: 1.4rem; font-weight: 900; letter-spacing: -.04em; } /* Styles live slider values. */
 
-    .formula {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: .78rem;
-      line-height: 1.5;
-    }
+    input[type=range] { /* Base range slider styling. */
+      -webkit-appearance: none; /* Removes default WebKit slider appearance. */
+      appearance: none; /* Removes default standard slider appearance. */
+      width: 100%; /* Makes slider full width. */
+      min-height: 44px; /* Gives a larger touch target on mobile. */
+      background: transparent; /* Removes native background. */
+      cursor: pointer; /* Shows draggable pointer cursor. */
+      padding: 10px 0; /* Adds vertical touch padding. */
+    } /* Ends base range styling. */
 
-    @media (max-width: 900px) {
-      header, .grid, .tables, .coach { grid-template-columns: 1fr; }
-      .summary, .scores { grid-template-columns: 1fr; }
-      .level-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <main class="wrap">
-    <header>
-      <div>
-        <h1>Cardio Zone Dose Calculator</h1>
-        <p class="sub">Adjust session length and weekly frequency. The calculator shows a science-based intensity mix: enough high-output work to drive VO2/cardiac adaptation, with Zone 2 added when there is enough time to make it useful.</p>
-      </div>
-      <div class="science-note">
-        <strong>Core idea:</strong> Zone 2 is not useless, but it is volume-dependent. With short weekly training time, moderate-to-high intensity becomes the main adaptation lever; with longer training time, Zone 2 becomes the sustainable volume layer.
-      </div>
-    </header>
+    input[type=range]::-webkit-slider-runnable-track { /* Styles slider track in Safari/Chrome. */
+      height: 8px; /* Sets track thickness. */
+      border-radius: 999px; /* Makes track pill-shaped. */
+      background: #d8d8ce; /* Sets track color. */
+      border: 1px solid var(--line); /* Adds track border. */
+    } /* Ends WebKit track styling. */
 
-    <section class="grid">
-      <aside class="card">
-        <h2>1. Choose training status</h2>
-        <div class="level-grid" id="levelGrid"></div>
+    input[type=range]::-webkit-slider-thumb { /* Styles slider thumb in Safari/Chrome. */
+      -webkit-appearance: none; /* Removes default WebKit thumb. */
+      appearance: none; /* Removes default standard thumb. */
+      width: 28px; /* Sets thumb width. */
+      height: 28px; /* Sets thumb height. */
+      border-radius: 50%; /* Makes thumb circular. */
+      background: #111; /* Sets thumb fill color. */
+      border: 3px solid #fff; /* Adds white thumb outline. */
+      box-shadow: 0 3px 14px rgba(0,0,0,.25); /* Adds depth to the thumb. */
+      margin-top: -11px; /* Vertically centers thumb on the track. */
+    } /* Ends WebKit thumb styling. */
 
-        <div class="slider-row">
-          <div class="slider-top">
-            <label for="duration">Time per session</label>
-            <div class="value"><span id="durationValue">45</span> min</div>
-          </div>
-          <input id="duration" type="range" min="15" max="90" value="45" step="5" />
-        </div>
+    input[type=range]::-moz-range-track { /* Styles slider track in Firefox. */
+      height: 8px; /* Sets track thickness. */
+      border-radius: 999px; /* Makes track pill-shaped. */
+      background: #d8d8ce; /* Sets track color. */
+      border: 1px solid var(--line); /* Adds track border. */
+    } /* Ends Firefox track styling. */
 
-        <div class="slider-row">
-          <div class="slider-top">
-            <label for="sessions">Sessions per week</label>
-            <div class="value"><span id="sessionsValue">3</span>x</div>
-          </div>
-          <input id="sessions" type="range" min="1" max="7" value="3" step="1" />
-        </div>
+    input[type=range]::-moz-range-thumb { /* Styles slider thumb in Firefox. */
+      width: 28px; /* Sets thumb width. */
+      height: 28px; /* Sets thumb height. */
+      border-radius: 50%; /* Makes thumb circular. */
+      background: #111; /* Sets thumb fill color. */
+      border: 3px solid #fff; /* Adds white thumb outline. */
+      box-shadow: 0 3px 14px rgba(0,0,0,.25); /* Adds thumb depth. */
+    } /* Ends Firefox thumb styling. */
 
-        <div class="summary">
-          <div class="metric"><div class="k">Weekly time</div><div class="v" id="weeklyTime">135m</div></div>
-          <div class="metric"><div class="k">Z4+Z5 / week</div><div class="v" id="hardTime">—</div></div>
-          <div class="metric"><div class="k">Hard share</div><div class="v" id="hardShare">—</div></div>
-        </div>
+    .summary { /* Grid for the three small summary metrics. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: repeat(3, 1fr); /* Creates three equal columns. */
+      gap: 10px; /* Adds spacing between metrics. */
+      margin-top: 18px; /* Adds space above summary metrics. */
+    } /* Ends summary grid styling. */
 
-        <p class="formula">Zones use %LTHR style boundaries: Z1 recovery, Z2 aerobic, Z3 threshold, Z4 VO2, Z5 max. This is an educational planning model, not medical advice.</p>
-      </aside>
+    .metric { /* Styles each small summary metric. */
+      background: #f4f4ee; /* Uses slightly darker neutral background. */
+      border: 1px solid var(--line); /* Adds subtle border. */
+      border-radius: 18px; /* Rounds metric cards. */
+      padding: 13px; /* Adds internal spacing. */
+    } /* Ends metric card styling. */
 
-      <section class="card hero-card">
-        <div class="gate">
-          <div>
-            <h2 id="gateTitle">VO2 gate</h2>
-            <p id="gateText">—</p>
-          </div>
-          <div id="gateBadge" class="gate-badge">—</div>
-        </div>
+    .metric .k { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; } /* Styles metric labels. */
+    .metric .v { margin-top: 4px; font-weight: 900; font-size: 1.28rem; } /* Styles metric values. */
 
-        <h2>2. Target distribution per session</h2>
-        <div class="zone-stack" id="zoneStack"></div>
+    .hero-card { overflow: hidden; position: relative; } /* Keeps the main results card visually contained. */
 
-        <div class="tables">
-          <div>
-            <h2>Per session</h2>
-            <table>
-              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">%</th></tr></thead>
-              <tbody id="sessionTable"></tbody>
-            </table>
-          </div>
-          <div>
-            <h2>Weekly total</h2>
-            <table>
-              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">Hours</th></tr></thead>
-              <tbody id="weeklyTable"></tbody>
-            </table>
-          </div>
-        </div>
+    .gate { /* Styles the top status/gate message. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: 1fr auto; /* Text column plus badge column. */
+      gap: 16px; /* Adds space between text and badge. */
+      align-items: center; /* Centers items vertically. */
+      padding: 18px; /* Adds internal spacing. */
+      border-radius: 22px; /* Rounds the gate box. */
+      border: 1px solid var(--line); /* Adds subtle border. */
+      background: #fbfbf8; /* Uses light neutral background. */
+      margin-bottom: 18px; /* Adds space below gate. */
+    } /* Ends gate styling. */
 
-        <div class="scores">
-          <div class="score">
-            <div class="label">Mito / base</div>
-            <div class="big" id="mitoScore">—</div>
-            <div class="small">Duration-dominant aerobic adaptation.</div>
-          </div>
-          <div class="score">
-            <div class="label">Cardiac</div>
-            <div class="big" id="cardiacScore">—</div>
-            <div class="small">Sustained high cardiac output.</div>
-          </div>
-          <div class="score">
-            <div class="label">VO2</div>
-            <div class="big" id="vo2Score">—</div>
-            <div class="small">Threshold-gated Z4/Z5 exposure.</div>
-          </div>
-        </div>
+    .gate h2 { margin: 0 0 6px; font-size: 1.4rem; letter-spacing: -.04em; } /* Styles gate title. */
+    .gate p { margin: 0; color: var(--muted); line-height: 1.45; } /* Styles gate explanatory text. */
 
-        <div class="coach">
-          <div>
-            <h3>What this plan is saying</h3>
-            <p id="coachText">—</p>
-          </div>
-          <div>
-            <h3>Practical session shape</h3>
-            <ul id="sessionShape"></ul>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
+    .gate-badge { /* Base styling for gate status badge. */
+      padding: 12px 14px; /* Adds badge padding. */
+      border-radius: 999px; /* Makes badge pill-shaped. */
+      font-weight: 900; /* Makes badge text bold. */
+      font-size: .78rem; /* Sets compact badge size. */
+      text-transform: uppercase; /* Makes badge label uppercase. */
+      letter-spacing: .06em; /* Adds badge letter spacing. */
+      white-space: nowrap; /* Keeps badge on one line when space allows. */
+    } /* Ends base badge styling. */
 
-  <script>
-    const zones = [
-      { key: 'z1', label: 'Z1 Recovery', short: 'Z1', color: 'var(--z1)' },
-      { key: 'z2', label: 'Z2 Aerobic', short: 'Z2', color: 'var(--z2)' },
-      { key: 'z3', label: 'Z3 Threshold', short: 'Z3', color: 'var(--z3)' },
-      { key: 'z4', label: 'Z4 VO2', short: 'Z4', color: 'var(--z4)' },
-      { key: 'z5', label: 'Z5 Max', short: 'Z5', color: 'var(--z5)' }
-    ];
+    .gate-badge.good { background: #dcfce7; color: var(--good); } /* Styles positive gate badge. */
+    .gate-badge.warn { background: #ffedd5; color: var(--warn); } /* Styles warning gate badge. */
+    .gate-badge.bad { background: #fee2e2; color: var(--bad); } /* Styles negative gate badge. */
 
-    const levels = {
-      beginner: {
-        name: 'Beginner / deconditioned',
-        desc: 'Intensity exposure, not sprint-only. Enough recovery to repeat it.',
-        hardPct: 0.24, hardMin: 4, hardMax: 18, z5Share: 0.04, z3Pct: 0.22, z1Pct: 0.16,
-        gateMin: 3, gateStrong: 6
-      },
-      intermediate: {
-        name: 'Intermediate',
-        desc: 'Most recreational athletes underdose real Z4 work.',
-        hardPct: 0.28, hardMin: 7, hardMax: 30, z5Share: 0.10, z3Pct: 0.18, z1Pct: 0.12,
-        gateMin: 5, gateStrong: 9
-      },
-      trained: {
-        name: 'Trained / advanced',
-        desc: 'Enough base to tolerate meaningful Z4/Z5 volume.',
-        hardPct: 0.30, hardMin: 10, hardMax: 45, z5Share: 0.15, z3Pct: 0.16, z1Pct: 0.10,
-        gateMin: 7, gateStrong: 12
-      },
-      elite: {
-        name: 'Elite',
-        desc: 'High volume still needs hard work, but most time is support volume.',
-        hardPct: 0.24, hardMin: 12, hardMax: 70, z5Share: 0.18, z3Pct: 0.10, z1Pct: 0.08,
-        gateMin: 10, gateStrong: 18
-      }
-    };
+    .zone-stack { /* Styles the horizontal zone distribution bar. */
+      height: 64px; /* Sets bar height. */
+      border-radius: 20px; /* Rounds bar corners. */
+      overflow: hidden; /* Clips child segments to rounded corners. */
+      display: flex; /* Places zone segments horizontally. */
+      background: #e8e8dd; /* Fallback/empty bar background. */
+      border: 1px solid var(--line); /* Adds subtle border. */
+      margin: 20px 0 14px; /* Adds vertical spacing. */
+    } /* Ends zone stack styling. */
 
-    let currentLevel = 'intermediate';
+    .seg { /* Styles each zone segment inside the bar. */
+      height: 100%; /* Makes each segment fill the bar height. */
+      display: flex; /* Centers text inside segment. */
+      align-items: center; /* Vertically centers segment label. */
+      justify-content: center; /* Horizontally centers segment label. */
+      color: white; /* Uses white text on colored segments. */
+      font-size: .78rem; /* Sets segment label size. */
+      font-weight: 900; /* Makes segment labels bold. */
+      min-width: 24px; /* Ensures tiny segments remain visible. */
+      transition: width .25s ease; /* Smoothly animates width changes. */
+    } /* Ends zone segment styling. */
 
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-    const round1 = n => Math.round(n * 10) / 10;
-    const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
+    .z1 { background: var(--z1); } /* Applies Zone 1 color. */
+    .z2 { background: var(--z2); } /* Applies Zone 2 color. */
+    .z3 { background: var(--z3); } /* Applies Zone 3 color. */
+    .z4 { background: var(--z4); } /* Applies Zone 4 color. */
+    .z5 { background: var(--z5); } /* Applies Zone 5 color. */
 
-    function buildLevels() {
-      const grid = document.getElementById('levelGrid');
+    .tables { /* Grid for per-session and weekly tables. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: 1fr 1fr; /* Shows two tables side by side on desktop. */
+      gap: 16px; /* Adds space between tables. */
+      margin-top: 16px; /* Adds space above tables. */
+    } /* Ends table grid styling. */
+
+    .table-card { min-width: 0; } /* Allows table cards to shrink inside grid columns. */
+
+    table { width: 100%; border-collapse: collapse; } /* Makes tables full width and removes spacing between cells. */
+
+    th, td { /* Styles table headers and cells. */
+      padding: 10px 6px; /* Adds cell spacing. */
+      text-align: left; /* Left-aligns default cell text. */
+      border-bottom: 1px solid var(--line); /* Adds row separators. */
+      font-size: .88rem; /* Sets table text size. */
+    } /* Ends table cell styling. */
+
+    th { color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; } /* Styles table headers. */
+    td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; } /* Right-aligns numeric cells and improves number alignment. */
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; margin-right: 8px; } /* Styles zone color dots. */
+
+    .scores { /* Grid for weekly MITO/CARDIAC/VO2 cards. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: repeat(3, 1fr); /* Creates three equal columns. */
+      gap: 12px; /* Adds space between cards. */
+      margin-top: 18px; /* Adds space above score cards. */
+    } /* Ends score grid styling. */
+
+    .score { /* Styles each score card. */
+      border-radius: 20px; /* Rounds score cards. */
+      padding: 16px; /* Adds internal spacing. */
+      background: #f4f4ee; /* Uses neutral card background. */
+      border: 1px solid var(--line); /* Adds subtle border. */
+    } /* Ends score card styling. */
+
+    .score .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; } /* Styles score labels. */
+    .score .big { font-size: 2rem; font-weight: 950; letter-spacing: -.06em; margin-top: 4px; } /* Styles large score numbers. */
+    .score .small { color: var(--muted); font-size: .78rem; line-height: 1.35; } /* Styles score explanations. */
+
+    .coach { /* Styles the black coaching panel. */
+      margin-top: 18px; /* Adds space above coach panel. */
+      border-radius: 22px; /* Rounds coach panel corners. */
+      background: #111; /* Uses dark background. */
+      color: white; /* Uses white heading text. */
+      padding: 18px; /* Adds internal spacing. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: 1fr 1fr; /* Creates two columns on desktop. */
+      gap: 16px; /* Adds space between columns. */
+    } /* Ends coach panel styling. */
+
+    .coach h3 { margin: 0 0 8px; } /* Styles coach panel headings. */
+    .coach p, .coach li { color: #d3d3ca; font-size: .9rem; line-height: 1.5; } /* Styles coach text and bullets. */
+    .coach ul { margin: 8px 0 0; padding-left: 18px; } /* Styles coach bullet list. */
+
+    .formula { /* Styles the small formula/disclaimer text. */
+      margin-top: 14px; /* Adds space above formula text. */
+      color: var(--muted); /* Uses muted color. */
+      font-size: .78rem; /* Keeps text compact. */
+      line-height: 1.5; /* Improves readability. */
+    } /* Ends formula text styling. */
+
+    .level-help { /* Styles the expandable training-level criteria guide. */
+      margin: -6px 0 20px; /* Pulls the guide closer to the level selector and adds bottom spacing. */
+      border: 1px solid var(--line); /* Adds a subtle border. */
+      border-radius: 18px; /* Rounds the guide corners. */
+      background: #fbfbf8; /* Uses a light neutral background. */
+      padding: 12px; /* Adds internal spacing. */
+    } /* Ends level help styling. */
+
+    .level-help summary { /* Styles the clickable guide heading. */
+      cursor: pointer; /* Shows that the summary is clickable. */
+      font-weight: 900; /* Makes the guide heading bold. */
+      font-size: .84rem; /* Keeps the guide heading compact. */
+      letter-spacing: -.01em; /* Slightly tightens the guide heading. */
+    } /* Ends guide summary styling. */
+
+    .level-help p { /* Styles the guide explanation paragraph. */
+      margin: 10px 0; /* Adds vertical spacing around the paragraph. */
+      color: var(--muted); /* Uses muted text color. */
+      font-size: .78rem; /* Keeps guide text compact. */
+      line-height: 1.45; /* Improves guide text readability. */
+    } /* Ends guide paragraph styling. */
+
+    .criteria-grid { /* Grid for the four level criteria cards. */
+      display: grid; /* Uses grid layout. */
+      grid-template-columns: 1fr; /* Stacks criteria cards vertically. */
+      gap: 8px; /* Adds space between criteria cards. */
+    } /* Ends criteria grid styling. */
+
+    .criteria-card { /* Styles each criteria card. */
+      border: 1px solid var(--line); /* Adds subtle border. */
+      border-radius: 14px; /* Rounds criteria card corners. */
+      background: #ffffff; /* Uses white background for contrast. */
+      padding: 10px; /* Adds internal spacing. */
+    } /* Ends criteria card styling. */
+
+    .criteria-card strong { /* Styles criteria card titles. */
+      display: block; /* Puts the label on its own line. */
+      font-size: .78rem; /* Keeps title compact. */
+      margin-bottom: 4px; /* Adds space below title. */
+    } /* Ends criteria card title styling. */
+
+    .criteria-card span { /* Styles criteria card descriptions. */
+      display: block; /* Makes the description its own block. */
+      color: var(--muted); /* Uses muted text color. */
+      font-size: .72rem; /* Keeps criteria compact. */
+      line-height: 1.35; /* Improves readability. */
+    } /* Ends criteria card description styling. */
+
+    @media (max-width: 900px) { /* Tablet/mobile breakpoint. */
+      .wrap { width: min(100% - 24px, 720px); padding: 22px 0 40px; } /* Narrows gutters and reduces vertical padding. */
+      header, .grid, .tables, .coach { grid-template-columns: 1fr; } /* Switches major grids to one column. */
+      .summary, .scores { grid-template-columns: 1fr; } /* Stacks metric and score cards. */
+      .level-grid { grid-template-columns: 1fr 1fr; } /* Keeps selectors two-wide when space allows. */
+      .card { border-radius: 24px; padding: 18px; } /* Slightly compacts cards. */
+      .gate { grid-template-columns: 1fr; } /* Stacks gate text and badge. */
+      .gate-badge { width: fit-content; } /* Keeps badge from stretching full width. */
+    } /* Ends tablet/mobile breakpoint. */
+
+    @media (max-width: 640px) { /* Phone breakpoint. */
+      .wrap { width: min(100% - 18px, 520px); padding: 16px 0 32px; } /* Uses smaller phone gutters. */
+      header { gap: 12px; margin-bottom: 14px; } /* Compacts header spacing. */
+      h1 { font-size: clamp(2.05rem, 13vw, 3rem); line-height: .92; letter-spacing: -.07em; } /* Makes title phone-friendly. */
+      .sub { font-size: .92rem; line-height: 1.48; margin-top: 10px; } /* Compacts subtitle. */
+      .science-note { font-size: .8rem; padding: 14px; border-radius: 18px; } /* Compacts science note. */
+      .grid { gap: 12px; } /* Reduces main grid gap. */
+      .card { padding: 14px; border-radius: 20px; } /* Compacts card padding. */
+      .card h2 { font-size: .95rem; margin-bottom: 10px; } /* Compacts section headings. */
+      .level-grid { grid-template-columns: 1fr; gap: 8px; margin-bottom: 14px; } /* Stacks selector buttons on phones. */
+      .level { min-height: auto; padding: 12px 13px; border-radius: 16px; } /* Makes selector buttons shorter on phones. */
+      .level .name { font-size: .9rem; } /* Compacts selector name. */
+      .level .desc { font-size: .72rem; } /* Keeps selector description readable. */
+      .slider-row { margin: 17px 0; } /* Reduces slider row spacing. */
+      .slider-top { margin-bottom: 6px; } /* Reduces label-to-slider gap. */
+      label { font-size: .8rem; } /* Compacts form labels. */
+      .value { font-size: 1.18rem; } /* Compacts live slider values. */
+      .summary { gap: 8px; margin-top: 12px; } /* Compacts summary grid. */
+      .metric { padding: 11px; border-radius: 15px; } /* Compacts metric cards. */
+      .metric .v { font-size: 1.15rem; } /* Compacts metric values. */
+      .gate { padding: 14px; border-radius: 18px; gap: 10px; margin-bottom: 14px; } /* Compacts gate box. */
+      .gate h2 { font-size: 1.12rem; } /* Compacts gate title. */
+      .gate p { font-size: .86rem; } /* Compacts gate text. */
+      .gate-badge { padding: 9px 11px; font-size: .68rem; white-space: normal; } /* Allows badge to wrap on narrow screens. */
+      .zone-stack { height: 52px; border-radius: 16px; margin: 14px 0 10px; } /* Compacts zone bar. */
+      .seg { font-size: .68rem; min-width: 14px; } /* Compacts zone segment labels. */
+      .tables { gap: 10px; } /* Reduces table gap. */
+      .table-card { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 16px; padding: 8px 10px 2px; background: #fbfbf8; } /* Makes tables scroll safely on phones. */
+      .table-card h2 { margin: 0 0 4px; } /* Compacts table headings. */
+      table { min-width: 310px; } /* Prevents table columns from becoming unreadably narrow. */
+      th, td { padding: 8px 4px; font-size: .8rem; } /* Compacts table cells. */
+      th { font-size: .62rem; } /* Compacts table headers. */
+      .dot { width: 8px; height: 8px; margin-right: 6px; } /* Compacts zone dots. */
+      .scores { gap: 8px; margin-top: 12px; } /* Compacts score card grid. */
+      .score { padding: 13px; border-radius: 16px; } /* Compacts score cards. */
+      .score .big { font-size: 1.65rem; } /* Compacts large score numbers. */
+      .score .small { font-size: .74rem; } /* Compacts score explanations. */
+      .coach { padding: 14px; border-radius: 18px; gap: 8px; margin-top: 12px; } /* Compacts coach panel. */
+      .coach h3 { font-size: .95rem; margin-bottom: 6px; } /* Compacts coach headings. */
+      .coach p, .coach li { font-size: .82rem; line-height: 1.45; } /* Compacts coach body text. */
+      .coach ul { padding-left: 17px; } /* Adjusts phone bullet indentation. */
+      .formula { font-size: .72rem; } /* Compacts formula/disclaimer text. */
+    } /* Ends phone breakpoint. */
+
+    @media (max-width: 380px) { /* Very small phone breakpoint. */
+      .wrap { width: min(100% - 14px, 360px); } /* Uses very small gutters. */
+      .card { padding: 12px; } /* Further compacts cards. */
+      h1 { font-size: 2rem; } /* Prevents title from becoming too large. */
+      table { min-width: 280px; } /* Allows smaller tables on narrow phones. */
+      th, td { font-size: .76rem; } /* Further compacts table text. */
+      .seg { font-size: .62rem; } /* Further compacts zone labels. */
+    } /* Ends very small phone breakpoint. */
+  </style> <!-- Ends CSS styling block. -->
+</head> <!-- Ends document head. -->
+
+<body> <!-- Opens visible page body. -->
+  <main class="wrap"> <!-- Main content wrapper. -->
+    <header> <!-- Top hero/header section. -->
+      <div> <!-- Left header column. -->
+        <h1>Cardio Zone Dose Calculator</h1> <!-- Main page heading. -->
+        <p class="sub">Adjust work-session length and weekly frequency. The calculator assigns productive training time across Z2–Z5, while Z1 is shown separately as warm-up/recovery overhead.</p> <!-- Main explanatory subtitle. -->
+      </div> <!-- Ends left header column. -->
+      <div class="science-note"> <!-- Right header science note card. -->
+        <strong>Core idea:</strong> Zone 1 is preparation and recovery, not the main work dose. Productive adaptation time is distributed across Z2–Z5, with more high-output work when total time is low and more Zone 2 when time is high. <!-- Core model explanation. -->
+      </div> <!-- Ends science note card. -->
+    </header> <!-- Ends top header. -->
+
+    <section class="grid"> <!-- Main two-column app layout. -->
+      <aside class="card"> <!-- Left control panel card. -->
+        <h2>1. Choose training status</h2> <!-- Training status selector heading. -->
+        <div class="level-grid" id="levelGrid"></div> <!-- JavaScript inserts status buttons here. -->
+
+        <details class="level-help" open> <!-- Expandable criteria guide for choosing the correct training level. -->
+          <summary>How to choose your level</summary> <!-- Clickable heading for the criteria guide. -->
+          <p><strong>Use your weakest limiter.</strong> If your volume, hard-effort tolerance, or recovery fits a lower category, choose the lower level.</p> <!-- Main selection rule. -->
+          <div class="criteria-grid"> <!-- Grid containing level criteria cards. -->
+            <div class="criteria-card"> <!-- Beginner criteria card. -->
+              <strong>Beginner / Deconditioned</strong> <!-- Beginner label. -->
+              <span>&lt;6 weeks consistent training · &lt;90 min/week · hard efforts wreck you for 48h+</span> <!-- Beginner criteria. -->
+            </div> <!-- Ends beginner criteria card. -->
+            <div class="criteria-card"> <!-- Intermediate criteria card. -->
+              <strong>Intermediate</strong> <!-- Intermediate label. -->
+              <span>6–16 weeks consistent · 90–180 min/week · can repeat 1–3 min hard efforts</span> <!-- Intermediate criteria. -->
+            </div> <!-- Ends intermediate criteria card. -->
+            <div class="criteria-card"> <!-- Trained criteria card. -->
+              <strong>Trained / Advanced</strong> <!-- Trained label. -->
+              <span>4+ months structured · 180–360 min/week · can repeat 3–4 min Z4 blocks</span> <!-- Trained criteria. -->
+            </div> <!-- Ends trained criteria card. -->
+            <div class="criteria-card"> <!-- Elite criteria card. -->
+              <strong>Elite / Competitive</strong> <!-- Elite label. -->
+              <span>Long-term structured training · 360+ min/week · high intensity does not disrupt the week</span> <!-- Elite criteria. -->
+            </div> <!-- Ends elite criteria card. -->
+          </div> <!-- Ends criteria grid. -->
+        </details> <!-- Ends expandable criteria guide. -->
+
+        <h2>2. Choose adaptation focus</h2> <!-- Adaptation focus selector heading. -->
+        <div class="level-grid" id="focusGrid"></div> <!-- JavaScript inserts focus buttons here. -->
+
+        <details class="level-help" open> <!-- Expandable guide explaining the adaptation focus choices. -->
+          <summary>What do the focus options mean?</summary> <!-- Clickable heading for the focus explanation guide. -->
+          <p><strong>Focus shifts emphasis, not exclusivity.</strong> The unchosen systems still receive maintenance work so one part of fitness does not degrade.</p> <!-- Main focus rule. -->
+          <div class="criteria-grid"> <!-- Grid containing focus explanation cards. -->
+            <div class="criteria-card"> <!-- Balanced explanation card. -->
+              <strong>All 3 balanced</strong> <!-- Balanced label. -->
+              <span>Best default. Builds aerobic base, heart/stroke-volume stimulus, and VO2max together.</span> <!-- Balanced explanation. -->
+            </div> <!-- Ends balanced explanation card. -->
+            <div class="criteria-card"> <!-- MITO explanation card. -->
+              <strong>MITO focus</strong> <!-- MITO label. -->
+              <span>Mitochondrial/aerobic base: better endurance, fat oxidation, and ability to handle more total work. Mostly Z2/Z3, with Z4/Z5 maintained.</span> <!-- MITO explanation. -->
+            </div> <!-- Ends MITO explanation card. -->
+            <div class="criteria-card"> <!-- CARDIAC explanation card. -->
+              <strong>CARDIAC focus</strong> <!-- CARDIAC label. -->
+              <span>Heart/stroke-volume stimulus: sustained high cardiac output that supports lower resting HR and stronger cardiovascular output. Mostly Z3/Z4.</span> <!-- CARDIAC explanation. -->
+            </div> <!-- Ends CARDIAC explanation card. -->
+            <div class="criteria-card"> <!-- VO2 explanation card. -->
+              <strong>VO2max focus</strong> <!-- VO2max label. -->
+              <span>Aerobic ceiling: your ability to use oxygen at high intensity. Mostly Z4 with some Z5, while Z2/Z3 stay at maintenance.</span> <!-- VO2max explanation. -->
+            </div> <!-- Ends VO2 explanation card. -->
+          </div> <!-- Ends focus explanation grid. -->
+        </details> <!-- Ends expandable focus explanation guide. -->
+
+        <div class="slider-row"> <!-- Work duration slider row. -->
+          <div class="slider-top"> <!-- Label/value row for duration slider. -->
+            <label for="duration">Work time per session</label> <!-- Duration slider label. -->
+            <div class="value"><span id="durationValue">45</span> min</div> <!-- Live duration value. -->
+          </div> <!-- Ends duration label/value row. -->
+          <input id="duration" type="range" min="15" max="90" value="45" step="5" /> <!-- Duration slider input. -->
+        </div> <!-- Ends duration slider row. -->
+
+        <div class="slider-row"> <!-- Sessions-per-week slider row. -->
+          <div class="slider-top"> <!-- Label/value row for sessions slider. -->
+            <label for="sessions">Sessions per week</label> <!-- Sessions slider label. -->
+            <div class="value"><span id="sessionsValue">3</span>x</div> <!-- Live sessions value. -->
+          </div> <!-- Ends sessions label/value row. -->
+          <input id="sessions" type="range" min="1" max="7" value="3" step="1" /> <!-- Sessions slider input. -->
+        </div> <!-- Ends sessions slider row. -->
+
+        <div class="summary"> <!-- Summary metrics row. -->
+          <div class="metric"><div class="k">Weekly work</div><div class="v" id="weeklyTime">135m</div></div> <!-- Weekly productive work metric. -->
+          <div class="metric"><div class="k">Z4+Z5 / week</div><div class="v" id="hardTime">—</div></div> <!-- Weekly hard-zone time metric. -->
+          <div class="metric"><div class="k">Hard share</div><div class="v" id="hardShare">—</div></div> <!-- Weekly hard-zone percentage metric. -->
+        </div> <!-- Ends summary metrics row. -->
+
+        <p class="formula">Zones use %LTHR style boundaries: Z1 recovery, Z2 aerobic, Z3 threshold, Z4 VO2, Z5 max. This is an educational planning model, not medical advice.</p> <!-- Small zone/disclaimer text. -->
+      </aside> <!-- Ends left control panel. -->
+
+      <section class="card hero-card"> <!-- Main results panel card. -->
+        <div class="gate"> <!-- Top status/gate message. -->
+          <div> <!-- Gate text column. -->
+            <h2 id="gateTitle">VO2 gate</h2> <!-- JavaScript updates the gate title. -->
+            <p id="gateText">—</p> <!-- JavaScript updates the gate explanation. -->
+          </div> <!-- Ends gate text column. -->
+          <div id="gateBadge" class="gate-badge">—</div> <!-- JavaScript updates the gate status badge. -->
+        </div> <!-- Ends gate message. -->
+
+        <h2>2. Target distribution per session</h2> <!-- Zone distribution heading. -->
+        <div class="zone-stack" id="zoneStack"></div> <!-- JavaScript inserts colored zone bar here. -->
+
+        <div class="tables"> <!-- Two tables wrapper. -->
+          <div class="table-card"> <!-- Per-session table card. -->
+            <h2>Per session</h2> <!-- Per-session table heading. -->
+            <table> <!-- Per-session zone table. -->
+              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">% work</th></tr></thead> <!-- Per-session table header. -->
+              <tbody id="sessionTable"></tbody> <!-- JavaScript inserts per-session rows here. -->
+            </table> <!-- Ends per-session table. -->
+          </div> <!-- Ends per-session table card. -->
+          <div class="table-card"> <!-- Weekly total table card. -->
+            <h2>Weekly total</h2> <!-- Weekly table heading. -->
+            <table> <!-- Weekly zone table. -->
+              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">Hours</th></tr></thead> <!-- Weekly table header. -->
+              <tbody id="weeklyTable"></tbody> <!-- JavaScript inserts weekly rows here. -->
+            </table> <!-- Ends weekly table. -->
+          </div> <!-- Ends weekly table card. -->
+        </div> <!-- Ends tables wrapper. -->
+
+        <div class="scores"> <!-- Weekly score card grid. -->
+          <div class="score"> <!-- MITO score card. -->
+            <div class="label">Weekly Mito / base</div> <!-- MITO card label. -->
+            <div class="big" id="mitoScore">—</div> <!-- JavaScript inserts weekly MITO score. -->
+            <div class="small" id="mitoSub">Duration-dominant aerobic adaptation.</div> <!-- JavaScript inserts per-session MITO explanation. -->
+          </div> <!-- Ends MITO score card. -->
+          <div class="score"> <!-- CARDIAC score card. -->
+            <div class="label">Weekly Cardiac</div> <!-- CARDIAC card label. -->
+            <div class="big" id="cardiacScore">—</div> <!-- JavaScript inserts weekly CARDIAC score. -->
+            <div class="small" id="cardiacSub">Sustained high cardiac output.</div> <!-- JavaScript inserts per-session CARDIAC explanation. -->
+          </div> <!-- Ends CARDIAC score card. -->
+          <div class="score"> <!-- VO2 score card. -->
+            <div class="label">Weekly VO2</div> <!-- VO2 card label. -->
+            <div class="big" id="vo2Score">—</div> <!-- JavaScript inserts weekly VO2 score. -->
+            <div class="small" id="vo2Sub">Threshold-gated Z4/Z5 exposure.</div> <!-- JavaScript inserts per-session VO2 explanation. -->
+          </div> <!-- Ends VO2 score card. -->
+        </div> <!-- Ends weekly score card grid. -->
+
+        <div class="coach"> <!-- Coaching explanation panel. -->
+          <div> <!-- Left coaching column. -->
+            <h3>What this plan is saying</h3> <!-- Coaching explanation heading. -->
+            <p id="coachText">—</p> <!-- JavaScript inserts coaching explanation. -->
+          </div> <!-- Ends left coaching column. -->
+          <div> <!-- Right coaching column. -->
+            <h3>Practical session shape</h3> <!-- Session shape heading. -->
+            <ul id="sessionShape"></ul> <!-- JavaScript inserts practical bullet list. -->
+          </div> <!-- Ends right coaching column. -->
+        </div> <!-- Ends coaching panel. -->
+      </section> <!-- Ends main results panel. -->
+    </section> <!-- Ends main app layout. -->
+  </main> <!-- Ends main content wrapper. -->
+
+  <script> /* Opens JavaScript logic block. */
+    const zones = [ /* Defines the zone metadata used for rendering tables and bars. */
+      { key: 'z1', label: 'Z1 Recovery', short: 'Z1', color: 'var(--z1)' }, /* Zone 1 definition. */
+      { key: 'z2', label: 'Z2 Aerobic', short: 'Z2', color: 'var(--z2)' }, /* Zone 2 definition. */
+      { key: 'z3', label: 'Z3 Threshold', short: 'Z3', color: 'var(--z3)' }, /* Zone 3 definition. */
+      { key: 'z4', label: 'Z4 VO2', short: 'Z4', color: 'var(--z4)' }, /* Zone 4 definition. */
+      { key: 'z5', label: 'Z5 Max', short: 'Z5', color: 'var(--z5)' } /* Zone 5 definition. */
+    ]; /* Ends zone metadata array. */
+
+    const levels = { /* Defines training-status presets. */
+      beginner: { /* Beginner/deconditioned preset. */
+        name: 'Beginner / deconditioned', /* User-facing preset name. */
+        desc: 'Z2/Z3 first, with tiny Z4 touches if recoverable.', /* Preset explanation. */
+        hardPct: 0.16, hardMin: 2, hardMax: 12, z5Share: 0.02, z3Pct: 0.28, z1Pct: 0.16, /* Beginner dose parameters: Z2/Z3 dominant with small Z4 exposure. */
+        gateMin: 1.5, gateStrong: 4 /* Beginner Z4/Z5 gate thresholds per session. */
+      }, /* Ends beginner preset. */
+      intermediate: { /* Intermediate preset. */
+        name: 'Intermediate', /* User-facing preset name. */
+        desc: 'Most recreational athletes underdose real Z4 work.', /* Preset explanation. */
+        hardPct: 0.28, hardMin: 7, hardMax: 30, z5Share: 0.16, z3Pct: 0.18, z1Pct: 0.12, /* Intermediate dose parameters. */
+        gateMin: 5, gateStrong: 9 /* Intermediate Z4/Z5 gate thresholds per session. */
+      }, /* Ends intermediate preset. */
+      trained: { /* Trained/advanced preset. */
+        name: 'Trained / advanced', /* User-facing preset name. */
+        desc: 'Enough base to tolerate meaningful Z4/Z5 volume.', /* Preset explanation. */
+        hardPct: 0.30, hardMin: 10, hardMax: 45, z5Share: 0.22, z3Pct: 0.16, z1Pct: 0.10, /* Trained dose parameters. */
+        gateMin: 7, gateStrong: 12 /* Trained Z4/Z5 gate thresholds per session. */
+      }, /* Ends trained preset. */
+      elite: { /* Elite preset. */
+        name: 'Elite', /* User-facing preset name. */
+        desc: 'High volume still needs hard work, but most time is support volume.', /* Preset explanation. */
+        hardPct: 0.24, hardMin: 12, hardMax: 70, z5Share: 0.28, z3Pct: 0.10, z1Pct: 0.08, /* Elite dose parameters. */
+        gateMin: 10, gateStrong: 18 /* Elite Z4/Z5 gate thresholds per session. */
+      } /* Ends elite preset. */
+    }; /* Ends training-status preset object. */
+
+    const focusProfiles = { /* Defines adaptation-focus presets. */
+      balanced: { /* Balanced focus profile. */
+        name: 'All 3 balanced', /* User-facing focus name. */
+        desc: 'Build MITO, CARDIAC, and VO2 together.', /* Focus explanation. */
+        hardMult: 1.00, z3Mult: 1.00, z5Shift: 0.00, /* Balanced multipliers do not shift the base plan. */
+        z2Floor: 0.18, z3Floor: 0.10, hardFloor: 0.12 /* Maintenance floors for balanced mode. */
+      }, /* Ends balanced focus. */
+      mito: { /* MITO focus profile. */
+        name: 'MITO focus', /* User-facing focus name. */
+        desc: 'More Z2/Z3, but hard work stays at maintenance.', /* Focus explanation. */
+        hardMult: 0.72, z3Mult: 1.15, z5Shift: -0.04, /* Reduces hard share while increasing Z3 support. */
+        z2Floor: 0.42, z3Floor: 0.12, hardFloor: 0.08 /* Keeps hard work alive while emphasizing Z2. */
+      }, /* Ends MITO focus. */
+      cardiac: { /* CARDIAC focus profile. */
+        name: 'CARDIAC focus', /* User-facing focus name. */
+        desc: 'More Z3/Z4 for stroke-volume stimulus.', /* Focus explanation. */
+        hardMult: 1.10, z3Mult: 1.35, z5Shift: -0.05, /* Increases Z3/Z4 emphasis and slightly reduces Z5 share. */
+        z2Floor: 0.18, z3Floor: 0.18, hardFloor: 0.14 /* Maintains MITO and VO2 while emphasizing cardiac work. */
+      }, /* Ends CARDIAC focus. */
+      vo2: { /* VO2max focus profile. */
+        name: 'VO2max focus', /* User-facing focus name. */
+        desc: 'More Z4/Z5, while base stays alive.', /* Focus explanation. */
+        hardMult: 1.35, z3Mult: 0.85, z5Shift: 0.08, /* Increases hard share and Z5 fraction. */
+        z2Floor: 0.16, z3Floor: 0.08, hardFloor: 0.18 /* Keeps MITO/CARDIAC maintenance while emphasizing VO2. */
+      } /* Ends VO2 focus. */
+    }; /* Ends focus profile object. */
+
+    let currentLevel = 'intermediate'; /* Stores the currently selected training-status preset. */
+    let currentFocus = 'balanced'; /* Stores the currently selected adaptation-focus preset. */
+
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n)); /* Restricts a number between a minimum and maximum. */
+    const round1 = n => Math.round(n * 10) / 10; /* Rounds a number to one decimal place. */
+    const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1); /* Formats integers without decimals and non-integers with one decimal. */
+
+    function buildLevels() { /* Builds the training-status buttons. */
+      const grid = document.getElementById('levelGrid'); /* Gets the status button container. */
       grid.innerHTML = Object.entries(levels).map(([key, l]) => `
         <button class="level ${key === currentLevel ? 'active' : ''}" data-level="${key}">
           <div class="name">${l.name}</div>
           <div class="desc">${l.desc}</div>
         </button>
-      `).join('');
-      grid.querySelectorAll('.level').forEach(btn => btn.addEventListener('click', () => {
-        currentLevel = btn.dataset.level;
-        buildLevels();
-        update();
-      }));
-    }
+      `).join(''); /* Inserts all status buttons into the container. */
+      grid.querySelectorAll('.level').forEach(btn => btn.addEventListener('click', () => { /* Adds click handlers to status buttons. */
+        currentLevel = btn.dataset.level; /* Stores the selected training status. */
+        buildLevels(); /* Rebuilds buttons to update active styling. */
+        update(); /* Recalculates and redraws the calculator. */
+      })); /* Ends click handler setup. */
+    } /* Ends buildLevels function. */
 
-    function calculate(duration, sessions, level) {
-      const total = duration * sessions;
-      const l = levels[level];
+    function buildFocus() { /* Builds the adaptation-focus buttons. */
+      const grid = document.getElementById('focusGrid'); /* Gets the focus button container. */
+      grid.innerHTML = Object.entries(focusProfiles).map(([key, f]) => `
+        <button class="level ${key === currentFocus ? 'active' : ''}" data-focus="${key}">
+          <div class="name">${f.name}</div>
+          <div class="desc">${f.desc}</div>
+        </button>
+      `).join(''); /* Inserts all focus buttons into the container. */
+      grid.querySelectorAll('.level').forEach(btn => btn.addEventListener('click', () => { /* Adds click handlers to focus buttons. */
+        currentFocus = btn.dataset.focus; /* Stores the selected adaptation focus. */
+        buildFocus(); /* Rebuilds buttons to update active styling. */
+        update(); /* Recalculates and redraws the calculator. */
+      })); /* Ends click handler setup. */
+    } /* Ends buildFocus function. */
 
-      // Short sessions should bias toward intensity because total volume is too low
-      // for Zone 2 to carry the adaptation alone. Long sessions reduce hard share
-      // because recovery cost and durability matter more as total volume rises.
-      const shortFactor = clamp((35 - duration) / 20, 0, 1);
-      const longFactor = clamp((duration - 45) / 45, 0, 1);
+    function calculate(duration, sessions, level) { /* Calculates the weekly and per-session zone distribution. */
+      const workTotal = duration * sessions; /* Calculates total weekly productive work minutes. */
+      const l = levels[level]; /* Gets the selected training-status preset. */
+      const f = focusProfiles[currentFocus]; /* Gets the selected adaptation-focus profile. */
+      const shortFactor = clamp((35 - duration) / 20, 0, 1); /* Increases when sessions are short. */
+      const longFactor = clamp((duration - 45) / 45, 0, 1); /* Increases when sessions are long. */
+      const baseHardPct = l.hardPct + shortFactor * 0.14 - longFactor * 0.12; /* Adjusts hard-work share by session length. */
+      const dynamicHardPct = baseHardPct * f.hardMult; /* Applies the focus-specific hard-work multiplier. */
+      const hardFloor = Math.max(l.hardMin, workTotal * f.hardFloor); /* Creates a minimum Z4/Z5 maintenance floor. */
+      const hardWeekly = clamp(workTotal * dynamicHardPct, hardFloor, l.hardMax); /* Calculates weekly Z4/Z5 work with min/max limits. */
+      const z5MinShare = currentLevel === 'beginner' ? 0 : 0.04; /* Beginners do not need mandatory Z5. */
+      const z5MaxShare = currentLevel === 'beginner' ? 0.06 : 0.34; /* Caps beginner Z5 to tiny exposure only. */
+      const dynamicZ5Share = clamp(l.z5Share + f.z5Shift + shortFactor * 0.04 - longFactor * 0.05, z5MinShare, z5MaxShare); /* Calculates how much hard work becomes Z5. */
+      let z5Weekly = hardWeekly * dynamicZ5Share; /* Calculates weekly Z5 minutes. */
+      let z4Weekly = hardWeekly - z5Weekly; /* Calculates weekly Z4 minutes. */
+      let z3Weekly = workTotal * l.z3Pct * f.z3Mult; /* Calculates weekly Z3 minutes. */
+      let z2Weekly = workTotal - z3Weekly - z4Weekly - z5Weekly; /* Assigns remaining productive work time to Z2. */
+      const z2Floor = workTotal * f.z2Floor; /* Calculates the MITO/Z2 maintenance floor. */
+      const z3Floor = workTotal * f.z3Floor; /* Calculates the CARDIAC/Z3 maintenance floor. */
+      const z2TargetFloor = duration <= 25 ? Math.min(z2Floor, workTotal * 0.25) : z2Floor; /* Limits Z2 floor for very short sessions. */
+      z2Weekly = Math.max(z2Weekly, z2TargetFloor); /* Ensures Z2 does not fall below maintenance. */
+      z3Weekly = Math.max(z3Weekly, z3Floor); /* Ensures Z3 does not fall below maintenance. */
+      let sum = z2Weekly + z3Weekly + z4Weekly + z5Weekly; /* Calculates total assigned weekly work. */
+      if (sum > workTotal) { /* Checks whether maintenance floors exceed available time. */
+        let excess = sum - workTotal; /* Calculates how much time must be removed. */
+        const reducibleZ2 = Math.max(0, z2Weekly - z2TargetFloor); /* Calculates Z2 minutes above the Z2 floor. */
+        const takeZ2 = Math.min(reducibleZ2, excess); /* Determines how much excess can be removed from Z2. */
+        z2Weekly -= takeZ2; /* Removes excess from Z2 first. */
+        excess -= takeZ2; /* Updates remaining excess. */
+        const reducibleZ3 = Math.max(0, z3Weekly - z3Floor); /* Calculates Z3 minutes above the Z3 floor. */
+        const takeZ3 = Math.min(reducibleZ3, excess); /* Determines how much excess can be removed from Z3. */
+        z3Weekly -= takeZ3; /* Removes excess from Z3 second. */
+        excess -= takeZ3; /* Updates remaining excess. */
+        if (excess > 0) { /* If still over budget, reduce Z5 partially. */
+          const takeZ5 = Math.min(z5Weekly * 0.5, excess); /* Limits how much Z5 can be removed at once. */
+          z5Weekly -= takeZ5; /* Removes excess from Z5. */
+          excess -= takeZ5; /* Updates remaining excess. */
+        } /* Ends Z5 reduction block. */
+        if (excess > 0) { z4Weekly = Math.max(0, z4Weekly - excess); } /* Removes any final excess from Z4. */
+      } /* Ends over-budget correction. */
+      return normalize({ z1: 0, z2: z2Weekly, z3: z3Weekly, z4: z4Weekly, z5: z5Weekly }, workTotal, sessions); /* Returns normalized weekly and session plans. */
+    } /* Ends calculate function. */
 
-      const dynamicHardPct = l.hardPct + shortFactor * 0.14 - longFactor * 0.12;
-      const hardWeekly = clamp(total * dynamicHardPct, l.hardMin, l.hardMax);
+    function normalize(weekly, total, sessions) { /* Converts weekly zone minutes into normalized weekly and per-session values. */
+      const sum = Object.values(weekly).reduce((a,b) => a + b, 0); /* Adds up all assigned weekly zone minutes. */
+      const factor = total / sum; /* Calculates correction factor so assigned time equals available time. */
+      const fixedWeekly = {}; /* Creates object for normalized weekly values. */
+      const perSession = {}; /* Creates object for per-session values. */
+      Object.keys(weekly).forEach(k => { /* Loops over each zone key. */
+        fixedWeekly[k] = weekly[k] * factor; /* Applies normalization to weekly minutes. */
+        perSession[k] = fixedWeekly[k] / sessions; /* Divides weekly minutes by session count. */
+      }); /* Ends zone normalization loop. */
+      return { weekly: fixedWeekly, session: perSession }; /* Returns both weekly and per-session plans. */
+    } /* Ends normalize function. */
 
-      const z5Weekly = hardWeekly * l.z5Share;
-      const z4Weekly = hardWeekly - z5Weekly;
+    function score(m) { /* Calculates MITO/CARDIAC/VO2 stimulus scores from zone minutes. */
+      const active = m.z2 + m.z3 + m.z4 + m.z5; /* Counts productive active minutes, excluding Z1 overhead. */
+      const volumeBonus = Math.min(active / 12, 15); /* Canonical MITO volume bonus, capped at 15 points. */
+      const mitoBase = m.z2 * 1.0 + m.z3 * 1.35 + volumeBonus; /* Calculates base MITO score from Z2/Z3 plus duration. */
+      const mitoHigh = m.z4 * 1.5 + m.z5 * 1.5; /* Calculates high-intensity MITO contribution from Z4/Z5. */
+      const mito = Math.min(mitoBase + Math.min(mitoHigh, mitoBase * 2), 80); /* Applies high-intensity MITO cap and session cap. */
+      const cardiac = Math.min(m.z3 * 1.0 + m.z4 * 2.1 + m.z5 * 1.25, 75); /* Calculates capped CARDIAC score from Z3/Z4/Z5. */
+      const vo2 = Math.min(m.z4 * 2.2 + m.z5 * 3.3, 65); /* Calculates capped VO2 score from Z4/Z5 only. */
+      return { mito, cardiac, vo2 }; /* Returns the three stimulus scores. */
+    } /* Ends score function. */
 
-      const z1Weekly = total * l.z1Pct;
-      const z3Weekly = total * l.z3Pct;
-
-      // Z2 expands only when duration becomes long enough.
-      let z2Weekly = total - z1Weekly - z3Weekly - z4Weekly - z5Weekly;
-
-      // For ultra-short sessions, keep Z2 as a small support layer,
-      // not the dominant prescription.
-      if (duration <= 25) {
-        z2Weekly = Math.min(z2Weekly, total * 0.25);
-      }
-
-      if (z2Weekly < 0) {
-        const overflow = Math.abs(z2Weekly);
-        z2Weekly = 0;
-
-        const reduceZ3 = Math.min(z3Weekly, overflow * 0.5);
-        const remaining = overflow - reduceZ3;
-        const reduceZ1 = Math.min(z1Weekly, remaining);
-
-        return normalize({
-          z1: z1Weekly - reduceZ1,
-          z2: 0,
-          z3: z3Weekly - reduceZ3,
-          z4: z4Weekly,
-          z5: z5Weekly
-        }, total, sessions);
-      }
-
-      return normalize({
-        z1: z1Weekly,
-        z2: z2Weekly,
-        z3: z3Weekly,
-        z4: z4Weekly,
-        z5: z5Weekly
-      }, total, sessions);
-    }
-
-    function normalize(weekly, total, sessions) {
-      const sum = Object.values(weekly).reduce((a,b) => a + b, 0);
-      const factor = total / sum;
-      const fixedWeekly = {};
-      const perSession = {};
-      Object.keys(weekly).forEach(k => {
-        fixedWeekly[k] = weekly[k] * factor;
-        perSession[k] = fixedWeekly[k] / sessions;
-      });
-      return { weekly: fixedWeekly, session: perSession };
-    }
-
-    function score(m) {
-      const mitoBase = m.z2 * 1.0 + m.z3 * 1.35;
-      const mitoHigh = m.z4 * 1.5 + m.z5 * 1.5;
-      const mito = mitoBase + Math.min(mitoHigh, mitoBase * 2);
-      const cardiac = m.z3 * 1.0 + m.z4 * 2.1 + m.z5 * 1.25;
-      const vo2 = m.z4 * 2.2 + m.z5 * 3.3;
-      return { mito, cardiac, vo2 };
-    }
-
-    function update() {
-      const duration = Number(document.getElementById('duration').value);
-      const sessions = Number(document.getElementById('sessions').value);
-      const level = levels[currentLevel];
-      const plan = calculate(duration, sessions, currentLevel);
-      const sScore = score(plan.session);
-      const wScore = score(plan.weekly);
-      const hardSession = plan.session.z4 + plan.session.z5;
-      const hardWeekly = plan.weekly.z4 + plan.weekly.z5;
-      const hardPct = hardWeekly / (duration * sessions) * 100;
-
-      document.getElementById('durationValue').textContent = duration;
-      document.getElementById('sessionsValue').textContent = sessions;
-      document.getElementById('weeklyTime').textContent = `${duration * sessions}m`;
-      document.getElementById('hardTime').textContent = `${fmt(round1(hardWeekly))}m`;
-      document.getElementById('hardShare').textContent = `${Math.round(hardPct)}%`;
-
-      renderStack(plan.session, duration);
-      renderTables(plan, duration, sessions);
-
-      document.getElementById('mitoScore').textContent = fmt(round1(sScore.mito));
-      document.getElementById('cardiacScore').textContent = fmt(round1(sScore.cardiac));
-      document.getElementById('vo2Score').textContent = fmt(round1(sScore.vo2));
-
-      const badge = document.getElementById('gateBadge');
-      const title = document.getElementById('gateTitle');
-      const text = document.getElementById('gateText');
-      badge.className = 'gate-badge';
-
-      if (hardSession < level.gateMin) {
-        badge.classList.add('bad');
-        badge.textContent = 'Too little Z4/Z5';
-        title.textContent = 'High-output work is underdosed';
-        text.textContent = `This setup gives only ${fmt(round1(hardSession))} min Z4/Z5 per session. For ${level.name.toLowerCase()}, raise the high-output exposure toward about ${level.gateMin} min/session before making Zone 2 the main focus.`;
-      } else if (hardSession < level.gateStrong) {
-        badge.classList.add('warn');
-        badge.textContent = 'Minimum met';
-        title.textContent = 'Minimum high-output exposure met';
-        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. This is enough exposure to justify adding some Zone 2, but the plan should still protect intensity quality.`;
-      } else {
-        badge.classList.add('good');
-        badge.textContent = 'Ready for base volume';
-        title.textContent = 'Now Zone 2 volume makes more sense';
-        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. The high-output gate is open, so additional Zone 2 now supports sustainable volume instead of hiding a missing intensity dose.`;
-      }
-
-      const z4 = fmt(round1(plan.session.z4));
-      const z5 = fmt(round1(plan.session.z5));
-      const z3 = fmt(round1(plan.session.z3));
-      const z2 = fmt(round1(plan.session.z2));
-      const z1 = fmt(round1(plan.session.z1));
-      document.getElementById('coachText').textContent = `For ${sessions} × ${duration} min/week, the target is ${fmt(round1(hardWeekly))} min/week in Z4–Z5. This avoids the common mistake of using easy volume to compensate for missing high-output stimulus.`;
+    function update() { /* Main redraw function called whenever user changes inputs. */
+      const duration = Number(document.getElementById('duration').value); /* Reads current work-time slider value. */
+      const sessions = Number(document.getElementById('sessions').value); /* Reads current sessions-per-week slider value. */
+      const level = levels[currentLevel]; /* Gets selected training-status object. */
+      const plan = calculate(duration, sessions, currentLevel); /* Calculates the current zone plan. */
+      const sScore = score(plan.session); /* Calculates per-session stimulus scores. */
+      const wScore = { mito: sScore.mito * sessions, cardiac: sScore.cardiac * sessions, vo2: sScore.vo2 * sessions }; /* Weekly score = repeated session score × sessions. */
+      const hardSession = plan.session.z4 + plan.session.z5; /* Calculates per-session Z4+Z5 minutes. */
+      const hardWeekly = plan.weekly.z4 + plan.weekly.z5; /* Calculates weekly Z4+Z5 minutes. */
+      const hardPct = hardWeekly / (duration * sessions) * 100; /* Calculates Z4+Z5 as percent of productive weekly work. */
+      const z1OverheadSession = Math.max(3, Math.min(10, duration * 0.2)); /* Estimates optional Z1 overhead per session. */
+      const z1OverheadWeekly = z1OverheadSession * sessions; /* Calculates optional weekly Z1 overhead. */
+      document.getElementById('durationValue').textContent = duration; /* Updates visible duration value. */
+      document.getElementById('sessionsValue').textContent = sessions; /* Updates visible sessions value. */
+      document.getElementById('weeklyTime').textContent = `${duration * sessions}m`; /* Updates weekly productive work metric. */
+      document.getElementById('hardTime').textContent = `${fmt(round1(hardWeekly))}m`; /* Updates weekly hard-time metric. */
+      document.getElementById('hardShare').textContent = `${Math.round(hardPct)}%`; /* Updates hard-share metric. */
+      renderStack(plan.session, duration); /* Redraws horizontal zone distribution bar. */
+      renderTables(plan, duration, sessions); /* Redraws per-session and weekly tables. */
+      document.getElementById('mitoScore').textContent = fmt(round1(wScore.mito)); /* Updates weekly MITO score. */
+      document.getElementById('cardiacScore').textContent = fmt(round1(wScore.cardiac)); /* Updates weekly CARDIAC score. */
+      document.getElementById('vo2Score').textContent = fmt(round1(wScore.vo2)); /* Updates weekly VO2 score. */
+      document.getElementById('mitoSub').textContent = `${fmt(round1(sScore.mito))} per session · duration-dominant base signal.`; /* Updates per-session MITO subtitle. */
+      document.getElementById('cardiacSub').textContent = `${fmt(round1(sScore.cardiac))} per session · sustained high-output signal.`; /* Updates per-session CARDIAC subtitle. */
+      document.getElementById('vo2Sub').textContent = `${fmt(round1(sScore.vo2))} per session · Z4/Z5 threshold-gated signal.`; /* Updates per-session VO2 subtitle. */
+      const badge = document.getElementById('gateBadge'); /* Gets gate badge element. */
+      const title = document.getElementById('gateTitle'); /* Gets gate title element. */
+      const text = document.getElementById('gateText'); /* Gets gate text element. */
+      badge.className = 'gate-badge'; /* Resets gate badge classes. */
+      if (hardSession < level.gateMin) { /* Checks if high-output exposure is below minimum. */
+        badge.classList.add('bad'); /* Applies bad status styling. */
+        badge.textContent = 'Too little Z4/Z5'; /* Sets bad status label. */
+        title.textContent = 'High-output work is underdosed'; /* Sets gate title for low hard work. */
+        text.textContent = `This setup gives only ${fmt(round1(hardSession))} min Z4/Z5 per session. For ${level.name.toLowerCase()}, raise the high-output exposure toward about ${level.gateMin} min/session before making Zone 2 the main focus.`; /* Explains underdosed hard work. */
+      } else if (hardSession < level.gateStrong) { /* Checks if high-output exposure meets minimum but not strong target. */
+        badge.classList.add('warn'); /* Applies warning status styling. */
+        badge.textContent = 'Minimum met'; /* Sets warning status label. */
+        title.textContent = 'Minimum high-output exposure met'; /* Sets gate title for minimum hard work. */
+        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. This is enough exposure to justify adding some Zone 2, but the plan should still protect intensity quality.`; /* Explains minimum hard work. */
+      } else { /* Handles strong/high hard-work exposure. */
+        badge.classList.add('good'); /* Applies good status styling. */
+        badge.textContent = 'Ready for base volume'; /* Sets good status label. */
+        title.textContent = 'Now Zone 2 volume makes more sense'; /* Sets gate title for strong hard work. */
+        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. The high-output gate is open, so additional Zone 2 now supports sustainable volume instead of hiding a missing intensity dose.`; /* Explains why Zone 2 now makes sense. */
+      } /* Ends gate status logic. */
+      const z4 = fmt(round1(plan.session.z4)); /* Formats per-session Z4 minutes. */
+      const z5 = fmt(round1(plan.session.z5)); /* Formats per-session Z5 minutes. */
+      const z3 = fmt(round1(plan.session.z3)); /* Formats per-session Z3 minutes. */
+      const z2 = fmt(round1(plan.session.z2)); /* Formats per-session Z2 minutes. */
+      const z1 = fmt(round1(z1OverheadSession)); /* Formats optional per-session Z1 overhead. */
+      document.getElementById('coachText').textContent = `Focus: ${focusProfiles[currentFocus].name}. For ${sessions} × ${duration} min/week, the target is ${fmt(round1(hardWeekly))} min/week in Z4–Z5. The chosen focus shifts emphasis, but every system keeps a maintenance dose.`; /* Updates coaching explanation. */
       document.getElementById('sessionShape').innerHTML = `
-        <li>${z1} min Z1 warm-up/recovery</li>
-        <li>${z4} min Z4 plus ${z5} min Z5 as the main adaptation gate</li>
+        <li>${z1} min optional Z1 warm-up/recovery overhead, not counted as work time</li>
+        <li>${z4} min Z4 as the main VO2/cardiac work</li>
+        <li>${z5} min Z5 as peak-dose work — useful, but intentionally small</li>
         <li>${z3} min Z3 transition / threshold work</li>
         <li>${z2} min Z2 as sustainable support volume</li>
-      `;
-    }
+      `; /* Ends session-shape bullet HTML. */
+    } /* Ends update function. */
 
-    function renderStack(session, duration) {
-      document.getElementById('zoneStack').innerHTML = zones.map(z => {
-        const minutes = session[z.key];
-        const pct = minutes / duration * 100;
-        return `<div class="seg ${z.key}" style="width:${pct}%" title="${z.label}: ${fmt(round1(minutes))} min">${pct >= 8 ? z.short : ''}</div>`;
-      }).join('');
-    }
+    function renderStack(session, duration) { /* Renders the horizontal colored zone bar. */
+      document.getElementById('zoneStack').innerHTML = zones.map(z => { /* Converts each zone into a bar segment. */
+        const minutes = session[z.key]; /* Gets per-session minutes for this zone. */
+        const pct = minutes / duration * 100; /* Calculates this zone's percentage of productive work time. */
+        return `<div class="seg ${z.key}" style="width:${pct}%" title="${z.label}: ${fmt(round1(minutes))} min">${pct >= 8 ? z.short : ''}</div>`; /* Returns segment HTML with label if wide enough. */
+      }).join(''); /* Inserts all segments into the bar. */
+    } /* Ends renderStack function. */
 
-    function renderTables(plan, duration, sessions) {
-      document.getElementById('sessionTable').innerHTML = zones.map(z => {
-        const min = plan.session[z.key];
-        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${Math.round(min / duration * 100)}%</td></tr>`;
-      }).join('');
-      document.getElementById('weeklyTable').innerHTML = zones.map(z => {
-        const min = plan.weekly[z.key];
-        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${(min / 60).toFixed(2)}</td></tr>`;
-      }).join('');
-    }
+    function renderTables(plan, duration, sessions) { /* Renders the per-session and weekly tables. */
+      const z1OverheadSession = Math.max(3, Math.min(10, duration * 0.2)); /* Recalculates optional Z1 overhead per session. */
+      const z1OverheadWeekly = z1OverheadSession * sessions; /* Recalculates optional Z1 overhead per week. */
+      document.getElementById('sessionTable').innerHTML = zones.map(z => { /* Builds per-session table rows. */
+        const min = z.key === 'z1' ? z1OverheadSession : plan.session[z.key]; /* Uses overhead for Z1 and plan minutes for Z2–Z5. */
+        const pct = z.key === 'z1' ? 'overhead' : `${Math.round(min / duration * 100)}%`; /* Labels Z1 as overhead and other zones as work percent. */
+        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${pct}</td></tr>`; /* Returns per-session row HTML. */
+      }).join(''); /* Inserts per-session rows. */
+      document.getElementById('weeklyTable').innerHTML = zones.map(z => { /* Builds weekly table rows. */
+        const min = z.key === 'z1' ? z1OverheadWeekly : plan.weekly[z.key]; /* Uses weekly overhead for Z1 and plan minutes for Z2–Z5. */
+        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${(min / 60).toFixed(2)}</td></tr>`; /* Returns weekly row HTML. */
+      }).join(''); /* Inserts weekly rows. */
+    } /* Ends renderTables function. */
 
-    document.getElementById('duration').addEventListener('input', update);
-    document.getElementById('sessions').addEventListener('input', update);
-    buildLevels();
-    update();
-  </script>
-</body>
-</html>
+    const durationSlider = document.getElementById('duration'); /* Gets the duration slider element. */
+    const sessionsSlider = document.getElementById('sessions'); /* Gets the sessions slider element. */
+
+    ['input', 'change', 'touchend'].forEach(evt => { /* Registers multiple events for better iOS Safari reliability. */
+      durationSlider.addEventListener(evt, update, { passive: true }); /* Updates calculator when duration slider changes. */
+      sessionsSlider.addEventListener(evt, update, { passive: true }); /* Updates calculator when sessions slider changes. */
+    }); /* Ends slider event listener setup. */
+
+    buildLevels(); /* Builds initial training-status selector buttons. */
+    buildFocus(); /* Builds initial adaptation-focus selector buttons. */
+    update(); /* Performs initial calculation and page render. */
+  </script> <!-- Ends JavaScript logic block. -->
+</body> <!-- Ends visible page body. -->
+</html> <!-- Ends HTML document. -->
