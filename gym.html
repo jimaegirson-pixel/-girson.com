@@ -51,13 +51,11 @@ button { cursor: pointer; }
 }
 
 .top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  padding-top: 6px;
-  margin: -6px -4px 12px;
-  background: linear-gradient(to bottom, rgba(248, 250, 252, 0.98) 75%, rgba(248, 250, 252, 0));
-  backdrop-filter: blur(14px);
+  position: static;
+  padding-top: 0;
+  margin: 0 0 12px;
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .hero {
@@ -65,7 +63,7 @@ button { cursor: pointer; }
   background: var(--card);
   border-radius: 0;
   box-shadow: var(--shadow);
-  padding: 16px;
+  padding: 12px;
   position: relative;
 }
 
@@ -82,7 +80,7 @@ button { cursor: pointer; }
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .pill {
@@ -129,7 +127,7 @@ button { cursor: pointer; }
 
 h1 {
   margin: 0;
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
   letter-spacing: -0.03em;
   text-transform: uppercase;
@@ -138,16 +136,13 @@ h1 {
 }
 
 .subtitle {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.45;
+  display: none;
 }
 
 .zone-card {
-  margin-top: 14px;
+  margin-top: 10px;
   border-radius: 0;
-  padding: 16px;
+  padding: 12px;
   border: 3px solid #231942;
   transition: background 180ms ease, border 180ms ease, color 180ms ease;
   box-shadow: 4px 4px 0 #231942;
@@ -161,7 +156,7 @@ h1 {
 }
 
 .zone-title {
-  font-size: 31px;
+  font-size: 25px;
   line-height: 0.98;
   letter-spacing: -0.04em;
   font-weight: 950;
@@ -171,8 +166,8 @@ h1 {
 .zone-icon {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.66);
   font-size: 22px;
@@ -181,11 +176,11 @@ h1 {
 }
 
 .zone-copy {
-  margin-top: 8px;
+  margin-top: 7px;
   color: inherit;
   opacity: 0.86;
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .cards { display: grid; gap: 12px; }
@@ -205,6 +200,17 @@ h1 {
   inset: 5px;
   border: 1px dashed rgba(35, 25, 66, 0.18);
   pointer-events: none;
+  z-index: 0;
+}
+
+.card > *, .hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+input[type="range"], button {
+  position: relative;
+  z-index: 2;
 }
 
 .section-title {
@@ -694,4 +700,4 @@ input[type="range"]::-moz-range-thumb {
       const weeklyStim = sessionStimValid * state.frequency;
       const atrophyLoss = weeklyAtrophyLossEvenSpacing(state.frequency);
       const netWeeklyAU = Math.max(0, weeklyStim - atrophyLoss);
-      const avgQF = selectedRows.length ? selectedRows.reduce((su
+      const avgQF = selectedRows.length ? selectedRows.reduce((sum, row) => sum + row.qf, 0) / 
