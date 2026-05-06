@@ -307,6 +307,12 @@
     .score .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; } /* Styles score labels. */
     .score .big { font-size: 2rem; font-weight: 950; letter-spacing: -.06em; margin-top: 4px; } /* Styles large score numbers. */
     .score .small { color: var(--muted); font-size: .78rem; line-height: 1.35; } /* Styles score explanations. */
+    .stimulus { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; } /* Makes the symbolic score scale visually stable. */
+    .stimulus.under { color: var(--bad); } /* Red minus means underdosed. */
+    .stimulus.maintain { color: var(--muted); } /* Grey plus means maintenance. */
+    .stimulus.productive { color: var(--good); } /* Green pluses mean productive stimulus. */
+    .stimulus.strong { color: var(--warn); } /* Amber pluses mean strong focused stimulus. */
+    .stimulus.high { color: var(--warn); } /* Amber high state means strong stimulus, while recovery risk is handled by Plan Fit. */
 
     .coach { /* Styles the black coaching panel. */
       margin-top: 18px; /* Adds space above coach panel. */
@@ -611,17 +617,17 @@
 
         <div class="scores"> <!-- Weekly score card grid. -->
           <div class="score"> <!-- MITO score card. -->
-            <div class="label">Weekly Mito / base</div> <!-- MITO card label. -->
+            <div class="label">Base / MITO</div> <!-- MITO card label. -->
             <div class="big" id="mitoScore">—</div> <!-- JavaScript inserts weekly MITO score. -->
             <div class="small" id="mitoSub">Duration-dominant aerobic adaptation.</div> <!-- JavaScript inserts per-session MITO explanation. -->
           </div> <!-- Ends MITO score card. -->
           <div class="score"> <!-- CARDIAC score card. -->
-            <div class="label">Weekly Cardiac</div> <!-- CARDIAC card label. -->
+            <div class="label">Cardiac</div> <!-- CARDIAC card label. -->
             <div class="big" id="cardiacScore">—</div> <!-- JavaScript inserts weekly CARDIAC score. -->
             <div class="small" id="cardiacSub">Sustained high cardiac output.</div> <!-- JavaScript inserts per-session CARDIAC explanation. -->
           </div> <!-- Ends CARDIAC score card. -->
           <div class="score"> <!-- VO2 score card. -->
-            <div class="label">Weekly VO2</div> <!-- VO2 card label. -->
+            <div class="label">VO2max</div> <!-- VO2 card label. -->
             <div class="big" id="vo2Score">—</div> <!-- JavaScript inserts weekly VO2 score. -->
             <div class="small" id="vo2Sub">Threshold-gated Z4/Z5 exposure.</div> <!-- JavaScript inserts per-session VO2 explanation. -->
           </div> <!-- Ends VO2 score card. -->
@@ -655,25 +661,25 @@
         name: 'Beginner / deconditioned', /* User-facing preset name. */
         desc: 'Z2/Z3 first, with tiny Z4 touches if recoverable.', /* Preset explanation. */
         hardPct: 0.16, hardMin: 2, hardMax: 12, z5Share: 0.02, z3Pct: 0.28, z1Pct: 0.16, /* Beginner dose parameters: Z2/Z3 dominant with small Z4 exposure. */
-        gateMin: 1.5, gateStrong: 4 /* Beginner Z4/Z5 gate thresholds per session. */
+        gateMin: 1.5, gateStrong: 4, loadMin: 30, loadMax: 120, hardCeiling: 0.36, z5Ceiling: 0.05 /* Beginner plan-fit thresholds. */
       }, /* Ends beginner preset. */
       intermediate: { /* Intermediate preset. */
         name: 'Intermediate', /* User-facing preset name. */
         desc: 'Most recreational athletes underdose real Z4 work.', /* Preset explanation. */
         hardPct: 0.28, hardMin: 7, hardMax: 30, z5Share: 0.16, z3Pct: 0.18, z1Pct: 0.12, /* Intermediate dose parameters. */
-        gateMin: 5, gateStrong: 9 /* Intermediate Z4/Z5 gate thresholds per session. */
+        gateMin: 5, gateStrong: 9, loadMin: 75, loadMax: 240, hardCeiling: 0.42, z5Ceiling: 0.10 /* Intermediate plan-fit thresholds. */
       }, /* Ends intermediate preset. */
       trained: { /* Trained/advanced preset. */
         name: 'Trained / advanced', /* User-facing preset name. */
         desc: 'Enough base to tolerate meaningful Z4/Z5 volume.', /* Preset explanation. */
         hardPct: 0.30, hardMin: 10, hardMax: 45, z5Share: 0.22, z3Pct: 0.16, z1Pct: 0.10, /* Trained dose parameters. */
-        gateMin: 7, gateStrong: 12 /* Trained Z4/Z5 gate thresholds per session. */
+        gateMin: 7, gateStrong: 12, loadMin: 150, loadMax: 420, hardCeiling: 0.45, z5Ceiling: 0.14 /* Trained plan-fit thresholds. */
       }, /* Ends trained preset. */
       elite: { /* Elite preset. */
         name: 'Elite', /* User-facing preset name. */
         desc: 'High volume still needs hard work, but most time is support volume.', /* Preset explanation. */
         hardPct: 0.24, hardMin: 12, hardMax: 70, z5Share: 0.28, z3Pct: 0.10, z1Pct: 0.08, /* Elite dose parameters. */
-        gateMin: 10, gateStrong: 18 /* Elite Z4/Z5 gate thresholds per session. */
+        gateMin: 10, gateStrong: 18, loadMin: 300, loadMax: 700, hardCeiling: 0.42, z5Ceiling: 0.18 /* Elite plan-fit thresholds. */
       } /* Ends elite preset. */
     }; /* Ends training-status preset object. */
 
@@ -814,6 +820,125 @@
       return { mito, cardiac, vo2 }; /* Returns the three stimulus scores. */
     } /* Ends score function. */
 
+    function getStimulusDisplay(system, weeklyScore, weeklyWork, level, focusKey, sessions) { /* Converts raw engine scores into user-friendly symbols. */
+      const maintenanceDose = { /* Defines practical weekly maintenance targets by system and level. */
+        beginner:     { mito: 35,  cardiac: 12,  vo2: 6  }, /* Beginner weekly maintenance targets. */
+        intermediate: { mito: 90,  cardiac: 34,  vo2: 22 }, /* Intermediate weekly maintenance targets. */
+        trained:      { mito: 160, cardiac: 60,  vo2: 35 }, /* Trained weekly maintenance targets. */
+        elite:        { mito: 275, cardiac: 100, vo2: 55 }  /* Elite weekly maintenance targets. */
+      }; /* Ends weekly maintenance target object. */
+
+      const focusMult = { /* Defines how much each focus raises the target for its primary system. */
+        balanced: { mito: 1.35, cardiac: 1.25, vo2: 1.20 }, /* Balanced asks all systems to be productive, not necessarily maximal. */
+        mito:     { mito: 1.65, cardiac: 0.85, vo2: 0.80 }, /* MITO focus raises base target and lowers maintenance-only systems. */
+        cardiac:  { mito: 0.90, cardiac: 1.55, vo2: 0.90 }, /* CARDIAC focus raises cardiac target. */
+        vo2:      { mito: 0.85, cardiac: 0.95, vo2: 1.65 }  /* VO2 focus raises VO2 target. */
+      }; /* Ends focus multiplier object. */
+
+      const scoreCaps = { mito: 80, cardiac: 75, vo2: 65 }; /* Canonical per-session score caps. */
+      const rawTarget = maintenanceDose[level][system] * focusMult[focusKey][system]; /* Calculates the unconstrained target score for this system, level, and focus. */
+      const achievableTarget = scoreCaps[system] * sessions * 0.70; /* Prevents impossible targets when session count is low. */
+      const target = Math.min(rawTarget, achievableTarget); /* Uses the lower of desired target and achievable capped target. */
+      const ratio = target > 0 ? weeklyScore / target : 0; /* Converts raw weekly score into target-relative ratio. */
+
+      const copy = { /* Defines user-facing explanations for each system and level. */
+        mito: {
+          under: 'Base work is underdosed.', maintain: 'Maintains aerobic base.', productive: 'Productive base stimulus.', strong: 'Strong base stimulus.'
+        },
+        cardiac: {
+          under: 'Heart stimulus is underdosed.', maintain: 'Maintains cardiac stimulus.', productive: 'Productive heart stimulus.', strong: 'Strong cardiac stimulus.'
+        },
+        vo2: {
+          under: 'VO2 stimulus is underdosed.', maintain: 'Maintains VO2 exposure.', productive: 'Productive VO2 stimulus.', strong: 'Strong VO2 stimulus.'
+        }
+      }; /* Ends copy object. */
+
+      if (ratio < 0.55) return { symbol: '−', className: 'under', label: 'Underdosed', text: copy[system].under }; /* Red minus means not enough. */
+      if (ratio < 0.90) return { symbol: '+', className: 'maintain', label: 'Maintenance', text: copy[system].maintain }; /* Grey plus means maintenance only. */
+      if (ratio < 2.00) return { symbol: '++', className: 'productive', label: 'Productive', text: copy[system].productive }; /* Two pluses means productive. */
+      return { symbol: '+++', className: 'strong', label: 'Strong', text: copy[system].strong }; /* Three pluses is reserved for clearly emphasized stimulus. */
+    } /* Ends getStimulusDisplay function. */
+
+    function renderStimulus(system, display) { /* Renders a symbolic stimulus card. */
+      const big = document.getElementById(`${system}Score`); /* Gets the large symbol element. */
+      big.textContent = display.symbol; /* Inserts the symbolic score. */
+      big.className = `big stimulus ${display.className}`; /* Applies color-coded status class. */
+      document.getElementById(`${system}Sub`).textContent = `${display.label} · ${display.text}`; /* Inserts human-readable interpretation. */
+    } /* Ends renderStimulus function. */
+
+    function assessPlanFit(duration, sessions, level, plan, hardSession, hardWeekly, hardPct) { /* Evaluates whether the plan fits the selected level and focus. */
+      const weeklyWork = duration * sessions; /* Calculates total productive weekly work. */
+      const z2z3Pct = (plan.weekly.z2 + plan.weekly.z3) / weeklyWork; /* Calculates base-system share. */
+      const z3z4Pct = (plan.weekly.z3 + plan.weekly.z4) / weeklyWork; /* Calculates cardiac-system share. */
+      const z4z5Pct = (plan.weekly.z4 + plan.weekly.z5) / weeklyWork; /* Calculates VO2-system share. */
+      const z5Pct = plan.weekly.z5 / weeklyWork; /* Calculates Z5 share of work. */
+      const focus = focusProfiles[currentFocus]; /* Gets selected focus profile. */
+      const issues = []; /* Stores plan-fit issues. */
+      let severity = 0; /* 0 = good, 1 = caution, 2 = mismatch/risk. */
+
+      if (weeklyWork < level.loadMin) { /* Checks whether weekly work is too low for selected level. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push(`weekly work is low for ${level.name.toLowerCase()} (${weeklyWork}m vs ${level.loadMin}m+ target)`); /* Adds low-load issue. */
+      } /* Ends low-load check. */
+
+      if (weeklyWork > level.loadMax) { /* Checks whether weekly work is too high for selected level. */
+        severity = Math.max(severity, currentLevel === 'beginner' ? 2 : 1); /* Beginner overload is treated as higher risk. */
+        issues.push(`weekly work is high for ${level.name.toLowerCase()} (${weeklyWork}m vs ~${level.loadMax}m ceiling)`); /* Adds high-load issue. */
+      } /* Ends high-load check. */
+
+      const focusHardFloor = focus.hardFloor || 0.10; /* Gets the focus-specific weekly hard-work floor. */
+      const weeklyHardFloor = weeklyWork * focusHardFloor; /* Converts the hard-work floor into weekly minutes. */
+      const microdoseAllowed = sessions >= 5 && hardWeekly >= weeklyHardFloor; /* Allows smaller per-session hard doses when weekly exposure is adequate. */
+      const requiredHardSession = currentFocus === 'mito' ? level.gateMin * 0.6 : currentFocus === 'cardiac' ? level.gateMin * 0.85 : level.gateMin; /* Makes hard-work requirement focus-sensitive. */
+      if (hardWeekly < weeklyHardFloor) { /* Checks whether weekly high-output exposure is truly too low. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push(`weekly Z4/Z5 exposure is low for the selected focus (${fmtTime(hardWeekly)} vs ${fmtTime(weeklyHardFloor)} target)`); /* Adds low weekly hard-work issue. */
+      } else if (hardSession < requiredHardSession && !microdoseAllowed) { /* Checks whether per-session exposure is too fragmented. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push(`Z4/Z5 exposure is very small per session (${fmtTime(hardSession)}), consider fewer harder sessions or longer sessions`); /* Adds fragmented hard-work issue. */
+      } /* Ends high-output check. */
+
+      if (hardPct / 100 > level.hardCeiling) { /* Checks whether hard work is too large a share. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push(`hard work is a high share of total work (${Math.round(hardPct)}%)`); /* Adds high-intensity-share issue. */
+      } /* Ends hard-share check. */
+
+      if (z5Pct > level.z5Ceiling) { /* Checks whether Z5 exposure is too high for selected level. */
+        severity = Math.max(severity, currentLevel === 'beginner' ? 2 : 1); /* Beginner Z5 overload is treated as higher risk. */
+        issues.push(`Z5 exposure is high for the selected level (${Math.round(z5Pct * 100)}% of work)`); /* Adds Z5 issue. */
+      } /* Ends Z5 check. */
+
+      if (currentFocus === 'mito' && z2z3Pct < 0.55) { /* Checks MITO focus alignment. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push('MITO focus needs more Z2/Z3 base work'); /* Adds MITO alignment issue. */
+      } /* Ends MITO focus check. */
+
+      if (currentFocus === 'cardiac' && z3z4Pct < 0.40) { /* Checks CARDIAC focus alignment. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push('CARDIAC focus needs more Z3/Z4 sustained output'); /* Adds CARDIAC alignment issue. */
+      } /* Ends CARDIAC focus check. */
+
+      if (currentFocus === 'vo2' && z4z5Pct < Math.max(0.18, focus.hardFloor)) { /* Checks VO2 focus alignment. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push('VO2max focus needs more Z4/Z5 exposure'); /* Adds VO2 alignment issue. */
+      } /* Ends VO2 focus check. */
+
+      if (currentFocus === 'balanced' && (z2z3Pct < 0.35 || z4z5Pct < 0.10)) { /* Checks balanced focus alignment. */
+        severity = Math.max(severity, 1); /* Marks caution severity. */
+        issues.push('balanced focus should preserve both base work and high-output work'); /* Adds balanced alignment issue. */
+      } /* Ends balanced focus check. */
+
+      if (severity === 2) { /* Handles mismatch/risk status. */
+        return { status: 'bad', badge: 'Mismatch', title: 'Plan fit: mismatch', text: `This setup likely does not match the selected level/focus: ${issues.join('; ')}.` }; /* Returns mismatch message. */
+      } /* Ends mismatch status. */
+
+      if (severity === 1) { /* Handles caution status. */
+        return { status: 'warn', badge: 'Adjust', title: 'Plan fit: adjust', text: `This plan can work, but it needs attention: ${issues.join('; ')}.` }; /* Returns caution message. */
+      } /* Ends caution status. */
+
+      return { status: 'good', badge: 'Well matched', title: 'Plan fit: well matched', text: `This structure matches ${level.name.toLowerCase()} with ${focus.name.toLowerCase()}. It balances the target stimulus with maintenance work for the other systems.` }; /* Returns good message. */
+    } /* Ends assessPlanFit function. */
+
     function update() { /* Main redraw function called whenever user changes inputs. */
       const duration = Number(document.getElementById('duration').value); /* Reads current work-time slider value. */
       const sessions = Number(document.getElementById('sessions').value); /* Reads current sessions-per-week slider value. */
@@ -833,32 +958,18 @@
       document.getElementById('hardShare').textContent = `${Math.round(hardPct)}%`; /* Updates hard-share metric. */
       renderStack(plan.session, duration); /* Redraws horizontal zone distribution bar. */
       renderTables(plan, duration, sessions); /* Redraws per-session and weekly tables. */
-      document.getElementById('mitoScore').textContent = fmtScore(wScore.mito); /* Updates weekly MITO score. */
-      document.getElementById('cardiacScore').textContent = fmtScore(wScore.cardiac); /* Updates weekly CARDIAC score. */
-      document.getElementById('vo2Score').textContent = fmtScore(wScore.vo2); /* Updates weekly VO2 score. */
-      document.getElementById('mitoSub').textContent = `${fmtScore(sScore.mito)} per session · duration-dominant base signal.`; /* Updates per-session MITO subtitle. */
-      document.getElementById('cardiacSub').textContent = `${fmtScore(sScore.cardiac)} per session · sustained high-output signal.`; /* Updates per-session CARDIAC subtitle. */
-      document.getElementById('vo2Sub').textContent = `${fmtScore(sScore.vo2)} per session · Z4/Z5 threshold-gated signal.`; /* Updates per-session VO2 subtitle. */
+      renderStimulus('mito', getStimulusDisplay('mito', wScore.mito, duration * sessions, currentLevel, currentFocus, sessions)); /* Renders MITO as a user-friendly symbol. */
+      renderStimulus('cardiac', getStimulusDisplay('cardiac', wScore.cardiac, duration * sessions, currentLevel, currentFocus, sessions)); /* Renders CARDIAC as a user-friendly symbol. */
+      renderStimulus('vo2', getStimulusDisplay('vo2', wScore.vo2, duration * sessions, currentLevel, currentFocus, sessions)); /* Renders VO2 as a user-friendly symbol. */
       const badge = document.getElementById('gateBadge'); /* Gets gate badge element. */
       const title = document.getElementById('gateTitle'); /* Gets gate title element. */
       const text = document.getElementById('gateText'); /* Gets gate text element. */
       badge.className = 'gate-badge'; /* Resets gate badge classes. */
-      if (hardSession < level.gateMin) { /* Checks if high-output exposure is below minimum. */
-        badge.classList.add('bad'); /* Applies bad status styling. */
-        badge.textContent = 'Too little Z4/Z5'; /* Sets bad status label. */
-        title.textContent = 'Optimization signal is low'; /* Sets gate title for low hard work. */
-        text.textContent = `This setup gives only ${fmtTime(hardSession)} Z4/Z5 per session. For ${level.name.toLowerCase()} with ${focusProfiles[currentFocus].name.toLowerCase()}, the plan may not create enough high-output stimulus to fully support the selected adaptation goal.`; /* Explains underdosed hard work. */
-      } else if (hardSession < level.gateStrong) { /* Checks if high-output exposure meets minimum but not strong target. */
-        badge.classList.add('warn'); /* Applies warning status styling. */
-        badge.textContent = 'Minimum met'; /* Sets warning status label. */
-        title.textContent = 'Plan is within the effective range'; /* Sets gate title for minimum hard work. */
-        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. The plan gives a workable balance between high-output stimulus and support volume for the selected level and focus.`; /* Explains minimum hard work. */
-      } else { /* Handles strong/high hard-work exposure. */
-        badge.classList.add('good'); /* Applies good status styling. */
-        badge.textContent = 'Ready for base volume'; /* Sets good status label. */
-        title.textContent = 'Plan is strongly aligned'; /* Sets gate title for strong hard work. */
-        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. The plan is well aligned with the selected training level and adaptation focus, while still preserving support work for the other systems.`; /* Explains strong plan alignment. */
-      } /* Ends gate status logic. */
+      const fit = assessPlanFit(duration, sessions, level, plan, hardSession, hardWeekly, hardPct); /* Runs the full plan-fit assessment. */
+      badge.classList.add(fit.status); /* Applies the plan-fit status color. */
+      badge.textContent = fit.badge; /* Sets the plan-fit badge label. */
+      title.textContent = fit.title; /* Sets the plan-fit title. */
+      text.textContent = fit.text; /* Sets the plan-fit explanation. */
       const z4 = fmtTime(plan.session.z4, 'z4'); /* Formats per-session Z4 time. */
       const z5 = fmtTime(plan.session.z5, 'z5'); /* Formats per-session Z5 time. */
       const z3 = fmtTime(plan.session.z3, 'z3'); /* Formats per-session Z3 time. */
