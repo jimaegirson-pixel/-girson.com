@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardio Zone Dose Calculator</title>
+  <style>
+    :root {
+      --bg: #f7f7f2;
+      --panel: #ffffff;
+      --ink: #161616;
+      --muted: #6b6b63;
+      --line: #deded4;
+      --z1: #9ca3af;
+      --z2: #2563eb;
+      --z3: #16a34a;
+      --z4: #f97316;
+      --z5: #dc2626;
+      --good: #166534;
+      --warn: #b45309;
+      --bad: #991b1b;
+      --shadow: 0 18px 60px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #fff7ed, transparent 34%), var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 54px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      letter-spacing: -.06em;
+      line-height: .95;
+    }
+
+    .sub {
+      margin: 14px 0 0;
+      color: var(--muted);
+      max-width: 680px;
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .science-note {
+      background: rgba(255,255,255,.75);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.55;
+    }
+
+    .science-note strong { color: var(--ink); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      letter-spacing: -.02em;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .level {
+      border: 1px solid var(--line);
+      background: #fbfbf8;
+      border-radius: 18px;
+      padding: 12px;
+      cursor: pointer;
+      transition: .18s ease;
+      min-height: 92px;
+    }
+
+    .level:hover { transform: translateY(-1px); border-color: #a8a89d; }
+    .level.active {
+      border-color: #111;
+      background: #111;
+      color: white;
+    }
+    .level .name { font-weight: 800; font-size: .92rem; }
+    .level .desc { color: var(--muted); font-size: .72rem; line-height: 1.35; margin-top: 6px; }
+    .level.active .desc { color: #cfcfc7; }
+
+    .slider-row { margin: 22px 0; }
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    label { font-weight: 800; font-size: .86rem; }
+    .value { font-size: 1.4rem; font-weight: 900; letter-spacing: -.04em; }
+    input[type=range] { width: 100%; accent-color: #111; }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .metric {
+      background: #f4f4ee;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px;
+    }
+    .metric .k { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; }
+    .metric .v { margin-top: 4px; font-weight: 900; font-size: 1.28rem; }
+
+    .hero-card {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gate {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: #fbfbf8;
+      margin-bottom: 18px;
+    }
+    .gate h2 { margin: 0 0 6px; font-size: 1.4rem; letter-spacing: -.04em; }
+    .gate p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .gate-badge {
+      padding: 12px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .gate-badge.good { background: #dcfce7; color: var(--good); }
+    .gate-badge.warn { background: #ffedd5; color: var(--warn); }
+    .gate-badge.bad { background: #fee2e2; color: var(--bad); }
+
+    .zone-stack {
+      height: 64px;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      background: #e8e8dd;
+      border: 1px solid var(--line);
+      margin: 20px 0 14px;
+    }
+    .seg {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: .78rem;
+      font-weight: 900;
+      min-width: 24px;
+      transition: width .25s ease;
+    }
+    .z1 { background: var(--z1); }
+    .z2 { background: var(--z2); }
+    .z3 { background: var(--z3); }
+    .z4 { background: var(--z4); }
+    .z5 { background: var(--z5); }
+
+    .tables {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 10px 6px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: .88rem;
+    }
+    th { color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; margin-right: 8px; }
+
+    .scores {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .score {
+      border-radius: 20px;
+      padding: 16px;
+      background: #f4f4ee;
+      border: 1px solid var(--line);
+    }
+    .score .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+    .score .big { font-size: 2rem; font-weight: 950; letter-spacing: -.06em; margin-top: 4px; }
+    .score .small { color: var(--muted); font-size: .78rem; line-height: 1.35; }
+
+    .coach {
+      margin-top: 18px;
+      border-radius: 22px;
+      background: #111;
+      color: white;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .coach h3 { margin: 0 0 8px; }
+    .coach p, .coach li { color: #d3d3ca; font-size: .9rem; line-height: 1.5; }
+    .coach ul { margin: 8px 0 0; padding-left: 18px; }
+
+    .formula {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      header, .grid, .tables, .coach { grid-template-columns: 1fr; }
+      .summary, .scores { grid-template-columns: 1fr; }
+      .level-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div>
+        <h1>Cardio Zone Dose Calculator</h1>
+        <p class="sub">Adjust session length and weekly frequency. The calculator shows a science-based intensity mix: enough high-output work to drive VO2/cardiac adaptation, with Zone 2 added when there is enough time to make it useful.</p>
+      </div>
+      <div class="science-note">
+        <strong>Core idea:</strong> Zone 2 is not useless, but it is volume-dependent. With short weekly training time, moderate-to-high intensity becomes the main adaptation lever; with longer training time, Zone 2 becomes the sustainable volume layer.
+      </div>
+    </header>
+
+    <section class="grid">
+      <aside class="card">
+        <h2>1. Choose training status</h2>
+        <div class="level-grid" id="levelGrid"></div>
+
+        <div class="slider-row">
+          <div class="slider-top">
+            <label for="duration">Time per session</label>
+            <div class="value"><span id="durationValue">45</span> min</div>
+          </div>
+          <input id="duration" type="range" min="15" max="90" value="45" step="5" />
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-top">
+            <label for="sessions">Sessions per week</label>
+            <div class="value"><span id="sessionsValue">3</span>x</div>
+          </div>
+          <input id="sessions" type="range" min="1" max="7" value="3" step="1" />
+        </div>
+
+        <div class="summary">
+          <div class="metric"><div class="k">Weekly time</div><div class="v" id="weeklyTime">135m</div></div>
+          <div class="metric"><div class="k">Z4+Z5 / week</div><div class="v" id="hardTime">—</div></div>
+          <div class="metric"><div class="k">Hard share</div><div class="v" id="hardShare">—</div></div>
+        </div>
+
+        <p class="formula">Zones use %LTHR style boundaries: Z1 recovery, Z2 aerobic, Z3 threshold, Z4 VO2, Z5 max. This is an educational planning model, not medical advice.</p>
+      </aside>
+
+      <section class="card hero-card">
+        <div class="gate">
+          <div>
+            <h2 id="gateTitle">VO2 gate</h2>
+            <p id="gateText">—</p>
+          </div>
+          <div id="gateBadge" class="gate-badge">—</div>
+        </div>
+
+        <h2>2. Target distribution per session</h2>
+        <div class="zone-stack" id="zoneStack"></div>
+
+        <div class="tables">
+          <div>
+            <h2>Per session</h2>
+            <table>
+              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">%</th></tr></thead>
+              <tbody id="sessionTable"></tbody>
+            </table>
+          </div>
+          <div>
+            <h2>Weekly total</h2>
+            <table>
+              <thead><tr><th>Zone</th><th class="num">Minutes</th><th class="num">Hours</th></tr></thead>
+              <tbody id="weeklyTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="scores">
+          <div class="score">
+            <div class="label">Mito / base</div>
+            <div class="big" id="mitoScore">—</div>
+            <div class="small">Duration-dominant aerobic adaptation.</div>
+          </div>
+          <div class="score">
+            <div class="label">Cardiac</div>
+            <div class="big" id="cardiacScore">—</div>
+            <div class="small">Sustained high cardiac output.</div>
+          </div>
+          <div class="score">
+            <div class="label">VO2</div>
+            <div class="big" id="vo2Score">—</div>
+            <div class="small">Threshold-gated Z4/Z5 exposure.</div>
+          </div>
+        </div>
+
+        <div class="coach">
+          <div>
+            <h3>What this plan is saying</h3>
+            <p id="coachText">—</p>
+          </div>
+          <div>
+            <h3>Practical session shape</h3>
+            <ul id="sessionShape"></ul>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const zones = [
+      { key: 'z1', label: 'Z1 Recovery', short: 'Z1', color: 'var(--z1)' },
+      { key: 'z2', label: 'Z2 Aerobic', short: 'Z2', color: 'var(--z2)' },
+      { key: 'z3', label: 'Z3 Threshold', short: 'Z3', color: 'var(--z3)' },
+      { key: 'z4', label: 'Z4 VO2', short: 'Z4', color: 'var(--z4)' },
+      { key: 'z5', label: 'Z5 Max', short: 'Z5', color: 'var(--z5)' }
+    ];
+
+    const levels = {
+      beginner: {
+        name: 'Beginner / deconditioned',
+        desc: 'Intensity exposure, not sprint-only. Enough recovery to repeat it.',
+        hardPct: 0.24, hardMin: 4, hardMax: 18, z5Share: 0.04, z3Pct: 0.22, z1Pct: 0.16,
+        gateMin: 3, gateStrong: 6
+      },
+      intermediate: {
+        name: 'Intermediate',
+        desc: 'Most recreational athletes underdose real Z4 work.',
+        hardPct: 0.28, hardMin: 7, hardMax: 30, z5Share: 0.10, z3Pct: 0.18, z1Pct: 0.12,
+        gateMin: 5, gateStrong: 9
+      },
+      trained: {
+        name: 'Trained / advanced',
+        desc: 'Enough base to tolerate meaningful Z4/Z5 volume.',
+        hardPct: 0.30, hardMin: 10, hardMax: 45, z5Share: 0.15, z3Pct: 0.16, z1Pct: 0.10,
+        gateMin: 7, gateStrong: 12
+      },
+      elite: {
+        name: 'Elite',
+        desc: 'High volume still needs hard work, but most time is support volume.',
+        hardPct: 0.24, hardMin: 12, hardMax: 70, z5Share: 0.18, z3Pct: 0.10, z1Pct: 0.08,
+        gateMin: 10, gateStrong: 18
+      }
+    };
+
+    let currentLevel = 'intermediate';
+
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const round1 = n => Math.round(n * 10) / 10;
+    const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
+
+    function buildLevels() {
+      const grid = document.getElementById('levelGrid');
+      grid.innerHTML = Object.entries(levels).map(([key, l]) => `
+        <button class="level ${key === currentLevel ? 'active' : ''}" data-level="${key}">
+          <div class="name">${l.name}</div>
+          <div class="desc">${l.desc}</div>
+        </button>
+      `).join('');
+      grid.querySelectorAll('.level').forEach(btn => btn.addEventListener('click', () => {
+        currentLevel = btn.dataset.level;
+        buildLevels();
+        update();
+      }));
+    }
+
+    function calculate(duration, sessions, level) {
+      const total = duration * sessions;
+      const l = levels[level];
+
+      // Short sessions should bias toward intensity because total volume is too low
+      // for Zone 2 to carry the adaptation alone. Long sessions reduce hard share
+      // because recovery cost and durability matter more as total volume rises.
+      const shortFactor = clamp((35 - duration) / 20, 0, 1);
+      const longFactor = clamp((duration - 45) / 45, 0, 1);
+
+      const dynamicHardPct = l.hardPct + shortFactor * 0.14 - longFactor * 0.12;
+      const hardWeekly = clamp(total * dynamicHardPct, l.hardMin, l.hardMax);
+
+      const z5Weekly = hardWeekly * l.z5Share;
+      const z4Weekly = hardWeekly - z5Weekly;
+
+      const z1Weekly = total * l.z1Pct;
+      const z3Weekly = total * l.z3Pct;
+
+      // Z2 expands only when duration becomes long enough.
+      let z2Weekly = total - z1Weekly - z3Weekly - z4Weekly - z5Weekly;
+
+      // For ultra-short sessions, keep Z2 as a small support layer,
+      // not the dominant prescription.
+      if (duration <= 25) {
+        z2Weekly = Math.min(z2Weekly, total * 0.25);
+      }
+
+      if (z2Weekly < 0) {
+        const overflow = Math.abs(z2Weekly);
+        z2Weekly = 0;
+
+        const reduceZ3 = Math.min(z3Weekly, overflow * 0.5);
+        const remaining = overflow - reduceZ3;
+        const reduceZ1 = Math.min(z1Weekly, remaining);
+
+        return normalize({
+          z1: z1Weekly - reduceZ1,
+          z2: 0,
+          z3: z3Weekly - reduceZ3,
+          z4: z4Weekly,
+          z5: z5Weekly
+        }, total, sessions);
+      }
+
+      return normalize({
+        z1: z1Weekly,
+        z2: z2Weekly,
+        z3: z3Weekly,
+        z4: z4Weekly,
+        z5: z5Weekly
+      }, total, sessions);
+    }
+
+    function normalize(weekly, total, sessions) {
+      const sum = Object.values(weekly).reduce((a,b) => a + b, 0);
+      const factor = total / sum;
+      const fixedWeekly = {};
+      const perSession = {};
+      Object.keys(weekly).forEach(k => {
+        fixedWeekly[k] = weekly[k] * factor;
+        perSession[k] = fixedWeekly[k] / sessions;
+      });
+      return { weekly: fixedWeekly, session: perSession };
+    }
+
+    function score(m) {
+      const mitoBase = m.z2 * 1.0 + m.z3 * 1.35;
+      const mitoHigh = m.z4 * 1.5 + m.z5 * 1.5;
+      const mito = mitoBase + Math.min(mitoHigh, mitoBase * 2);
+      const cardiac = m.z3 * 1.0 + m.z4 * 2.1 + m.z5 * 1.25;
+      const vo2 = m.z4 * 2.2 + m.z5 * 3.3;
+      return { mito, cardiac, vo2 };
+    }
+
+    function update() {
+      const duration = Number(document.getElementById('duration').value);
+      const sessions = Number(document.getElementById('sessions').value);
+      const level = levels[currentLevel];
+      const plan = calculate(duration, sessions, currentLevel);
+      const sScore = score(plan.session);
+      const wScore = score(plan.weekly);
+      const hardSession = plan.session.z4 + plan.session.z5;
+      const hardWeekly = plan.weekly.z4 + plan.weekly.z5;
+      const hardPct = hardWeekly / (duration * sessions) * 100;
+
+      document.getElementById('durationValue').textContent = duration;
+      document.getElementById('sessionsValue').textContent = sessions;
+      document.getElementById('weeklyTime').textContent = `${duration * sessions}m`;
+      document.getElementById('hardTime').textContent = `${fmt(round1(hardWeekly))}m`;
+      document.getElementById('hardShare').textContent = `${Math.round(hardPct)}%`;
+
+      renderStack(plan.session, duration);
+      renderTables(plan, duration, sessions);
+
+      document.getElementById('mitoScore').textContent = fmt(round1(sScore.mito));
+      document.getElementById('cardiacScore').textContent = fmt(round1(sScore.cardiac));
+      document.getElementById('vo2Score').textContent = fmt(round1(sScore.vo2));
+
+      const badge = document.getElementById('gateBadge');
+      const title = document.getElementById('gateTitle');
+      const text = document.getElementById('gateText');
+      badge.className = 'gate-badge';
+
+      if (hardSession < level.gateMin) {
+        badge.classList.add('bad');
+        badge.textContent = 'Too little Z4/Z5';
+        title.textContent = 'High-output work is underdosed';
+        text.textContent = `This setup gives only ${fmt(round1(hardSession))} min Z4/Z5 per session. For ${level.name.toLowerCase()}, raise the high-output exposure toward about ${level.gateMin} min/session before making Zone 2 the main focus.`;
+      } else if (hardSession < level.gateStrong) {
+        badge.classList.add('warn');
+        badge.textContent = 'Minimum met';
+        title.textContent = 'Minimum high-output exposure met';
+        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. This is enough exposure to justify adding some Zone 2, but the plan should still protect intensity quality.`;
+      } else {
+        badge.classList.add('good');
+        badge.textContent = 'Ready for base volume';
+        title.textContent = 'Now Zone 2 volume makes more sense';
+        text.textContent = `You have ${fmt(round1(hardSession))} min Z4/Z5 per session. The high-output gate is open, so additional Zone 2 now supports sustainable volume instead of hiding a missing intensity dose.`;
+      }
+
+      const z4 = fmt(round1(plan.session.z4));
+      const z5 = fmt(round1(plan.session.z5));
+      const z3 = fmt(round1(plan.session.z3));
+      const z2 = fmt(round1(plan.session.z2));
+      const z1 = fmt(round1(plan.session.z1));
+      document.getElementById('coachText').textContent = `For ${sessions} × ${duration} min/week, the target is ${fmt(round1(hardWeekly))} min/week in Z4–Z5. This avoids the common mistake of using easy volume to compensate for missing high-output stimulus.`;
+      document.getElementById('sessionShape').innerHTML = `
+        <li>${z1} min Z1 warm-up/recovery</li>
+        <li>${z4} min Z4 plus ${z5} min Z5 as the main adaptation gate</li>
+        <li>${z3} min Z3 transition / threshold work</li>
+        <li>${z2} min Z2 as sustainable support volume</li>
+      `;
+    }
+
+    function renderStack(session, duration) {
+      document.getElementById('zoneStack').innerHTML = zones.map(z => {
+        const minutes = session[z.key];
+        const pct = minutes / duration * 100;
+        return `<div class="seg ${z.key}" style="width:${pct}%" title="${z.label}: ${fmt(round1(minutes))} min">${pct >= 8 ? z.short : ''}</div>`;
+      }).join('');
+    }
+
+    function renderTables(plan, duration, sessions) {
+      document.getElementById('sessionTable').innerHTML = zones.map(z => {
+        const min = plan.session[z.key];
+        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${Math.round(min / duration * 100)}%</td></tr>`;
+      }).join('');
+      document.getElementById('weeklyTable').innerHTML = zones.map(z => {
+        const min = plan.weekly[z.key];
+        return `<tr><td><span class="dot" style="background:${z.color}"></span>${z.label}</td><td class="num">${fmt(round1(min))}</td><td class="num">${(min / 60).toFixed(2)}</td></tr>`;
+      }).join('');
+    }
+
+    document.getElementById('duration').addEventListener('input', update);
+    document.getElementById('sessions').addEventListener('input', update);
+    buildLevels();
+    update();
+  </script>
+</body>
+</html>
