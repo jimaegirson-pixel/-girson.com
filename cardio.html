@@ -846,18 +846,18 @@
       if (hardSession < level.gateMin) { /* Checks if high-output exposure is below minimum. */
         badge.classList.add('bad'); /* Applies bad status styling. */
         badge.textContent = 'Too little Z4/Z5'; /* Sets bad status label. */
-        title.textContent = 'High-output work is underdosed'; /* Sets gate title for low hard work. */
-        text.textContent = `This setup gives only ${fmtTime(hardSession)} Z4/Z5 per session. For ${level.name.toLowerCase()}, raise the high-output exposure toward about ${fmtTime(level.gateMin)} per session before making Zone 2 the main focus.`; /* Explains underdosed hard work. */
+        title.textContent = 'Optimization signal is low'; /* Sets gate title for low hard work. */
+        text.textContent = `This setup gives only ${fmtTime(hardSession)} Z4/Z5 per session. For ${level.name.toLowerCase()} with ${focusProfiles[currentFocus].name.toLowerCase()}, the plan may not create enough high-output stimulus to fully support the selected adaptation goal.`; /* Explains underdosed hard work. */
       } else if (hardSession < level.gateStrong) { /* Checks if high-output exposure meets minimum but not strong target. */
         badge.classList.add('warn'); /* Applies warning status styling. */
         badge.textContent = 'Minimum met'; /* Sets warning status label. */
-        title.textContent = 'Minimum high-output exposure met'; /* Sets gate title for minimum hard work. */
-        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. This is enough exposure to justify adding some Zone 2, but the plan should still protect intensity quality.`; /* Explains minimum hard work. */
+        title.textContent = 'Plan is within the effective range'; /* Sets gate title for minimum hard work. */
+        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. The plan gives a workable balance between high-output stimulus and support volume for the selected level and focus.`; /* Explains minimum hard work. */
       } else { /* Handles strong/high hard-work exposure. */
         badge.classList.add('good'); /* Applies good status styling. */
         badge.textContent = 'Ready for base volume'; /* Sets good status label. */
-        title.textContent = 'Now Zone 2 volume makes more sense'; /* Sets gate title for strong hard work. */
-        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. The high-output gate is open, so additional Zone 2 now supports sustainable volume instead of hiding a missing intensity dose.`; /* Explains why Zone 2 now makes sense. */
+        title.textContent = 'Plan is strongly aligned'; /* Sets gate title for strong hard work. */
+        text.textContent = `You have ${fmtTime(hardSession)} Z4/Z5 per session. The plan is well aligned with the selected training level and adaptation focus, while still preserving support work for the other systems.`; /* Explains strong plan alignment. */
       } /* Ends gate status logic. */
       const z4 = fmtTime(plan.session.z4, 'z4'); /* Formats per-session Z4 time. */
       const z5 = fmtTime(plan.session.z5, 'z5'); /* Formats per-session Z5 time. */
