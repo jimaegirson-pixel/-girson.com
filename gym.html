@@ -433,7 +433,11 @@
       }
 
       function bindElements() {
-        ["resetBtn", "setsSlider", "repsSlider", "frequencySlider", "frequencyApprox", "effortSlider", "setsValue", "repsValue", "frequencyValue", "effortValue", "effortGrid", "zoneCard", "zoneTitle", "zoneIcon", "zoneCopy", "qualityLabel", "qualityBar", "qualityCopy", "recoveryLabel", "recoveryBar", "recoveryCopy", "tensionLabel", "tensionCopy", "doseLabel", "doseCopy", "junkWarning", "failureWarning", "modelExplanation"].forEach(id => { el[id] = byId(id); });
+        ["resetBtn", "setsSlider", "repsSlider", "frequencySlider", "effortSlider", "setsValue", "repsValue", "frequencyValue", "effortValue", "effortGrid", "zoneCard", "zoneTitle", "zoneIcon", "zoneCopy", "qualityLabel", "qualityBar", "qualityCopy", "recoveryLabel", "recoveryBar", "recoveryCopy", "tensionLabel", "tensionCopy", "doseLabel", "doseCopy", "junkWarning", "failureWarning", "modelExplanation"].forEach(id => {
+          el[id] = byId(id);
+        });
+
+        el.frequencyApprox = document.getElementById("frequencyApprox");
       }
 
       function qfFloorForFrequency(frequency) {
@@ -484,5 +488,4 @@
 
       function classifyZone(model) {
         const recoveryCost = recoveryCostScore(model);
-        const usefulWeeklySets = model.validRows.length * state.frequency;
-        co
+        cons
