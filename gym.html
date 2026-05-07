@@ -13,7 +13,6 @@
       --bg2:   #111c22;
       --line:  rgba(180,145,80,0.32);
       --gold:  #e8c96a;
-      --gold2: rgba(232,201,106,0.12);
       --text:  #eee8d8;
       --muted: #7a8a84;
       --green: #4ade80;
@@ -45,6 +44,7 @@
       min-height: 100svh;
     }
 
+    /* HEADER */
     .hd {
       display: flex;
       align-items: center;
@@ -52,167 +52,81 @@
       padding: 10px 14px 8px;
       border-bottom: 1px solid var(--line);
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .pig {
-      width: 20px; height: 20px;
-      image-rendering: pixelated;
-    }
-
+    .brand { display: flex; align-items: center; gap: 7px; }
+    .pig { width: 20px; height: 20px; image-rendering: pixelated; }
     .brand-name {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 18px;
-      letter-spacing: 0.06em;
-      color: var(--gold);
+      font-size: 18px; letter-spacing: 0.06em; color: var(--gold);
     }
-
     .reset-btn {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--muted);
-      background: transparent;
+      font-size: 10px; font-weight: 500;
+      color: var(--muted); background: transparent;
       border: 1px solid rgba(122,138,132,0.35);
-      border-radius: 6px;
-      padding: 4px 10px;
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      border-radius: 6px; padding: 4px 10px; cursor: pointer;
+      letter-spacing: 0.05em; text-transform: uppercase;
     }
     .reset-btn:active { opacity: 0.6; }
 
+    /* ZONE BANNER */
     .zone-banner {
       margin: 10px 14px 0;
-      border-radius: 14px;
-      padding: 12px 14px;
-      border: 1px solid var(--zone-border, var(--line));
-      background: var(--zone-bg, rgba(20,30,36,0.8));
+      border-radius: 14px; padding: 12px 14px;
+      border: 1px solid var(--line);
       transition: background 0.25s, border-color 0.25s;
     }
-
-    .zone-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-    }
-
+    .zone-row { display: flex; align-items: baseline; justify-content: space-between; }
     .zone-name {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px;
-      letter-spacing: 0.01em;
-      line-height: 1;
-      color: var(--zone-color, var(--text));
+      font-size: 36px; letter-spacing: 0.01em; line-height: 1;
       transition: color 0.25s;
     }
+    .zone-au { font-family: 'DM Mono', monospace; font-size: 11px; opacity: 0.75; }
+    .zone-copy { font-size: 11px; margin-top: 3px; opacity: 0.82; line-height: 1.4; }
 
-    .zone-au {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--zone-color, var(--muted));
-      opacity: 0.75;
-    }
-
-    .zone-copy {
-      font-size: 11px;
-      color: var(--zone-color, var(--muted));
-      margin-top: 3px;
-      opacity: 0.82;
-      line-height: 1.4;
-    }
-
-    .controls {
-      padding: 10px 14px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    /* CONTROLS */
+    .controls { padding: 10px 14px 0; display: flex; flex-direction: column; gap: 8px; }
     .ctrl {
-      background: var(--bg1);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 12px 8px;
+      background: var(--bg1); border: 1px solid var(--line);
+      border-radius: 12px; padding: 10px 12px 8px;
     }
-
-    .ctrl-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 7px;
-    }
-
-    .ctrl-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
+    .ctrl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+    .ctrl-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
     .ctrl-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--gold);
-      background: rgba(232,201,106,0.1);
-      border: 1px solid rgba(232,201,106,0.3);
-      border-radius: 6px;
-      padding: 2px 8px;
-      min-width: 52px;
-      text-align: center;
+      font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+      color: var(--gold); background: rgba(232,201,106,0.1);
+      border: 1px solid rgba(232,201,106,0.3); border-radius: 6px;
+      padding: 2px 8px; min-width: 52px; text-align: center;
+    }
+    .freq-pair { display: flex; align-items: center; gap: 6px; }
+    .freq-derived {
+      font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
+      background: rgba(122,138,132,0.12); border: 1px solid rgba(122,138,132,0.25);
+      border-radius: 5px; padding: 2px 7px; white-space: nowrap;
     }
 
     input[type="range"] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 4px;
-      border-radius: 2px;
-      background: var(--bg2);
-      outline: none;
-      display: block;
-      touch-action: pan-y;
+      -webkit-appearance: none; width: 100%; height: 4px;
+      border-radius: 2px; background: var(--bg2); outline: none;
+      display: block; touch-action: pan-y;
     }
     input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: var(--gold);
-      border: 2px solid var(--bg);
-      box-shadow: 0 0 8px rgba(232,201,106,0.5);
-      cursor: pointer;
+      -webkit-appearance: none; width: 18px; height: 18px;
+      border-radius: 50%; background: var(--gold);
+      border: 2px solid var(--bg); box-shadow: 0 0 8px rgba(232,201,106,0.5); cursor: pointer;
     }
-
     .limits {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 4px;
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: rgba(122,138,132,0.5);
+      display: flex; justify-content: space-between; margin-top: 4px;
+      font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(122,138,132,0.5);
     }
 
-    .effort-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-top: 6px;
-    }
-
+    /* EFFORT BUTTONS */
+    .effort-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 6px; }
     .eff-btn {
-      height: 36px;
-      border-radius: 8px;
-      border: 1px solid rgba(122,138,132,0.28);
-      background: var(--bg2);
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      font-weight: 500;
-      cursor: pointer;
+      height: 36px; border-radius: 8px;
+      border: 1px solid rgba(122,138,132,0.28); background: var(--bg2);
+      color: var(--muted); font-family: 'DM Mono', monospace;
+      font-size: 10px; font-weight: 500; cursor: pointer;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
     .eff-btn.sel {
@@ -222,163 +136,45 @@
       box-shadow: 0 0 10px color-mix(in srgb, var(--eff-color) 25%, transparent);
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-      padding: 8px 14px 0;
-    }
+    /* STATS */
+    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; padding: 8px 14px 0; }
+    .stat { background: var(--bg1); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+    .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.03em; line-height: 1; }
+    .stat-sub { font-size: 9px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
 
-    .stat {
-      background: var(--bg1);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 8px 10px;
-    }
+    /* SET BARS */
+    .set-bar-wrap { padding: 8px 14px 0; }
+    .set-bar-card { background: var(--bg1); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+    .set-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .set-bar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+    .set-bar-legend { display: flex; gap: 10px; }
+    .leg-item { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--muted); }
+    .leg-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .set-bars { display: flex; gap: 4px; align-items: flex-end; height: 44px; }
+    .set-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .set-bar { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.2s ease, background 0.2s; min-height: 2px; }
+    .set-col-num { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--muted); }
 
-    .stat-label {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .stat-val {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      letter-spacing: 0.03em;
-      line-height: 1;
-    }
-
-    .stat-sub {
-      font-size: 9px;
-      color: var(--muted);
-      margin-top: 2px;
-      line-height: 1.3;
-    }
-
-    .set-bar-wrap {
-      padding: 8px 14px 0;
-    }
-
-    .set-bar-card {
-      background: var(--bg1);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-
-    .set-bar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .set-bar-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .set-bar-legend {
-      display: flex;
-      gap: 10px;
-    }
-
-    .leg-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    .leg-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-    }
-
-    .set-bars {
-      display: flex;
-      gap: 4px;
-      align-items: flex-end;
-      height: 44px;
-    }
-
-    .set-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .set-bar {
-      width: 100%;
-      border-radius: 3px 3px 0 0;
-      transition: height 0.2s ease, background 0.2s;
-      min-height: 2px;
-    }
-
-    .set-col-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 8px;
-      color: var(--muted);
-    }
-
-    .info-wrap {
-      padding: 8px 14px;
-    }
-
-    .info-box {
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-size: 11px;
-      line-height: 1.5;
-      border: 1px solid;
-    }
-
-    .info-box b {
-      display: block;
-      margin-bottom: 2px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .warn-failure {
-      background: rgba(248,113,113,0.1);
-      border-color: rgba(248,113,113,0.4);
-      color: #fca5a5;
-    }
-    .warn-junk {
-      background: rgba(249,115,22,0.1);
-      border-color: rgba(249,115,22,0.4);
-      color: #fdba74;
-    }
-    .info-neutral {
-      background: rgba(122,138,132,0.08);
-      border-color: rgba(122,138,132,0.2);
-      color: var(--muted);
-    }
+    /* INFO */
+    .info-wrap { padding: 8px 14px; }
+    .info-box { border-radius: 10px; padding: 9px 12px; font-size: 11px; line-height: 1.5; border: 1px solid; margin-bottom: 6px; }
+    .info-box:last-child { margin-bottom: 0; }
+    .info-box b { display: block; margin-bottom: 2px; font-size: 11px; font-weight: 700; }
+    .warn-red    { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.4); color: #fca5a5; }
+    .warn-orange { background: rgba(249,115,22,0.1);  border-color: rgba(249,115,22,0.4);  color: #fdba74; }
+    .info-muted  { background: rgba(122,138,132,0.08); border-color: rgba(122,138,132,0.2); color: var(--muted); }
 
     .footer {
-      margin-top: auto;
-      padding: 8px 14px 4px;
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: rgba(122,138,132,0.38);
-      text-align: center;
-      letter-spacing: 0.03em;
+      margin-top: auto; padding: 8px 14px 4px;
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      color: rgba(122,138,132,0.38); text-align: center; letter-spacing: 0.03em;
     }
   </style>
 </head>
 <body>
 <main class="app">
+
   <header class="hd">
     <div class="brand">
       <svg class="pig" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
@@ -402,12 +198,13 @@
   <div class="zone-banner" id="zoneBanner">
     <div class="zone-row">
       <div class="zone-name" id="zoneName">Gains</div>
-      <div class="zone-au" id="zoneAU">NET — AU/wk</div>
+      <div class="zone-au" id="zoneAU">— AU/wk net</div>
     </div>
     <div class="zone-copy" id="zoneCopy">Productive growth dose.</div>
   </div>
 
   <div class="controls">
+
     <div class="ctrl">
       <div class="ctrl-header">
         <span class="ctrl-label">Sets / session</span>
@@ -429,9 +226,9 @@
     <div class="ctrl">
       <div class="ctrl-header">
         <span class="ctrl-label">Rest between sessions</span>
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div class="freq-pair">
           <span class="ctrl-val" id="freqRestVal">2 days</span>
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:rgba(122,138,132,0.12);border:1px solid rgba(122,138,132,0.25);border-radius:5px;padding:2px 7px;white-space:nowrap;" id="freqDerivedVal">2.3×/wk</span>
+          <span class="freq-derived" id="freqDerivedVal">2.3×/wk</span>
         </div>
       </div>
       <input type="range" id="freqSlider" min="0" max="4" step="1" value="2" />
@@ -445,13 +242,14 @@
       </div>
       <div class="effort-grid" id="effortGrid"></div>
     </div>
+
   </div>
 
   <div class="stats">
     <div class="stat">
-      <div class="stat-label">Session stim</div>
+      <div class="stat-label">Session STIM</div>
       <div class="stat-val" id="statStim">–</div>
-      <div class="stat-sub" id="statStimSub">AU</div>
+      <div class="stat-sub" id="statStimSub">AU this session</div>
     </div>
     <div class="stat">
       <div class="stat-label">Recovery</div>
@@ -460,7 +258,7 @@
     </div>
     <div class="stat">
       <div class="stat-label">QF min</div>
-      <div class="stat-val" id="statSFR">–</div>
+      <div class="stat-val" id="statQF">–</div>
       <div class="stat-sub" id="statQFSub">floor check</div>
     </div>
   </div>
@@ -468,7 +266,7 @@
   <div class="set-bar-wrap">
     <div class="set-bar-card">
       <div class="set-bar-header">
-        <span class="set-bar-label">Set QF map</span>
+        <span class="set-bar-label">Set quality decay</span>
         <div class="set-bar-legend">
           <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>Productive</div>
           <div class="leg-item"><div class="leg-dot" style="background:var(--orange)"></div>Junk</div>
@@ -480,30 +278,46 @@
   </div>
 
   <div class="info-wrap" id="infoWrap"></div>
-  <div class="footer">GYM_PIGS v2 · CB/QF framework · 2 RIR ceiling · 1–15 reps</div>
-</main>
 
+  <div class="footer">GYM_PIGS v3 · CB/WNS framework · 2 RIR ceiling · QF floors 0.75 / 0.85</div>
+
+</main>
 <script>
 (() => {
   'use strict';
 
-  const ATROPHY_COST_PER_DAY = 0.32;
-  const STIM_WINDOW_DAYS = 2;
+  // ─── CONSTANTS (from Master Document) ───────────────────────────────────────
 
+  // QF floors: framework values from Section 21 Quick Reference
+  const QF_FLOOR_DAILY   = 0.85; // 7×/wk (daily training)
+  const QF_FLOOR_STANDARD = 0.75; // 2–3×/wk (standard frequency)
+
+  // MPS window: stimulus active for 48h post-session before atrophy begins
+  const MPS_WINDOW_DAYS = 2;
+  const ATROPHY_COST_PER_DAY = 0.32;
+
+  // CB maintenance ceiling and growth floors (from master doc)
+  const NET_AU_MAINTAIN_CEIL = 10.0;
+  const NET_AU_GROWTH_FLOOR  = 52.27;
+  const NET_AU_GAINMAXX_FLOOR = 180.77;
+
+  // Cumulative STIM by rep count at 2 RIR (from master doc calculations)
   const BASE_STIM_BY_REP = [
     0,
-    2.00, 3.95, 5.80, 7.50, 9.00,
-    10.30, 11.40, 12.30, 13.00, 13.55,
-    14.00, 14.35, 14.65, 14.90, 15.10
+    2.00, 3.95, 5.80, 7.50, 9.00,     // 1–5
+    10.30, 11.40, 12.30, 13.00, 13.55, // 6–10
+    14.00, 14.35, 14.65, 14.90, 15.10  // 11–15
   ];
 
-  const DC_2RIR_BY_REP = [
+  // QF decay coefficient at 2 RIR baseline, by rep count
+  const DC_2RIR = [
     0,
-    0.003, 0.006, 0.010, 0.016, 0.024,
-    0.035, 0.048, 0.063, 0.080, 0.100,
-    0.122, 0.146, 0.172, 0.200, 0.230
+    0.003, 0.006, 0.010, 0.016, 0.024,  // 1–5
+    0.035, 0.048, 0.063, 0.080, 0.100,  // 6–10
+    0.122, 0.146, 0.172, 0.200, 0.230   // 11–15
   ];
 
+  // dc multiplier by RIR (how much faster/slower fatigue accumulates vs 2 RIR baseline)
   const EFFORT_OPTIONS = [
     { key: 'FAIL', label: 'Failure', short: 'FAIL', numericRir: 0, dcMult: 3.5, color: '#f87171' },
     { key: '0',    label: '0 RIR',   short: '0',    numericRir: 0, dcMult: 3.5, color: '#f97316' },
@@ -514,6 +328,7 @@
     { key: '5',    label: '5 RIR',   short: '5',    numericRir: 5, dcMult: 0.3, color: '#94a3b8' },
   ];
 
+  // Rest days → sessions per week. Primary input is rest days; freq is derived.
   const REST_OPTIONS = [
     { restDays: 0, restLabel: '0 days', freqLabel: '7×/wk',    sessPerWeek: 7,    intervalDays: 1 },
     { restDays: 1, restLabel: '1 day',  freqLabel: '3.5×/wk',  sessPerWeek: 3.5,  intervalDays: 2 },
@@ -522,217 +337,357 @@
     { restDays: 6, restLabel: '6 days', freqLabel: '1×/wk',    sessPerWeek: 1,    intervalDays: 7 },
   ];
 
-  const CB_MAINTENANCE_CEILING = 10.0;
-  const CB_MIN_GAINS_CEILING = 52.27;
-  const CB_GAINSMAXXING_FLOOR = 180.77;
+  // ─── MODEL FUNCTIONS ────────────────────────────────────────────────────────
 
   function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
-  function triangularBySetIndex(iZeroBased) { return (iZeroBased * (iZeroBased + 1)) / 2; }
-  function estimatedRM(reps, numericRir) { return reps + numericRir; }
-  function isLoadDriven(reps, numericRir) { return estimatedRM(reps, numericRir) <= 6; }
 
-  function qfFloor(freq) {
-    return freq.sessPerWeek >= 7 ? 0.85 : 0.75;
+  // QF of set i (0-based) given decay coefficient dc
+  // Formula: 1 − dc × (i × (i+1) / 2) from master doc
+  function qfAtSet(setIdx, dc) {
+    return clamp(1 - dc * (setIdx * (setIdx + 1)) / 2, 0, 1);
   }
 
-  function qfOverloadFloor(freq) {
-    return freq.sessPerWeek >= 7 ? 0.89 : qfFloor(freq);
+  // Is this a load-driven set? (≤6RM estimated, all reps are high-tension from rep 1)
+  function isLoadDriven(reps, numericRir) {
+    return (reps + numericRir) <= 6;
   }
 
+  // Effective (high-tension) reps per set
+  // Load-driven: all reps count. Fatigue-driven: only terminal reps near failure.
   function effectiveReps(reps, numericRir) {
     if (isLoadDriven(reps, numericRir)) return reps;
-    if (numericRir > 3) return 0;
+    if (numericRir > 4) return 0; // too far from failure for HTMU recruitment
     return Math.max(0, Math.min(reps, 5 - numericRir));
   }
 
-  function fatigueDrivenBaseMultiplier(numericRir) {
-    if (numericRir === 0) return 1.173;
-    if (numericRir === 1) return 0.960;
-    if (numericRir === 2) return 1.000;
-    if (numericRir === 3) return 0.870;
-    return 0;
+  // Base STIM per session for given reps/RIR (pre-QF, set 1 only)
+  // Load-driven uses full table value. Fatigue-driven applies proximity multiplier.
+  function baseStim(reps, numericRir, loadDriven) {
+    const raw = BASE_STIM_BY_REP[clamp(reps, 1, 15)];
+    if (loadDriven) return raw;
+    // Fatigue-driven STIM scaled by RIR proximity (from master doc)
+    const proximityMult = numericRir === 0 ? 1.173
+                        : numericRir === 1 ? 0.960
+                        : numericRir === 2 ? 1.000
+                        : numericRir === 3 ? 0.870
+                        : 0; // 4+ RIR: sub-threshold
+    return raw * proximityMult;
   }
 
-  function baseStimRaw(reps, numericRir, effReps, loadDriven) {
-    if (loadDriven) return BASE_STIM_BY_REP[clamp(reps, 1, 15)];
-    if (effReps <= 0) return 0;
-    return BASE_STIM_BY_REP[clamp(reps, 1, 15)] * fatigueDrivenBaseMultiplier(numericRir);
+  // QF floor for this frequency
+  function qfFloor(restOption) {
+    return restOption.intervalDays <= 1 ? QF_FLOOR_DAILY : QF_FLOOR_STANDARD;
   }
 
-  function stimulatingRepsForRecovery(reps, numericRir) {
-    return Math.max(0, Math.min(reps, 5 - numericRir));
+  // ─── JUNK DETECTION ─────────────────────────────────────────────────────────
+  //
+  // KEY FIX: Junk detection is rep-range aware.
+  //
+  // Load-driven (≤6RM): QF floor is the right gate. All reps produce tension,
+  //   so QF decay directly reduces stimulus quality.
+  //
+  // Fatigue-driven (>6RM): QF naturally decays faster because dc is larger.
+  //   But high-rep sets near failure STILL produce valid stimulus from the
+  //   terminal effective reps — 3×12 at 2 RIR has 3 effective reps on every set.
+  //   Using a fixed QF floor here wrongly flags productive sets as junk.
+  //   Instead: junk when effectiveReps === 0 (too far from failure to recruit
+  //   high-threshold motor units at all). QF is kept for display only.
+  //
+  function isSetJunk(stim, qf, effReps, loadDriven, floor) {
+    if (stim <= 0) return true;
+    if (loadDriven) return qf < floor;   // QF floor applies: decay matters
+    return effReps === 0;                 // fatigue-driven: only RIR matters
   }
 
-  function recoveryBaseFatigue(reps) {
-    if (reps <= 3) return 0.38;
-    if (reps <= 5) return 0.67;
-    if (reps <= 10) return 1.00;
-    return 1.50;
+  // Recovery estimate (days) — calibrated to CB recovery chart
+  // ~0.6 days/set at failure for 6-15RM. Scales with dc (proxy for damage).
+  // Recovery calibrated to CB chart: linear sets→days at moderate loads.
+  // 3 sets at failure → ~1.8 days. At 2 RIR: substantially less damage.
+  // Rep range does NOT significantly affect recovery (CB chart uses 6-15RM throughout).
+  // Driven by RIR only, not rep count.
+  const REC_PROX = [1.00, 1.00, 0.60, 0.35, 0.20, 0.10, 0.05]; // indexed by numericRir
+  const REC_BASE = 0.6; // days per set at failure (CB anchor: 3 sets → 1.8d)
+
+  function recoveryDays(numericRir, setCount) {
+    const proxFactor = REC_PROX[Math.min(numericRir, 6)];
+    return Math.max(0.5, setCount * REC_BASE * proxFactor);
   }
 
-  function recoveryFatigueThreshold(reps) {
-    if (reps <= 3) return 1.0;
-    if (reps <= 5) return 1.5;
-    if (reps <= 10) return 2.0;
-    return 3.0;
-  }
-
-  function fatigueRecoveryScorePerSet(reps, numericRir) {
-    const threshold = recoveryFatigueThreshold(reps);
-    const proximityFatigue = Math.max(0, (threshold - numericRir) / threshold);
-    return recoveryBaseFatigue(reps) * proximityFatigue;
-  }
-
-  function sessionLongTailRecoveryDays(reps, numericRir, selectedSetCount) {
-    return (12 + (12 * selectedSetCount * fatigueRecoveryScorePerSet(reps, numericRir))) / 24;
-  }
-
-  function volumeRecoveryTargetFESets48h(reps) {
-    if (reps <= 3) return 8.0;
-    if (reps <= 5) return 4.5;
-    if (reps <= 10) return 3.0;
-    if (reps <= 15) return 2.0;
-    return 1.0;
-  }
-
-  function sessionVolumeRecoveryDays(reps, numericRir, selectedSetCount) {
-    const stimReps = stimulatingRepsForRecovery(reps, numericRir);
-    const failureEquivalentSets = (selectedSetCount * stimReps) / 5;
-    const target48h = volumeRecoveryTargetFESets48h(reps);
-    if (failureEquivalentSets <= 0 || target48h <= 0) return 0.5;
-    return Math.max(0.5, (failureEquivalentSets / target48h) * 2);
-  }
-
-  function sessionRecoveryDays(reps, numericRir, selectedSetCount) {
-    const frs = selectedSetCount * fatigueRecoveryScorePerSet(reps, numericRir);
-    const longTail = sessionLongTailRecoveryDays(reps, numericRir, selectedSetCount);
-    const volumeGate = sessionVolumeRecoveryDays(reps, numericRir, selectedSetCount);
-    return frs > 0 ? longTail : Math.max(longTail, volumeGate);
-  }
+  // ─── MAIN CALCULATE ─────────────────────────────────────────────────────────
 
   function calculate(state) {
-    const effort = EFFORT_OPTIONS[state.effortIdx];
-    const freq = REST_OPTIONS[state.freqIdx];
-    const sessPerWeek = freq.sessPerWeek;
-    const restInterval = freq.intervalDays;
-    const numRir = effort.numericRir;
-    const estRM = estimatedRM(state.reps, numRir);
-    const loadDriven = isLoadDriven(state.reps, numRir);
-    const effReps = effectiveReps(state.reps, numRir);
-    const floor = qfFloor(freq);
-    const overloadFloor = qfOverloadFloor(freq);
-    const dcBase = DC_2RIR_BY_REP[clamp(state.reps, 1, 15)];
-    const dc = dcBase * effort.dcMult;
-    const rawBaseStim = baseStimRaw(state.reps, numRir, effReps, loadDriven);
+    const effort  = EFFORT_OPTIONS[state.effortIdx];
+    const restOpt = REST_OPTIONS[state.freqIdx];
+    const sessPerWeek  = restOpt.sessPerWeek;
+    const intervalDays = restOpt.intervalDays;
+    const numRir   = effort.numericRir;
+    const loadDrv  = isLoadDriven(state.reps, numRir);
+    const effReps  = effectiveReps(state.reps, numRir);
+    const floor    = qfFloor(restOpt);
+    const dc       = DC_2RIR[clamp(state.reps, 1, 15)] * effort.dcMult;
+    const rawStim  = baseStim(state.reps, numRir, loadDrv);
 
     const sets = [];
     for (let i = 0; i < 8; i++) {
-      const qf = clamp(1 - (dc * triangularBySetIndex(i)), 0, 1);
+      const qf       = qfAtSet(i, dc);
+      const stim     = rawStim * qf;
       const selected = (i + 1) <= state.sets;
-      const stim = rawBaseStim * qf;
-      const isJunk = selected && (stim <= 0 || qf < floor);
-      const effectiveSetWeight = (!selected || isJunk) ? 0 : 1;
-      sets.push({ stim, qf, recoveryCost: 0, isJunk, selected, effectiveSetWeight });
+      const junk     = selected && isSetJunk(stim, qf, effReps, loadDrv, floor);
+      sets.push({ qf, stim, selected, junk });
     }
 
-    const selectedSets = sets.filter(s => s.selected);
-    const productiveSets = selectedSets.filter(s => !s.isJunk);
-    const junkSets = selectedSets.filter(s => s.isJunk);
-    const sessionStim = productiveSets.reduce((a, s) => a + s.stim, 0);
-    const sessionEffectiveSets = productiveSets.reduce((a, s) => a + s.effectiveSetWeight, 0);
-    const sessionAU = sessionEffectiveSets > 0 ? Math.sqrt(sessionEffectiveSets) : 0;
-    const recoveryCost = sessionRecoveryDays(state.reps, numRir, selectedSets.length);
-    const recoveryDaysClamped = recoveryCost;
-    const weeklyStimRaw = sessionStim * sessPerWeek;
-    const weeklyWNSRaw = sessionAU * sessPerWeek;
-    const atrophyDaysPerGap = Math.max(0, restInterval - STIM_WINDOW_DAYS);
-    const atrophyLossPerWeek = atrophyDaysPerGap * ATROPHY_COST_PER_DAY * sessPerWeek;
-    const netWeeklyAU = weeklyStimRaw - atrophyLossPerWeek;
-    const netWeeklyWNS = weeklyWNSRaw - atrophyLossPerWeek;
-    const sessionSFR = recoveryCost > 0 ? sessionStim / recoveryCost : 0;
-    const qfMin = selectedSets.length ? Math.min(...selectedSets.map(s => s.qf)) : 0;
+    const selectedSets  = sets.filter(s => s.selected);
+    const productiveSets = selectedSets.filter(s => !s.junk);
+    const junkSets      = selectedSets.filter(s => s.junk);
+    const sessionStim   = productiveSets.reduce((a, s) => a + s.stim, 0);
+    const qfMin         = selectedSets.length ? Math.min(...selectedSets.map(s => s.qf)) : 1;
+
+    const recDays = recoveryDays(numRir, selectedSets.length);
+
+    // Atrophy: if rest interval > MPS window, some signal is lost
+    const atrophyDaysOver = Math.max(0, intervalDays - MPS_WINDOW_DAYS);
+    const atrophyLossPerWeek = atrophyDaysOver * ATROPHY_COST_PER_DAY * sessPerWeek;
+    const weeklyStimRaw  = sessionStim * sessPerWeek;
+    const netWeeklyAU    = weeklyStimRaw - atrophyLossPerWeek;
 
     return {
-      effort, freq, reps: state.reps, estRM, loadDriven, effReps, qfFloor: floor, qfOverloadFloor: overloadFloor, dcBase, dc, sets,
+      effort, restOpt, reps: state.reps, sets,
+      loadDrv, effReps, floor, dc, rawStim,
       selectedSets, productiveSets, junkSets,
-      sessionStim, sessionEffectiveSets, sessionAU, recoveryCost, recoveryDaysClamped,
-      longTailRecoveryDays: sessionLongTailRecoveryDays(state.reps, numRir, selectedSets.length),
-      volumeRecoveryDays: sessionVolumeRecoveryDays(state.reps, numRir, selectedSets.length),
-      weeklyStimRaw, weeklyWNSRaw, atrophyLossPerWeek, netWeeklyAU, netWeeklyWNS,
-      sessPerWeek, restDays: freq.restDays, restInterval, sessionSFR, qfMin
+      sessionStim, qfMin, recDays,
+      sessPerWeek, intervalDays,
+      weeklyStimRaw, atrophyLossPerWeek, netWeeklyAU,
     };
   }
+
+  // ─── ZONE CLASSIFICATION ─────────────────────────────────────────────────────
 
   function zone(key, name, copy, color) { return { key, name, copy, color }; }
 
   function classify(m) {
     const junkRatio = m.selectedSets.length ? m.junkSets.length / m.selectedSets.length : 0;
+    const overloaded = m.recDays >= m.intervalDays;
 
-    if (m.recoveryDaysClamped >= m.restInterval) {
-      return zone('recoveryFailure', 'Recovery Failure', 'Recovery estimate exceeds the programmed rest interval. Reduce sets, effort, or frequency before judging stimulus outcome.', '#f87171');
+    // Recovery failure: can't repeat this session before the next one is due
+    if (overloaded) {
+      return zone('recoveryFailure', 'Recovery Failure',
+        `Recovery estimate (${m.recDays.toFixed(1)}d) exceeds your ${m.intervalDays}-day interval. Reduce sets, proximity to failure, or frequency.`,
+        '#f87171');
     }
-    if (m.effReps === 0 || m.netWeeklyAU < 0) {
-      return zone('detraining', 'Detraining', 'Net weekly AU is negative after atrophy loss. Increase recruitment, frequency, or productive volume.', '#fb923c');
+
+    // No effective reps: zero stimulus regardless of sets
+    if (m.effReps === 0 && !m.loadDrv) {
+      return zone('detraining', 'Detraining',
+        'Too far from failure for high-threshold motor unit recruitment. Reduce RIR or increase load.',
+        '#f97316');
     }
-    if (m.junkSets.length > 0) {
-      return zone('junkVolume', 'Junk Volume', 'One or more selected sets fell below the hard QF floor. Remove the junk set or reduce reps.', '#fb923c');
+
+    // Junk volume: selected sets below quality threshold
+    if (junkRatio > 0) {
+      return zone('junkVolume', 'Junk Volume',
+        `${m.junkSets.length} of ${m.selectedSets.length} selected set${m.selectedSets.length > 1 ? 's' : ''} produce no effective stimulus. Cut the tail sets or move closer to failure.`,
+        '#fb923c');
     }
-    if (m.qfMin < m.qfOverloadFloor) {
-      return zone('fatigueOverload', 'Fatigue Overload', 'QF is above the hard floor but too close to the daily buffer. Reduce reps or sets for daily repeatability.', '#fb923c');
+
+    // Net AU below maintenance
+    if (m.netWeeklyAU < NET_AU_MAINTAIN_CEIL) {
+      return zone('maintaining', 'Maintaining',
+        'Net weekly AU is below the reliable growth threshold. Enough to resist atrophy — increase frequency or productive sets to grow.',
+        '#94a3b8');
     }
-    if (m.netWeeklyAU < CB_MAINTENANCE_CEILING) {
-      return zone('maintaining', 'Maintaining', 'Below a reliable continuous-growth dose. Enough signal to resist loss, but increase frequency or productive volume.', '#94a3b8');
+
+    // Low-end growth
+    if (m.netWeeklyAU < NET_AU_GROWTH_FLOOR) {
+      return zone('minimumGains', 'Minimum Gains',
+        'In the growth zone, but at the low end. Productive — increase frequency or sets for a more robust growth dose.',
+        '#86efac');
     }
-    if (m.netWeeklyAU < CB_MIN_GAINS_CEILING) {
-      return zone('minimumGains', 'Minimum Gains', 'Low-end growth range. Productive, but not a robust continuous-growth dose.', '#86efac');
+
+    // Gainmaxxing: very high net AU, clean QF, 2 RIR, heavy load
+    if (m.netWeeklyAU >= NET_AU_GAINMAXX_FLOOR && m.effort.key === '2' && junkRatio === 0) {
+      return zone('gainsmaxxing', 'Gainmaxxing',
+        'Maximum productive exposure at the 2 RIR optimum. Monitor Set 1 — any degradation signals recovery debt.',
+        '#22c55e');
     }
-    if (m.effort.key === '2' && m.reps <= 4 && m.qfMin >= 0.89 && m.netWeeklyAU >= CB_GAINSMAXXING_FLOOR && junkRatio === 0) {
-      return zone('gainsmaxxing', 'GainsMaXXing', 'Very high net weekly STIM at the 2 RIR optimum, strong QF buffer, and recoverable before the next session.', '#22c55e');
-    }
-    return zone('gains', 'Gains', 'Productive growth range. Net weekly AU clears the growth floor with manageable quality constraints.', '#4ade80');
+
+    return zone('gains', 'Gains',
+      'Productive growth zone. Net weekly AU clears the growth floor with clean set quality.',
+      '#4ade80');
   }
 
-  const state = { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 };
+  // ─── ZONE STYLES ────────────────────────────────────────────────────────────
 
   const ZONE_STYLES = {
-    recoveryFailure: { bg: 'rgba(248,113,113,0.12)',  border: 'rgba(248,113,113,0.48)',  color: '#fca5a5' },
-    detraining:      { bg: 'rgba(251,146,60,0.10)',   border: 'rgba(251,146,60,0.40)',   color: '#fb923c' },
-    fatigueOverload: { bg: 'rgba(251,146,60,0.12)',   border: 'rgba(251,146,60,0.48)',   color: '#fdba74' },
-    junkVolume:      { bg: 'rgba(251,146,60,0.12)',   border: 'rgba(251,146,60,0.48)',   color: '#fdba74' },
-    maintaining:     { bg: 'rgba(148,163,184,0.08)',  border: 'rgba(148,163,184,0.32)',  color: '#cbd5e1' },
-    minimumGains:    { bg: 'rgba(134,239,172,0.08)',  border: 'rgba(134,239,172,0.35)',  color: '#86efac' },
-    gains:           { bg: 'rgba(74,222,128,0.08)',   border: 'rgba(74,222,128,0.38)',   color: '#4ade80' },
-    gainsmaxxing:    { bg: 'rgba(34,197,94,0.12)',    border: 'rgba(34,197,94,0.45)',    color: '#22c55e' },
+    recoveryFailure: { bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.45)', color: '#fca5a5' },
+    detraining:      { bg: 'rgba(251,146,60,0.10)',  border: 'rgba(251,146,60,0.40)',  color: '#fb923c' },
+    junkVolume:      { bg: 'rgba(251,146,60,0.12)',  border: 'rgba(251,146,60,0.45)',  color: '#fdba74' },
+    maintaining:     { bg: 'rgba(148,163,184,0.08)', border: 'rgba(148,163,184,0.32)', color: '#cbd5e1' },
+    minimumGains:    { bg: 'rgba(134,239,172,0.08)', border: 'rgba(134,239,172,0.35)', color: '#86efac' },
+    gains:           { bg: 'rgba(74,222,128,0.08)',  border: 'rgba(74,222,128,0.38)',  color: '#4ade80' },
+    gainsmaxxing:    { bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.45)',   color: '#22c55e' },
   };
+
+  // ─── SELF-TEST ───────────────────────────────────────────────────────────────
+
+  function selfTest() {
+    const errors = [];
+
+    // ── Numerical integrity: all 4200 combinations ──
+    let combos = 0;
+    for (let s = 1; s <= 8; s++) for (let r = 1; r <= 15; r++)
+    for (let f = 0; f <= 4; f++) for (let e = 0; e < 7; e++) {
+      combos++;
+      const m = calculate({ sets: s, reps: r, freqIdx: f, effortIdx: e });
+      const z = classify(m);
+      if (!isFinite(m.netWeeklyAU)) errors.push(`Non-finite netWeeklyAU s=${s} r=${r} f=${f} e=${e}`);
+      if (!isFinite(m.recDays))     errors.push(`Non-finite recDays s=${s} r=${r} f=${f} e=${e}`);
+      if (!ZONE_STYLES[z.key])      errors.push(`Invalid zone key=${z.key} s=${s} r=${r} f=${f} e=${e}`);
+    }
+
+    // ── Junk detection: load-driven vs fatigue-driven ──
+
+    // 3×12 @2RIR 2.3×/wk: fatigue-driven, effReps=3 → should NOT be junk
+    {
+      const m = calculate({ sets: 3, reps: 12, freqIdx: 2, effortIdx: 3 });
+      if (m.junkSets.length > 0)
+        errors.push(`3×12 @2RIR should have 0 junk sets (fatigue-driven, effReps=3). Got junk=${m.junkSets.length}`);
+    }
+
+    // 3×15 @2RIR 2.3×/wk: fatigue-driven, effReps=3 → should NOT be junk
+    {
+      const m = calculate({ sets: 3, reps: 15, freqIdx: 2, effortIdx: 3 });
+      if (m.junkSets.length > 0)
+        errors.push(`3×15 @2RIR should have 0 junk sets. Got junk=${m.junkSets.length}`);
+    }
+
+    // 3×12 @5RIR: effReps=0 → all sets junk
+    {
+      const m = calculate({ sets: 3, reps: 12, freqIdx: 2, effortIdx: 6 });
+      if (m.junkSets.length !== 3)
+        errors.push(`3×12 @5RIR should have 3 junk sets (effReps=0). Got junk=${m.junkSets.length}`);
+    }
+
+    // Load-driven: 3×2 @2RIR (estRM=4, ≤6) — QF very high, should NOT be junk
+    {
+      const m = calculate({ sets: 3, reps: 2, freqIdx: 2, effortIdx: 3 });
+      if (m.junkSets.length > 0)
+        errors.push(`3×2 @2RIR (load-driven) should have 0 junk. Got junk=${m.junkSets.length}`);
+    }
+
+    // ── SFR monotone: each subsequent set should be lower quality ──
+    {
+      const m = calculate({ sets: 8, reps: 5, freqIdx: 2, effortIdx: 3 });
+      for (let i = 0; i < 7; i++) {
+        if (m.sets[i].qf < m.sets[i+1].qf)
+          errors.push(`QF not monotone at set ${i+1} vs ${i+2}`);
+      }
+    }
+
+    // ── Recovery scales with set count at failure ──
+    for (let s = 1; s < 8; s++) {
+      const m1 = calculate({ sets: s,   reps: 5, freqIdx: 4, effortIdx: 0 });
+      const m2 = calculate({ sets: s+1, reps: 5, freqIdx: 4, effortIdx: 0 });
+      if (m2.recDays <= m1.recDays)
+        errors.push(`Recovery should increase with sets. ${s}→${s+1}: ${m1.recDays.toFixed(2)}→${m2.recDays.toFixed(2)}`);
+    }
+
+    // ── 2 RIR always less damage (shorter recovery) than failure ──
+    for (let s = 1; s <= 8; s++) {
+      const mF  = calculate({ sets: s, reps: 5, freqIdx: 2, effortIdx: 0 });
+      const m2r = calculate({ sets: s, reps: 5, freqIdx: 2, effortIdx: 3 });
+      if (m2r.recDays >= mF.recDays)
+        errors.push(`2 RIR recovery should always be < failure. sets=${s}`);
+    }
+
+    // ── Zone expectations ──
+    function testZone(label, st, expectedKey) {
+      const m = calculate(st);
+      const z = classify(m);
+      if (z.key !== expectedKey)
+        errors.push(`[${label}] expected=${expectedKey} got=${z.key} (netAU=${m.netWeeklyAU.toFixed(1)}, junk=${m.junkSets.length}/${m.selectedSets.length}, rec=${m.recDays.toFixed(2)}d)`);
+    }
+
+    // Heavy load, good freq → gains
+    testZone('3×5 @2RIR 2.3×/wk → gains',
+      { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 }, 'gains');
+
+    // High rep, good freq, close to failure → gains (NOT junk)
+    testZone('3×12 @2RIR 2.3×/wk → gains (not junk)',
+      { sets: 3, reps: 12, freqIdx: 2, effortIdx: 3 }, 'gains');
+    testZone('3×15 @2RIR 2.3×/wk → gains (not junk)',
+      { sets: 3, reps: 15, freqIdx: 2, effortIdx: 3 }, 'gains');
+
+    // 5 RIR: zero recruitment → detraining
+    testZone('1×5 @5RIR 1×/wk → detraining',
+      { sets: 1, reps: 5, freqIdx: 4, effortIdx: 6 }, 'detraining');
+    testZone('3×12 @5RIR 2.3×/wk → detraining',
+      { sets: 3, reps: 12, freqIdx: 2, effortIdx: 6 }, 'detraining');
+
+    // Recovery failure: too many sets at failure daily
+    testZone('8×5 @FAIL daily → recoveryFailure',
+      { sets: 8, reps: 5, freqIdx: 0, effortIdx: 0 }, 'recoveryFailure');
+
+    // Low frequency → maintaining
+    testZone('1×5 @2RIR 1×/wk → maintaining',
+      { sets: 1, reps: 5, freqIdx: 4, effortIdx: 3 }, 'maintaining');
+
+    // Many sets, load-driven, daily → check junk via QF floor
+    // 8 sets at 5-rep failure daily: QF at set 6 = 1 - (0.024×3.5)×(5×6/2) = 1 - 0.084×15 = -0.26 → 0 → junk
+    {
+      const m = calculate({ sets: 8, reps: 5, freqIdx: 0, effortIdx: 0 });
+      // load-driven 5-rep failure: estRM=5, ≤6 → load-driven, QF floor = 0.85 (daily)
+      // Late sets will hit QF < 0.85 → junk
+      if (m.junkSets.length === 0)
+        errors.push(`8×5 @FAIL daily (load-driven) should have some junk sets from QF floor. Got 0.`);
+    }
+
+    if (errors.length === 0) {
+      console.log(`GYM_PIGS v3 self-test: ALL PASSED ✓ (${combos} combinations)`);
+    } else {
+      errors.forEach(e => console.log('Error:', e));
+      console.log(`GYM_PIGS v3 self-test: ${errors.length} FAILURE(S)`);
+    }
+    return errors;
+  }
+
+  // ─── RENDER ─────────────────────────────────────────────────────────────────
+
+  const state = { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 };
 
   function render() {
     const m = calculate(state);
     const z = classify(m);
-    const effort = EFFORT_OPTIONS[state.effortIdx];
-    const style = ZONE_STYLES[z.key] || ZONE_STYLES.gains;
+    const effort  = EFFORT_OPTIONS[state.effortIdx];
+    const restOpt = REST_OPTIONS[state.freqIdx];
+    const style   = ZONE_STYLES[z.key];
 
+    // Zone banner
     const banner = document.getElementById('zoneBanner');
-    banner.style.background = style.bg;
-    banner.style.borderColor = style.border;
-    document.getElementById('zoneName').style.color = style.color;
-    document.getElementById('zoneName').textContent = z.name;
-    document.getElementById('zoneAU').textContent = `${m.netWeeklyAU.toFixed(1)} AU/wk net`;
-    document.getElementById('zoneCopy').textContent = z.copy;
-    document.getElementById('zoneCopy').style.color = style.color;
-    document.getElementById('zoneAU').style.color = style.color;
+    banner.style.background   = style.bg;
+    banner.style.borderColor  = style.border;
+    const nameEl = document.getElementById('zoneName');
+    nameEl.textContent = z.name;
+    nameEl.style.color = style.color;
+    const auEl = document.getElementById('zoneAU');
+    auEl.textContent = `${m.netWeeklyAU.toFixed(1)} AU/wk net`;
+    auEl.style.color = style.color;
+    const copyEl = document.getElementById('zoneCopy');
+    copyEl.textContent = z.copy;
+    copyEl.style.color = style.color;
 
+    // Control values
     document.getElementById('setsVal').textContent = state.sets;
     document.getElementById('repsVal').textContent = state.reps;
-    const restOpt = REST_OPTIONS[state.freqIdx];
-    document.getElementById('freqRestVal').textContent = restOpt.restLabel;
+    document.getElementById('freqRestVal').textContent  = restOpt.restLabel;
     document.getElementById('freqDerivedVal').textContent = restOpt.freqLabel;
-    document.getElementById('effortVal').textContent = effort.label;
-    document.getElementById('effortVal').style.color = effort.color;
-    document.getElementById('effortVal').style.borderColor = effort.color + '66';
-    document.getElementById('effortVal').style.background = effort.color + '18';
+    const efEl = document.getElementById('effortVal');
+    efEl.textContent = effort.label;
+    efEl.style.color       = effort.color;
+    efEl.style.borderColor = effort.color + '66';
+    efEl.style.background  = effort.color + '18';
 
-    const grid = document.getElementById('effortGrid');
-    Array.from(grid.children).forEach((btn, i) => {
+    // Effort buttons
+    Array.from(document.getElementById('effortGrid').children).forEach((btn, i) => {
       const e = EFFORT_OPTIONS[i];
       if (i === state.effortIdx) {
         btn.classList.add('sel');
@@ -743,39 +698,42 @@
       }
     });
 
+    // Stats
     document.getElementById('statStim').textContent = m.sessionStim.toFixed(1);
-    document.getElementById('statStimSub').textContent = 'STIM this session';
 
-    const recDays = m.recoveryDaysClamped;
-    const recLabel = recDays >= m.restInterval ? 'Recovery failure' : recDays >= m.restInterval * 0.85 ? 'Recovery margin tight' : recDays >= 2.5 ? 'Moderate recovery' : 'Low recovery';
-    const recColor = recDays >= m.restInterval ? '#f87171' : recDays >= m.restInterval * 0.85 ? '#fbbf24' : recDays >= 2.5 ? '#fbbf24' : '#4ade80';
-    const recEl = document.getElementById('statRec');
-    recEl.textContent = recDays.toFixed(1) + 'd';
-    recEl.style.color = recColor;
-    document.getElementById('statRecSub').textContent = recLabel;
+    const recEl  = document.getElementById('statRec');
+    const recSub = document.getElementById('statRecSub');
+    recEl.textContent = m.recDays.toFixed(1) + 'd';
+    const recRatio = m.recDays / m.intervalDays;
+    recEl.style.color = recRatio >= 1 ? '#f87171' : recRatio >= 0.85 ? '#fbbf24' : '#4ade80';
+    recSub.textContent = recRatio >= 1 ? 'Recovery failure' : recRatio >= 0.85 ? 'Margin tight' : 'Recoverable';
 
-    const qfEl = document.getElementById('statSFR');
-    qfEl.textContent = m.qfMin.toFixed(2);
-    qfEl.style.color = m.qfMin >= m.qfFloor ? '#4ade80' : '#f87171';
-    document.getElementById('statQFSub').textContent = `floor ${m.qfFloor.toFixed(2)} / buffer ${m.qfOverloadFloor.toFixed(2)}`;
+    const qfEl  = document.getElementById('statQF');
+    const qfSub = document.getElementById('statQFSub');
+    qfEl.textContent  = m.qfMin.toFixed(2);
+    qfEl.style.color  = m.qfMin >= m.floor ? '#4ade80' : '#f87171';
+    qfSub.textContent = `floor ${m.floor.toFixed(2)}`;
 
+    // Set bars
     renderSetBars(m);
-    renderInfo(m);
+
+    // Info
+    renderInfo(m, z);
   }
 
   function renderSetBars(m) {
     const container = document.getElementById('setBars');
     container.innerHTML = '';
+    const maxQF = 1;
     m.sets.forEach((s, i) => {
       const col = document.createElement('div');
       col.className = 'set-col';
-      const heightPct = Math.max(5, s.qf * 100);
       const bar = document.createElement('div');
       bar.className = 'set-bar';
-      bar.style.height = heightPct + '%';
-      if (!s.selected) bar.style.background = 'rgba(122,138,132,0.2)';
-      else if (s.isJunk) bar.style.background = 'linear-gradient(to top, #f97316, #fdba74)';
-      else bar.style.background = 'linear-gradient(to top, #4ade80, #a3e635)';
+      bar.style.height = Math.max(5, s.qf * 100) + '%';
+      if (!s.selected)   bar.style.background = 'rgba(122,138,132,0.2)';
+      else if (s.junk)   bar.style.background = 'linear-gradient(to top, #f97316, #fdba74)';
+      else               bar.style.background = 'linear-gradient(to top, #4ade80, #a3e635)';
       const num = document.createElement('div');
       num.className = 'set-col-num';
       num.textContent = i + 1;
@@ -785,42 +743,45 @@
     });
   }
 
-  function renderInfo(m) {
+  function renderInfo(m, z) {
     const wrap = document.getElementById('infoWrap');
     wrap.innerHTML = '';
     const msgs = [];
-    const effort = EFFORT_OPTIONS[state.effortIdx];
 
-    if (effort.key === 'FAIL' || effort.key === '0') {
-      msgs.push({ cls: 'warn-failure', title: effort.key === 'FAIL' ? 'Failure training' : '0 RIR', body: 'Failure/0 RIR uses the document failure dc multiplier of 3.5×. QF collapses faster and recovery cost rises. 2 RIR remains the ceiling.' });
+    // Failure / 0 RIR warning
+    if (m.effort.key === 'FAIL' || m.effort.key === '0') {
+      msgs.push({ cls: 'warn-red',
+        title: m.effort.key === 'FAIL' ? 'Failure training' : '0 RIR',
+        body: 'dc multiplier 3.5×. QF collapses faster; recovery cost rises proportionally. The 2 RIR ceiling exists because failure destroys net weekly STIM accumulation.' });
     }
 
+    // Junk volume
     if (m.junkSets.length > 0) {
-      const junkNums = m.selectedSets.map((s, i) => s.isJunk ? i + 1 : null).filter(Boolean).join(', ');
-      msgs.push({ cls: 'warn-junk', title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`, body: `Set ${m.junkSets.length > 1 ? 'numbers' : 'number'} ${junkNums} falls below the QF floor (${m.qfFloor.toFixed(2)}). Junk is a QF-floor violation.` });
-    } else if (m.qfMin < m.qfOverloadFloor) {
-      msgs.push({ cls: 'warn-junk', title: 'Daily QF buffer tight', body: `QF min (${m.qfMin.toFixed(2)}) is above the hard junk floor (${m.qfFloor.toFixed(2)}) but below the daily productive buffer (${m.qfOverloadFloor.toFixed(2)}). Reduce reps or sets if Set 1 drops next session.` });
+      const reason = m.loadDrv
+        ? `QF fell below the floor (${m.floor.toFixed(2)}) — load-driven work needs high QF because every rep counts.`
+        : `Effective reps = 0 — too far from failure for high-threshold motor unit recruitment.`;
+      msgs.push({ cls: 'warn-orange',
+        title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`,
+        body: reason + ' Cut the tail sets or move closer to failure.' });
     }
 
-    if (!m.loadDriven && m.effReps === 0) {
-      msgs.push({ cls: 'warn-junk', title: 'No effective reps', body: 'This is not ≤6RM load-driven work and is too far from failure for fatigue-driven recruitment. Increase load or reduce RIR while respecting the 2 RIR ceiling.' });
+    // Recovery tight warning
+    const recRatio = m.recDays / m.intervalDays;
+    if (recRatio >= 0.85 && z.key !== 'recoveryFailure') {
+      msgs.push({ cls: 'warn-orange',
+        title: 'Recovery margin tight',
+        body: `Recovery estimate (${m.recDays.toFixed(1)}d) is close to your ${m.intervalDays}-day interval. Set 1 performance is the warning signal — any degradation means take an extra rest day.` });
     }
 
-    if (m.restDays === 0 && m.recoveryDaysClamped < m.restInterval && m.sessionEffectiveSets > 0) {
-      msgs.push({ cls: m.recoveryDaysClamped >= 0.75 ? 'warn-junk' : 'info-neutral', title: 'Daily Set 1 check', body: `Estimated recovery is ${m.recoveryDaysClamped.toFixed(1)}d inside a 24h interval. This is only repeatable if next-session Set 1 performance is stable: same load, same reps, same or easier RIR.` });
-    }
-
-    if (m.recoveryDaysClamped >= m.restInterval) {
-      msgs.push({ cls: 'warn-failure', title: 'Recovery failure', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) exceeds your ${m.restInterval.toFixed(1)}-day stimulus interval. This setup is not repeatable as programmed.` });
-    } else if (m.recoveryDaysClamped >= m.restInterval * 0.85) {
-      msgs.push({ cls: 'warn-junk', title: 'Recovery margin tight', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) is close to your ${m.restInterval.toFixed(1)}-day stimulus interval. Set 1 degradation is the next-session warning signal.` });
-    }
-
+    // Positive summary
     if (msgs.length === 0) {
-      const qfNote = m.junkSets.length === 0 ? 'Clean QF.' : 'QF tail contamination present.';
-      const modeNote = m.loadDriven ? 'Load-driven recruitment from rep 1.' : 'Fatigue-driven recruitment model.';
-      const atNote = m.atrophyLossPerWeek > 0 ? ` Atrophy loss subtracts ${m.atrophyLossPerWeek.toFixed(1)} AU/wk after the 48h window.` : ' No atrophy window loss at this frequency.';
-      msgs.push({ cls: 'info-neutral', title: 'Model summary', body: `${qfNote} ${modeNote} WNS session AU ${m.sessionAU.toFixed(2)} from ${m.sessionEffectiveSets.toFixed(1)} productive set${Math.abs(m.sessionEffectiveSets - 1) < 0.01 ? '' : 's'}. Reps/set are reflected in CB Session STIM (${m.sessionStim.toFixed(1)}), not by inflating WNS set count. Net weekly AU = weekly CB STIM (${m.weeklyStimRaw.toFixed(1)}) − atrophy loss (${m.atrophyLossPerWeek.toFixed(1)}). WNS diagnostic net = ${m.netWeeklyWNS.toFixed(1)} AU/wk.${atNote}` });
+      const modeNote = m.loadDrv ? 'Load-driven: all reps count from rep 1.' : `Fatigue-driven: terminal ${m.effReps} rep${m.effReps !== 1 ? 's' : ''} per set are high-tension.`;
+      const atNote = m.atrophyLossPerWeek > 0
+        ? ` Atrophy loss: ${m.atrophyLossPerWeek.toFixed(1)} AU/wk (rest > 48h MPS window).`
+        : ' No atrophy loss — frequency covers the MPS window.';
+      msgs.push({ cls: 'info-muted',
+        title: 'Model summary',
+        body: `${modeNote} Session STIM: ${m.sessionStim.toFixed(1)} AU × ${m.sessPerWeek.toFixed(2)}×/wk = ${m.weeklyStimRaw.toFixed(1)} AU/wk raw.${atNote} Net: ${m.netWeeklyAU.toFixed(1)} AU/wk.` });
     }
 
     msgs.forEach(({ cls, title, body }) => {
@@ -830,6 +791,8 @@
       wrap.appendChild(box);
     });
   }
+
+  // ─── INIT ────────────────────────────────────────────────────────────────────
 
   function buildEffortButtons() {
     const grid = document.getElementById('effortGrid');
@@ -847,10 +810,7 @@
     document.getElementById('repsSlider').addEventListener('input', e => { state.reps = +e.target.value; render(); });
     document.getElementById('freqSlider').addEventListener('input', e => { state.freqIdx = +e.target.value; render(); });
     document.getElementById('resetBtn').addEventListener('click', () => {
-      state.sets = 3;
-      state.reps = 5;
-      state.freqIdx = 2;
-      state.effortIdx = 3;
+      state.sets = 3; state.reps = 5; state.freqIdx = 2; state.effortIdx = 3;
       document.getElementById('setsSlider').value = 3;
       document.getElementById('repsSlider').value = 5;
       document.getElementById('freqSlider').value = 2;
@@ -858,65 +818,11 @@
     });
   }
 
-  function selfTest() {
-    const cases = [
-      { label: 'screenshot 3×10 @2RIR 2.3×/wk = junkVolume, not fatigueOverload', state: { sets: 3, reps: 10, freqIdx: 2, effortIdx: 3 }, zone: 'junkVolume', qfMin: 0.70, recovery: 1.20 },
-      { label: '3×10 @3RIR 1×/wk = not fatigueOverload', state: { sets: 3, reps: 10, freqIdx: 4, effortIdx: 4 }, notZone: 'fatigueOverload', qfMin: 0.79 },
-      { label: '3×5 @2RIR daily = recoverable but Set 1 check', state: { sets: 3, reps: 5, freqIdx: 0, effortIdx: 3 }, notZone: 'recoveryFailure', recovery: 0.80 },
-      { label: '3×8 @0RIR every 2d = 48h recovery', state: { sets: 3, reps: 8, freqIdx: 1, effortIdx: 1 }, recovery: 2.00 },
-      { label: '5×8 @1RIR every 2d = 42h recovery', state: { sets: 5, reps: 8, freqIdx: 1, effortIdx: 2 }, recovery: 1.75 },
-      { label: '5×4 @2RIR session STIM anchor', state: { sets: 5, reps: 4, freqIdx: 2, effortIdx: 3 }, sessionStim: 35.10 },
-      { label: '4×5 @2RIR daily session STIM anchor', state: { sets: 4, reps: 5, freqIdx: 0, effortIdx: 3 }, sessionStim: 33.84 },
-    ];
-
-    const errors = [];
-    function near(a, b, tol = 0.03) { return Math.abs(a - b) <= tol; }
-
-    cases.forEach(c => {
-      const m = calculate(c.state);
-      const z = classify(m);
-      if (c.zone && z.key !== c.zone) errors.push(`${c.label}: expected zone ${c.zone}, got ${z.key}`);
-      if (c.notZone && z.key === c.notZone) errors.push(`${c.label}: should not be ${c.notZone}`);
-      if (Number.isFinite(c.qfMin) && !near(m.qfMin, c.qfMin)) errors.push(`${c.label}: expected qfMin ${c.qfMin}, got ${m.qfMin.toFixed(3)}`);
-      if (Number.isFinite(c.recovery) && !near(m.recoveryDaysClamped, c.recovery)) errors.push(`${c.label}: expected recovery ${c.recovery}, got ${m.recoveryDaysClamped.toFixed(3)}`);
-      if (Number.isFinite(c.sessionStim) && !near(m.sessionStim, c.sessionStim, 0.06)) errors.push(`${c.label}: expected sessionStim ${c.sessionStim}, got ${m.sessionStim.toFixed(3)}`);
-    });
-
-    let totalCombos = 0;
-    for (let s = 1; s <= 8; s++) {
-      for (let r = 1; r <= 15; r++) {
-        for (let f = 0; f <= 4; f++) {
-          for (let e = 0; e < EFFORT_OPTIONS.length; e++) {
-            totalCombos++;
-            const m = calculate({ sets: s, reps: r, freqIdx: f, effortIdx: e });
-            const z = classify(m);
-            if (!Number.isFinite(m.netWeeklyAU)) errors.push(`Non-finite netWeeklyAU at s=${s} r=${r} f=${f} e=${e}`);
-            if (!Number.isFinite(m.recoveryDaysClamped)) errors.push(`Non-finite recovery at s=${s} r=${r} f=${f} e=${e}`);
-            if (!ZONE_STYLES[z.key]) errors.push(`Invalid zone key ${z.key} at s=${s} r=${r} f=${f} e=${e}`);
-            m.selectedSets.forEach((set, i) => {
-              const shouldBeJunk = set.stim <= 0 || set.qf < m.qfFloor;
-              if (set.isJunk !== shouldBeJunk) errors.push(`Junk mismatch at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
-            });
-          }
-        }
-      }
-    }
-
-    if (errors.length) {
-      errors.forEach(e => console.error(e));
-      console.error(`GYM_PIGS self-test: ${errors.length} FAILURE(S)`);
-    } else {
-      console.info(`GYM_PIGS self-test: ALL PASSED ✓ (${totalCombos} settings runtime-checked, ${cases.length} anchor cases)`);
-    }
-    return errors;
-  }
-
-  window.GYM_PIGS_DEBUG = { calculate, classify, selfTest, fatigueRecoveryScorePerSet, stimulatingRepsForRecovery };
-
   buildEffortButtons();
   bindSliders();
   render();
   selfTest();
+
 })();
 </script>
 </body>
