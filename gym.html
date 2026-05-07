@@ -412,7 +412,7 @@
   <!-- ZONE BANNER -->
   <div class="zone-banner" id="zoneBanner">
     <div class="zone-row">
-      <div class="zone-name" id="zoneName">Gaining</div>
+      <div class="zone-name" id="zoneName">Gains</div>
       <div class="zone-au" id="zoneAU">NET — AU/wk</div>
     </div>
     <div class="zone-copy" id="zoneCopy">Productive growth dose.</div>
@@ -444,11 +444,14 @@
     <!-- FREQUENCY -->
     <div class="ctrl">
       <div class="ctrl-header">
-        <span class="ctrl-label">Session frequency</span>
-        <span class="ctrl-val" id="freqVal">3×/wk</span>
+        <span class="ctrl-label">Rest between sessions</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="ctrl-val" id="freqRestVal">3 days</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);background:rgba(122,138,132,0.12);border:1px solid rgba(122,138,132,0.25);border-radius:5px;padding:2px 7px;white-space:nowrap;" id="freqDerivedVal">2.3×/wk</span>
+        </div>
       </div>
       <input type="range" id="freqSlider" min="0" max="4" step="1" value="2" />
-      <div class="limits"><span>1×</span><span>7×</span></div>
+      <div class="limits"><span>1 day</span><span>7 days</span></div>
     </div>
 
     <!-- EFFORT / RIR -->
@@ -578,13 +581,15 @@
     { key: '5',    label: '5 RIR',   short: '5',    numericRir: 5, stimMult: 0.20, damageMult: 0.2, color: '#94a3b8' },
   ];
 
-  const FREQ_OPTIONS = [
-    { label: '1×/wk', sessPerWeek: 1 },
-    { label: '2×/wk', sessPerWeek: 2 },
-    { label: '3×/wk', sessPerWeek: 3 },
-    { label: '4×/wk', sessPerWeek: 4 },
-    { label: '7×/wk', sessPerWeek: 7 },
+  // REST_OPTIONS: primary input = rest days between sessions. Frequency is derived.
+  const REST_OPTIONS = [
+    { restDays: 1, restLabel: '1 day',  freqLabel: '7×/wk',    sessPerWeek: 7    },
+    { restDays: 2, restLabel: '2 days', freqLabel: '3.5×/wk',  sessPerWeek: 3.5  },
+    { restDays: 3, restLabel: '3 days', freqLabel: '2.3×/wk',  sessPerWeek: 7/3  },
+    { restDays: 4, restLabel: '4 days', freqLabel: '1.75×/wk', sessPerWeek: 1.75 },
+    { restDays: 7, restLabel: '7 days', freqLabel: '1×/wk',    sessPerWeek: 1    },
   ];
+  const FREQ_OPTIONS = REST_OPTIONS; // freqIdx indexes REST_OPTIONS
 
   // QF floor: below this, a set is "junk" — too much fatigue decay to add net stimulus
   // CB data: sets 6-8 provide "tiny benefit" → SFR is poor → marginal gain < damage cost
@@ -610,7 +615,10 @@
       const stim = marginalBase * scalar * effort.stimMult;
       const dmg = damagePerSet(i) * effort.damageMult;
       const sfr = dmg > 0 ? stim / dmg : 0;
-      const isJunk = sfr < JUNK_SFR_FLOOR;
+      // CB/WNS floor guard: first 1-3 selected sets are not junk when there is any effective recruitment.
+      // The junk floor is a tail-volume filter, not a low-rep early-set penalty.
+      const earlyProductiveFloor = i < 3 && effReps > 0;
+      const isJunk = !earlyProductiveFloor && sfr < JUNK_SFR_FLOOR;
       const selected = (i + 1) <= state.sets;
       sets.push({ stim, dmg, sfr, isJunk, selected });
     }
@@ -669,34 +677,27 @@
    * - Risk: recovery time exceeds inter-session interval (overtraining marker)
    */
   function classify(m) {
-    const { netWeeklyAU, sessPerWeek, recoveryDaysClamped, restInterval,
-            junkSets, selectedSets, sessionSFR, sessionStim, productiveSets } = m;
+    const { netWeeklyAU, recoveryDaysClamped, restInterval,
+            junkSets, selectedSets, sessionSFR } = m;
 
     const junkRatio = selectedSets.length ? junkSets.length / selectedSets.length : 0;
-    const overloaded = recoveryDaysClamped >= restInterval;
+    const recoverable = recoveryDaysClamped < restInterval;
 
-    if (m.effReps === 0) {
-      return zone('undertraining', 'Undertraining', 'Too far from failure — no effective motor unit recruitment.', '#fbbf24');
+    // Main banner = adaptation outcome only.
+    // Junk volume and recovery failure are quality/recovery warnings, not normal outcome zones.
+    if (m.effReps === 0 || netWeeklyAU < 0.15) {
+      return zone('detraining', 'Detraining', 'Net stimulus is too low to reliably preserve tissue. Increase recruitment, frequency, or productive volume.', '#fb923c');
     }
-    if (overloaded && sessPerWeek >= 3) {
-      return zone('risk', 'Overreaching', 'Recovery demand exceeds inter-session interval. Reduce sets, frequency, or proximity to failure.', '#f87171');
+    if (netWeeklyAU < 1.3) {
+      return zone('maintaining', 'Maintaining', 'Enough signal to resist loss, but below the growth floor. Add frequency or productive work.', '#94a3b8');
     }
-    if (junkRatio >= 0.5 && selectedSets.length >= 4) {
-      return zone('wasteful', 'Wasteful', 'Majority of sets fall below the SFR floor with high absolute volume. Reduce sets — you\'re accumulating damage without proportional stim.', '#f97316');
+    if (netWeeklyAU < 1.75) {
+      return zone('minimumGains', 'Minimum Gains', 'Crosses the minimum growth floor, but only barely. High SFR, low absolute exposure.', '#86efac');
     }
-    if (junkRatio >= 0.25) {
-      return zone('junk', 'Junk Volume', 'Significant junk-volume contamination. CB data: sets 6-8 provide tiny benefit relative to damage. Cut the tail sets.', '#f97316');
+    if (netWeeklyAU >= 7.5 && sessionSFR >= 1.2 && junkRatio === 0 && recoverable) {
+      return zone('gainsmaxxing', 'GainsMaXXing', 'Highest clean productive exposure: high net weekly AU, clean SFR, and recoverable before the next session.', '#22c55e');
     }
-    if (netWeeklyAU < 0.15) {
-      return zone('undertraining', 'Undertraining', 'Net weekly stimulus is near zero. Increase frequency, sets, or proximity to failure.', '#fbbf24');
-    }
-    if (netWeeklyAU < 1.8) {
-      return zone('maintaining', 'Maintaining', 'Enough to suppress atrophy, but below reliable growth dose. Increase frequency or add a productive set.', '#38bdf8');
-    }
-    if (netWeeklyAU >= 7.5 && sessionSFR >= 1.2 && junkRatio === 0) {
-      return zone('gainmaxxing', 'Gainmaxxing', 'Maximum productive exposure. Clean SFR, high net weekly stimulus. Ensure Set 1 performance stays stable session to session.', '#a3e635');
-    }
-    return zone('gaining', 'Gaining', 'Productive growth dose. Good SFR, net weekly AU above growth threshold, recovery manageable.', '#4ade80');
+    return zone('gains', 'Gains', 'Productive growth range. Net weekly AU clears the growth floor with manageable quality constraints.', '#4ade80');
   }
 
   function zone(key, name, copy, color) { return { key, name, copy, color }; }
@@ -715,60 +716,87 @@
       }
     }
 
-    // ── Numerical integrity: all combinations ──
+    const validZones = ['detraining', 'maintaining', 'minimumGains', 'gains', 'gainsmaxxing'];
+    const zoneCounts = Object.fromEntries(validZones.map(k => [k, 0]));
+    let totalCombos = 0;
+
+    // ── Numerical integrity + outcome-rule simulation: all combinations ──
     for (let s = 1; s <= 8; s++) {
       for (let r = 1; r <= 15; r++) {
         for (let f = 0; f <= 4; f++) {
           for (let e = 0; e < EFFORT_OPTIONS.length; e++) {
+            totalCombos++;
             const m = calculate({ sets: s, reps: r, freqIdx: f, effortIdx: e });
             const z = classify(m);
+
             if (!isFinite(m.netWeeklyAU)) errors.push(`Non-finite netWeeklyAU at s=${s} r=${r} f=${f} e=${e}`);
             if (!isFinite(m.sessionSFR)) errors.push(`Non-finite sessionSFR at s=${s} r=${r} f=${f} e=${e}`);
-            if (!z.key) errors.push(`Missing zone key at s=${s} r=${r} f=${f} e=${e}`);
+            if (!validZones.includes(z.key)) errors.push(`Invalid zone key at s=${s} r=${r} f=${f} e=${e}: ${z.key}`);
+            else zoneCounts[z.key]++;
+
+            if (m.effReps > 0) {
+              m.selectedSets.slice(0, Math.min(s, 3)).forEach((set, i) => {
+                if (set.isJunk) errors.push(`Early productive set misclassified as junk at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
+              });
+            }
+
+            if (s <= 3 && m.effReps > 0 && m.junkSets.length > 0) {
+              errors.push(`Low-volume session has junk contamination at s=${s} r=${r} f=${f} e=${e}`);
+            }
+
+            if (z.key === 'detraining' && !(m.effReps === 0 || m.netWeeklyAU < 0.15)) {
+              errors.push(`Detraining zone without detraining condition at s=${s} r=${r} f=${f} e=${e}`);
+            }
+            if (z.key === 'maintaining' && !(m.effReps > 0 && m.netWeeklyAU >= 0.15 && m.netWeeklyAU < 1.3)) {
+              errors.push(`Maintaining threshold violation at s=${s} r=${r} f=${f} e=${e}`);
+            }
+            if (z.key === 'minimumGains' && !(m.netWeeklyAU >= 1.3 && m.netWeeklyAU < 1.75)) {
+              errors.push(`Minimum Gains threshold violation at s=${s} r=${r} f=${f} e=${e}`);
+            }
+            if (z.key === 'gainsmaxxing') {
+              const junkRatio = m.selectedSets.length ? m.junkSets.length / m.selectedSets.length : 0;
+              if (!(m.netWeeklyAU >= 7.5 && m.sessionSFR >= 1.2 && junkRatio === 0 && m.recoveryDaysClamped < m.restInterval)) {
+                errors.push(`GainsMaXXing without clean high-output condition at s=${s} r=${r} f=${f} e=${e}`);
+              }
+            }
           }
         }
       }
     }
 
-    // ── CB-aligned zone expectations ──
-    // 1 set, 5 reps, 3×/wk, 2 RIR → gaining (minimum)
-    test('1×5 @ 2RIR 3×/wk', { sets: 1, reps: 5, freqIdx: 2, effortIdx: 3 }, 'gaining');
-    // 3 sets, 5 reps, 3×/wk, 2 RIR → gaining (productive)
-    test('3×5 @ 2RIR 3×/wk', { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 }, 'gaining');
-    // 1 set, 5 reps, 1×/wk, 2 RIR → maintaining (frequency too low)
-    test('1×5 @ 2RIR 1×/wk', { sets: 1, reps: 5, freqIdx: 0, effortIdx: 3 }, 'maintaining');
-    // 8 sets, 5 reps, 1×/wk, 2 RIR → wasteful (5/8 junk with ≥4 total = wasteful, not just junk)
-    test('8×5 @ 2RIR 1×/wk', { sets: 8, reps: 5, freqIdx: 0, effortIdx: 3 }, 'wasteful');
-    // 1 set, 5 reps, 1×/wk, 5 RIR → undertraining
-    test('1×5 @ 5RIR 1×/wk', { sets: 1, reps: 5, freqIdx: 0, effortIdx: 6 }, 'undertraining');
-    // 2 sets, 15 reps, 1×/wk, 5 RIR → undertraining (too easy)
-    test('2×15 @ 5RIR 1×/wk', { sets: 2, reps: 15, freqIdx: 0, effortIdx: 6 }, 'undertraining');
-    // 8 sets, 5 reps, 7×/wk, failure → overreaching
-    test('8×5 @ FAIL 7×/wk', { sets: 8, reps: 5, freqIdx: 4, effortIdx: 0 }, 'risk');
-    // 3 sets, 5 reps, 1×/wk, 4 RIR → undertraining or maintaining
-    // (frequency 1×/wk + 4 RIR = low net AU)
-    const m_low = calculate({ sets: 3, reps: 5, freqIdx: 0, effortIdx: 5 });
-    const z_low = classify(m_low);
-    if (!['undertraining','maintaining'].includes(z_low.key)) {
-      errors.push(`3×5 @ 4RIR 1×/wk: expected undertraining or maintaining, got ${z_low.key}`);
-    }
+    // ── CB-aligned anchor expectations ──
+    // REST_OPTIONS index map:
+    // 0 = 1 day rest  = 7×/wk
+    // 1 = 2 days rest = 3.5×/wk
+    // 2 = 3 days rest = 2.3×/wk
+    // 3 = 4 days rest = 1.75×/wk
+    // 4 = 7 days rest = 1×/wk
 
-    // ── CB: 1-3 sets should be productive (low damage per CB chart) ──
+    test('1×5 @ 2RIR every 3d', { sets: 1, reps: 5, freqIdx: 2, effortIdx: 3 }, 'minimumGains');
+    test('3×1 @ 2RIR every 3d', { sets: 3, reps: 1, freqIdx: 2, effortIdx: 3 }, 'maintaining');
+    test('3×2 @ 2RIR every 3d', { sets: 3, reps: 2, freqIdx: 2, effortIdx: 3 }, 'gains');
+    test('3×5 @ 2RIR every 3d', { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 }, 'gains');
+    test('1×5 @ 2RIR 1×/wk', { sets: 1, reps: 5, freqIdx: 4, effortIdx: 3 }, 'maintaining');
+    test('1×5 @ 5RIR 1×/wk', { sets: 1, reps: 5, freqIdx: 4, effortIdx: 6 }, 'detraining');
+    test('2×15 @ 5RIR 1×/wk', { sets: 2, reps: 15, freqIdx: 4, effortIdx: 6 }, 'detraining');
+
+    // ── CB: 1-3 sets should be productive when effective recruitment exists ──
     for (let s = 1; s <= 3; s++) {
-      const m = calculate({ sets: s, reps: 5, freqIdx: 2, effortIdx: 3 }); // 2 RIR, 3×/wk
-      const z = classify(m);
-      if (m.junkSets.length > 0) {
-        errors.push(`Sets 1-3 at 2 RIR should have 0 junk sets. sets=${s} got junk=${m.junkSets.length}`);
+      for (let r = 1; r <= 15; r++) {
+        const m = calculate({ sets: s, reps: r, freqIdx: 2, effortIdx: 3 }); // 2 RIR, every 3 days
+        if (m.effReps > 0 && m.junkSets.length > 0) {
+          errors.push(`Sets 1-3 at 2 RIR should have 0 junk sets. sets=${s} reps=${r} got junk=${m.junkSets.length}`);
+        }
       }
     }
 
-    // ── CB: sets 7-8 should always produce junk at moderate loads ──
+    // ── CB/WNS: tail sets should become junk at moderate loads ──
     const m8 = calculate({ sets: 8, reps: 10, freqIdx: 2, effortIdx: 3 });
     if (m8.junkSets.length < 2) {
       errors.push(`8 sets @ moderate load should have ≥2 junk sets. Got junk=${m8.junkSets.length}`);
     }
 
-    // ── SFR should be highest at set 1 and decrease ──
+    // ── SFR should be highest at Set 1 and decrease across the session ──
     const mSFR = calculate({ sets: 8, reps: 5, freqIdx: 2, effortIdx: 3 });
     for (let i = 0; i < 7; i++) {
       if (mSFR.sets[i].sfr < mSFR.sets[i+1].sfr) {
@@ -776,7 +804,7 @@
       }
     }
 
-    // ── Recovery days should scale with sets (CB recovery chart) ──
+    // ── Recovery days should scale with sets ──
     for (let s = 1; s < 8; s++) {
       const m1 = calculate({ sets: s, reps: 5, freqIdx: 0, effortIdx: 0 }); // failure
       const m2 = calculate({ sets: s+1, reps: 5, freqIdx: 0, effortIdx: 0 });
@@ -795,7 +823,8 @@
     }
 
     if (errors.length === 0) {
-      console.info('GYM_PIGS v2 self-test: ALL PASSED ✓');
+      console.info(`GYM_PIGS v2 self-test: ALL PASSED ✓ (${totalCombos} settings simulated)`);
+      console.info('Zone counts:', zoneCounts);
     } else {
       errors.forEach(e => console.error(e));
       console.error(`GYM_PIGS v2 self-test: ${errors.length} FAILURE(S)`);
@@ -810,13 +839,11 @@
   const state = { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 };
 
   const ZONE_STYLES = {
-    undertraining: { bg: 'rgba(251,191,36,0.08)',  border: 'rgba(251,191,36,0.35)', color: '#fcd34d' },
-    maintaining:   { bg: 'rgba(56,189,248,0.08)',   border: 'rgba(56,189,248,0.35)', color: '#7dd3fc' },
-    gaining:       { bg: 'rgba(74,222,128,0.08)',   border: 'rgba(74,222,128,0.35)', color: '#86efac' },
-    gainmaxxing:   { bg: 'rgba(163,230,53,0.10)',   border: 'rgba(163,230,53,0.40)', color: '#bef264' },
-    junk:          { bg: 'rgba(249,115,22,0.10)',   border: 'rgba(249,115,22,0.40)', color: '#fdba74' },
-    wasteful:      { bg: 'rgba(249,115,22,0.12)',   border: 'rgba(249,115,22,0.45)', color: '#fb923c' },
-    risk:          { bg: 'rgba(248,113,113,0.12)',  border: 'rgba(248,113,113,0.45)', color: '#fca5a5' },
+    detraining:    { bg: 'rgba(251,146,60,0.10)',   border: 'rgba(251,146,60,0.40)',   color: '#fb923c' },
+    maintaining:   { bg: 'rgba(148,163,184,0.08)',  border: 'rgba(148,163,184,0.32)',  color: '#cbd5e1' },
+    minimumGains:  { bg: 'rgba(134,239,172,0.08)',  border: 'rgba(134,239,172,0.35)',  color: '#86efac' },
+    gains:         { bg: 'rgba(74,222,128,0.08)',   border: 'rgba(74,222,128,0.38)',   color: '#4ade80' },
+    gainsmaxxing:  { bg: 'rgba(34,197,94,0.12)',    border: 'rgba(34,197,94,0.45)',    color: '#22c55e' },
   };
 
   // ─────────────────────────────────────────────
@@ -826,8 +853,7 @@
     const m = calculate(state);
     const z = classify(m);
     const effort = EFFORT_OPTIONS[state.effortIdx];
-    const freq = FREQ_OPTIONS[state.freqIdx];
-    const style = ZONE_STYLES[z.key] || ZONE_STYLES.gaining;
+    const style = ZONE_STYLES[z.key] || ZONE_STYLES.gains;
 
     // Zone banner
     const banner = document.getElementById('zoneBanner');
@@ -843,7 +869,9 @@
     // Sliders
     document.getElementById('setsVal').textContent = state.sets;
     document.getElementById('repsVal').textContent = state.reps;
-    document.getElementById('freqVal').textContent = freq.label;
+    const restOpt = REST_OPTIONS[state.freqIdx];
+    document.getElementById('freqRestVal').textContent = restOpt.restLabel;
+    document.getElementById('freqDerivedVal').textContent = restOpt.freqLabel;
     document.getElementById('effortVal').textContent = effort.label;
     document.getElementById('effortVal').style.color = effort.color;
     document.getElementById('effortVal').style.borderColor = effort.color + '66';
@@ -932,7 +960,11 @@
 
     // Junk volume warning
     if (m.junkSets.length > 0) {
-      msgs.push({ cls: 'warn-junk', title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`, body: `Set SFR falls below floor (${JUNK_SFR_FLOOR}). CB data: sets 6-8 at moderate loads provide tiny benefit relative to damage — an inverted U-shape. Remove these sets or drop frequency.` });
+      const junkNums = m.selectedSets
+        .map((s, i) => s.isJunk ? i + 1 : null)
+        .filter(Boolean)
+        .join(', ');
+      msgs.push({ cls: 'warn-junk', title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`, body: `Set ${m.junkSets.length > 1 ? 'numbers' : 'number'} ${junkNums} falls below floor (${JUNK_SFR_FLOOR}). CB/WNS: junk is tail-volume contamination where marginal stimulus is too low relative to damage. Remove these sets or drop frequency.` });
     }
 
     // Low effective reps
@@ -943,7 +975,9 @@
     // Recovery vs rest interval
     const freq = FREQ_OPTIONS[state.freqIdx];
     const restInterval = 7 / freq.sessPerWeek;
-    if (m.recoveryDaysClamped >= restInterval * 0.85 && z.key !== 'risk') {
+    if (m.recoveryDaysClamped >= restInterval) {
+      msgs.push({ cls: 'warn-failure', title: 'Recovery failure', body: `Recovery demand (${m.recoveryDaysClamped.toFixed(1)}d) exceeds your ${restInterval.toFixed(1)}-day rest interval. Banner still shows stimulus outcome; this warning means the setup is not recoverable as programmed.` });
+    } else if (m.recoveryDaysClamped >= restInterval * 0.85) {
       msgs.push({ cls: 'warn-junk', title: 'Recovery margin tight', body: `Recovery demand (${m.recoveryDaysClamped.toFixed(1)}d) is close to your ${restInterval.toFixed(1)}-day rest interval. Monitor Set 1 performance — degradation is an early overreaching signal.` });
     }
 
