@@ -488,7 +488,7 @@
   <div class="set-bar-wrap">
     <div class="set-bar-card">
       <div class="set-bar-header">
-        <span class="set-bar-label">Set quality decay</span>
+        <span class="set-bar-label">Set QF map</span>
         <div class="set-bar-legend">
           <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>Productive</div>
           <div class="leg-item"><div class="leg-dot" style="background:var(--orange)"></div>Junk</div>
@@ -502,7 +502,7 @@
   <!-- WARNING / INFO -->
   <div class="info-wrap" id="infoWrap"></div>
 
-  <div class="footer">GYM_PIGS v2 · CB/WNS framework · 2 RIR default · 1–15 reps</div>
+  <div class="footer">GYM_PIGS v2 · CB/QF framework · 2 RIR ceiling · 1–15 reps</div>
 </main>
 
 <script>
@@ -510,75 +510,53 @@
   'use strict';
 
   // ─────────────────────────────────────────────
-  // MODEL — calibrated to CB/WNS data
+  // MODEL — CB_ENGINE_MASTER.docx implementation
   // ─────────────────────────────────────────────
 
   /**
-   * WNS CURVE (from Beardsley/Schoenfeld data):
-   * Set 1 = 1.00 AU, Set 2 = 1.39, Set 3 = 1.61,
-   * Set 4 = 1.77, Set 5 = 1.90, Set 6 = 2.00,
-   * Set 7 = 2.09, Set 8 = 2.16, Set 9 = 2.23
-   * These are CUMULATIVE. Marginal gain per set:
-   * S1=1.00, S2=0.39, S3=0.22, S4=0.16, S5=0.13, S6=0.10, S7=0.09, S8=0.07
-   *
-   * CB damage curve: steep exponential after set 5-6.
-   * Recovery chart: ~0.6 days/set at failure (6-15RM moderate loads).
-   * At 2 RIR: damage is substantially lower → recovery time ~0.35 days/set.
+   * Formula stack from the master document:
+   * STIM/rep = Recruitment × Tension Capacity × 2
+   * QF(n) = 1 − dc(reps,RIR) × n(n−1)/2
+   * Set STIM(n) = Base STIM × QF(n)
+   * Session STIM = Σ Set STIM(n) above QF floor
+   * Weekly STIM = Session STIM × frequency
+   * Net Weekly AU = Weekly STIM − atrophy losses
+   * Atrophy loss = 0.32 AU/day after 48h post-stimulus window
    */
 
-  // Marginal stim per set (cumulative WNS AU differences), base = moderate load, near failure
-  // Index = set number (1-based), capped at 8.
-  const WNS_MARGINAL_BASE = [1.00, 0.39, 0.22, 0.16, 0.13, 0.10, 0.09, 0.07];
+  const ATROPHY_COST_PER_DAY = 0.32;
+  const STIM_WINDOW_DAYS = 2;
 
-  /**
-   * Load modifier on stim: heavy loads (≤6RM estimate) → all reps count.
-   * Lighter loads → endpoint-biased, stim per set is lower unless near failure.
-   * Effective reps model: final ~5 reps before failure are stimulating.
-   * For a set of N reps at X RIR, effective reps = max(0, min(N, 5 - X))
-   * capped by the 5-effective-rep ceiling.
-   */
-  function effectiveReps(reps, numericRir) {
-    const estRM = reps + numericRir;
-    if (estRM <= 6) return Math.min(reps, 5); // heavy load: all reps effective
-    return Math.max(0, Math.min(reps, 5 - numericRir));
-  }
+  // STIM per rep at 6RM / load-driven recruitment from the document.
+  const STIM_PER_REP_6RM = [0, 2.00, 1.95, 1.85, 1.70, 1.50, 1.30, 1.10, 0.90];
 
-  // Stim scalar: 0–1 based on effective reps. At ≥5 effective reps → 1.0.
-  // This scales the WNS base stim per set.
-  function stimScalar(effReps) {
-    if (effReps <= 0) return 0;
-    // Concave: 1 eff rep → 0.45, 2 → 0.65, 3 → 0.80, 4 → 0.92, 5 → 1.0
-    const table = [0, 0.45, 0.65, 0.80, 0.92, 1.00];
-    return table[Math.min(effReps, 5)];
-  }
+  // Base STIM per continuous set at 6RM. 1–8 are document values.
+  // 9–15 are conservative extrapolations only so the UI slider can stay 1–15.
+  const BASE_STIM_BY_REP = [
+    0,
+    2.00, 3.95, 5.80, 7.50, 9.00,
+    10.30, 11.40, 12.30, 13.00, 13.55,
+    14.00, 14.35, 14.65, 14.90, 15.10
+  ];
 
-  /**
-   * Damage per set: from CB chart — exponential increase after set 3.
-   * Calibrated so that sets 1-3 cause little damage (≤0.1 damage units),
-   * sets 4-5 are noticeable, sets 6-8 are high.
-   * Effort (RIR) scales damage multiplicatively.
-   */
-  function damagePerSet(setIndex) {
-    // setIndex is 0-based
-    // CB data: early sets minimal, later sets exponential
-    const base = [0.06, 0.10, 0.16, 0.26, 0.38, 0.54, 0.72, 0.92];
-    return base[Math.min(setIndex, 7)];
-  }
+  // Document dc anchors at 2 RIR. 1–5 are exact; 6–15 are extrapolated for UI continuity.
+  const DC_2RIR_BY_REP = [
+    0,
+    0.003, 0.006, 0.010, 0.016, 0.024,
+    0.035, 0.048, 0.063, 0.080, 0.100,
+    0.122, 0.146, 0.172, 0.200, 0.230
+  ];
 
-  /**
-   * Effort multipliers for stim and damage:
-   * - Higher proximity to failure → more stim (more effective reps)
-   * - Also more damage and fatigue cost
-   * RIR 2 is the optimal; failure and 0 RIR have diminishing NET benefit due to damage.
-   */
+  // Document RIR multipliers applied to dc(actual) = dc(base) × RIR multiplier.
+  // FAIL and 0 RIR share the document's failure multiplier.
   const EFFORT_OPTIONS = [
-    { key: 'FAIL', label: 'Failure', short: 'FAIL', numericRir: 0, stimMult: 1.05, damageMult: 3.2, color: '#f87171' },
-    { key: '0',    label: '0 RIR',   short: '0',    numericRir: 0, stimMult: 1.05, damageMult: 2.8, color: '#f97316' },
-    { key: '1',    label: '1 RIR',   short: '1',    numericRir: 1, stimMult: 0.95, damageMult: 1.6, color: '#fbbf24' },
-    { key: '2',    label: '2 RIR',   short: '2',    numericRir: 2, stimMult: 0.88, damageMult: 1.0, color: '#4ade80' },
-    { key: '3',    label: '3 RIR',   short: '3',    numericRir: 3, stimMult: 0.72, damageMult: 0.65, color: '#a3e635' },
-    { key: '4',    label: '4 RIR',   short: '4',    numericRir: 4, stimMult: 0.48, damageMult: 0.4, color: '#38bdf8' },
-    { key: '5',    label: '5 RIR',   short: '5',    numericRir: 5, stimMult: 0.20, damageMult: 0.2, color: '#94a3b8' },
+    { key: 'FAIL', label: 'Failure', short: 'FAIL', numericRir: 0, dcMult: 3.5, recoveryMult: 3.5, color: '#f87171' },
+    { key: '0',    label: '0 RIR',   short: '0',    numericRir: 0, dcMult: 3.5, recoveryMult: 3.5, color: '#f97316' },
+    { key: '1',    label: '1 RIR',   short: '1',    numericRir: 1, dcMult: 1.8, recoveryMult: 1.8, color: '#fbbf24' },
+    { key: '2',    label: '2 RIR',   short: '2',    numericRir: 2, dcMult: 1.0, recoveryMult: 1.0, color: '#4ade80' },
+    { key: '3',    label: '3 RIR',   short: '3',    numericRir: 3, dcMult: 0.7, recoveryMult: 0.7, color: '#a3e635' },
+    { key: '4',    label: '4 RIR',   short: '4',    numericRir: 4, dcMult: 0.5, recoveryMult: 0.5, color: '#38bdf8' },
+    { key: '5',    label: '5 RIR',   short: '5',    numericRir: 5, dcMult: 0.3, recoveryMult: 0.3, color: '#94a3b8' },
   ];
 
   // REST_OPTIONS: primary input = rest days between sessions. Frequency is derived.
@@ -589,113 +567,133 @@
     { restDays: 4, restLabel: '4 days', freqLabel: '1.75×/wk', sessPerWeek: 1.75 },
     { restDays: 7, restLabel: '7 days', freqLabel: '1×/wk',    sessPerWeek: 1    },
   ];
-  const FREQ_OPTIONS = REST_OPTIONS; // freqIdx indexes REST_OPTIONS
+  const FREQ_OPTIONS = REST_OPTIONS;
 
-  // QF floor: below this, a set is "junk" — too much fatigue decay to add net stimulus
-  // CB data: sets 6-8 provide "tiny benefit" → SFR is poor → marginal gain < damage cost
-  // We use the stim-to-damage ratio per set to determine junk dynamically.
-  const JUNK_SFR_FLOOR = 0.60; // stim must be at least 60% of damage to be productive
+  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+  function triangularBySetIndex(iZeroBased) { return (iZeroBased * (iZeroBased + 1)) / 2; }
+  function estimatedRM(reps, numericRir) { return reps + numericRir; }
+  function isLoadDriven(reps, numericRir) { return estimatedRM(reps, numericRir) <= 6; }
+
+  function qfFloor(freq) {
+    return freq.sessPerWeek >= 7 ? 0.85 : 0.75;
+  }
 
   /**
-   * Core model calculation.
-   * Returns per-set data and weekly aggregates.
+   * Effective reps are only used for fatigue-driven loads.
+   * At ≤6RM, the document states full HTMU recruitment from rep 1 at any RIR.
    */
+  function effectiveReps(reps, numericRir) {
+    if (isLoadDriven(reps, numericRir)) return reps;
+    if (numericRir > 3) return 0;
+    return Math.max(0, Math.min(reps, 5 - numericRir));
+  }
+
+  function loadScalarForFatigueDriven(estRM) {
+    return clamp(1 - ((estRM - 6) * 0.035), 0.55, 1.0);
+  }
+
+  function baseStimRaw(reps, numericRir, effReps, loadDriven) {
+    if (loadDriven) return BASE_STIM_BY_REP[clamp(reps, 1, 15)];
+    if (effReps <= 0) return 0;
+    const repIndex = clamp(effReps, 1, 5);
+    return BASE_STIM_BY_REP[repIndex] * loadScalarForFatigueDriven(estimatedRM(reps, numericRir));
+  }
+
+  // Recovery is not a primary CB formula in the document, so this is only a recoverability estimate.
+  // QF and Net Weekly AU remain the source-of-truth calculations.
+  function recoveryCostForSet(reps, qf, effort, loadDriven) {
+    const base = 0.05 + (0.018 * reps);
+    const qfPenalty = 1 + ((1 - qf) * 4);
+    const loadPenalty = loadDriven ? 1.10 : 1.00;
+    return base * effort.recoveryMult * qfPenalty * loadPenalty;
+  }
+
   function calculate(state) {
     const effort = EFFORT_OPTIONS[state.effortIdx];
     const freq = FREQ_OPTIONS[state.freqIdx];
     const sessPerWeek = freq.sessPerWeek;
+    const restInterval = freq.restDays;
     const numRir = effort.numericRir;
+    const estRM = estimatedRM(state.reps, numRir);
+    const loadDriven = isLoadDriven(state.reps, numRir);
     const effReps = effectiveReps(state.reps, numRir);
-    const scalar = stimScalar(effReps);
+    const floor = qfFloor(freq);
+    const dcBase = DC_2RIR_BY_REP[clamp(state.reps, 1, 15)];
+    const dc = dcBase * effort.dcMult;
+    const rawBaseStim = baseStimRaw(state.reps, numRir, effReps, loadDriven);
 
-    // Per-set results for all 8 possible sets
     const sets = [];
     for (let i = 0; i < 8; i++) {
-      const marginalBase = WNS_MARGINAL_BASE[i];
-      const stim = marginalBase * scalar * effort.stimMult;
-      const dmg = damagePerSet(i) * effort.damageMult;
-      const sfr = dmg > 0 ? stim / dmg : 0;
-      // CB/WNS floor guard: first 1-3 selected sets are not junk when there is any effective recruitment.
-      // The junk floor is a tail-volume filter, not a low-rep early-set penalty.
-      const earlyProductiveFloor = i < 3 && effReps > 0;
-      const isJunk = !earlyProductiveFloor && sfr < JUNK_SFR_FLOOR;
+      const qf = clamp(1 - (dc * triangularBySetIndex(i)), 0, 1);
       const selected = (i + 1) <= state.sets;
-      sets.push({ stim, dmg, sfr, isJunk, selected });
+      const stim = rawBaseStim * qf;
+      const recoveryCost = selected ? recoveryCostForSet(state.reps, qf, effort, loadDriven) : 0;
+      const isJunk = selected && (stim <= 0 || qf < floor);
+
+      // WNS Calculator uses effective sets per workout. CB/QF determines whether a set is productive.
+      // Load-driven ≤6RM sets count as 1 effective set when above the QF floor.
+      // Fatigue-driven sets are fractional when they do not contain a full effective-rep exposure.
+      const effectiveSetWeight = (!selected || isJunk)
+        ? 0
+        : (loadDriven ? 1 : clamp(effReps / 5, 0, 1));
+
+      sets.push({ stim, qf, recoveryCost, isJunk, selected, effectiveSetWeight });
     }
 
     const selectedSets = sets.filter(s => s.selected);
     const productiveSets = selectedSets.filter(s => !s.isJunk);
     const junkSets = selectedSets.filter(s => s.isJunk);
 
-    // Session stimulus: sum of productive sets only
     const sessionStim = productiveSets.reduce((a, s) => a + s.stim, 0);
+    const sessionEffectiveSets = productiveSets.reduce((a, s) => a + s.effectiveSetWeight, 0);
+    const sessionAU = sessionEffectiveSets > 0 ? Math.sqrt(sessionEffectiveSets) : 0;
+    const recoveryCost = selectedSets.reduce((a, s) => a + s.recoveryCost, 0);
+    const recoveryDaysClamped = Math.max(0.5, recoveryCost);
 
-    // Total session damage (all selected, junk still causes damage)
-    const sessionDmg = selectedSets.reduce((a, s) => a + s.dmg, 0);
-
-    // Recovery time: calibrated to CB recovery chart (~0.6 days/set to failure at moderate loads)
-    // At 2 RIR, damageMult = 1.0 → ~0.35 days/set (lower damage = faster recovery)
-    // Base recovery per set ≈ 0.35 days (2 RIR anchor), scaled by damageMult / 1.0
-    const baseDaysPerSet = 0.35;
-    const recoveryDays = selectedSets.reduce((a, s) => a + baseDaysPerSet * (s.dmg / (damagePerSet(0) * 1.0)), 0);
-    // Clamp: minimum 24h recovery floor
-    const recoveryDaysClamped = Math.max(0.5, recoveryDays);
-
-    // Atrophy: MPS elevated 24-72h post-session. Beyond that window, signal decays.
-    // Model: if rest > 3 days, apply a decay multiplier to that session's contribution.
-    // At 1×/wk (7-day rest): ~40% of signal survives (2.5/7 window coverage).
-    // At 2×/wk (3.5-day rest): ~70% survives.
-    // At 3×/wk (2.3-day rest): ~100% (within MPS window).
-    // This avoids the hard subtraction that could zero out net AU.
-    const restInterval = 7 / sessPerWeek;
-    const MPS_WINDOW = 2.5; // days
-    const signalRetention = Math.min(1.0, MPS_WINDOW / restInterval);
-    // Additional atrophy loss for partial overlap: attenuated signal
-    const weeklyStimRaw = sessionStim * sessPerWeek;
-    const netWeeklyAU = weeklyStimRaw * signalRetention;
-    const atrophyLossPerWeek = weeklyStimRaw * (1 - signalRetention);
-
-    // SFR (session level)
-    const sessionSFR = sessionDmg > 0 ? sessionStim / sessionDmg : 0;
+    // WNS Calculator model: weekly stimulus = session AU × frequency; net = weekly stimulus − atrophy.
+    // Session AU follows the diminishing-return set curve used in the master document: 1 set = 1 AU,
+    // 3 sets ≈ 1.73 AU, 4 sets = 2.00 AU, 8 sets ≈ 2.83 AU.
+    const weeklyStimRaw = sessionAU * sessPerWeek;
+    const atrophyDaysPerGap = Math.max(0, restInterval - STIM_WINDOW_DAYS);
+    const atrophyLossPerWeek = atrophyDaysPerGap * ATROPHY_COST_PER_DAY * sessPerWeek;
+    const netWeeklyAU = weeklyStimRaw - atrophyLossPerWeek;
+    const sessionSFR = recoveryCost > 0 ? sessionStim / recoveryCost : 0;
 
     return {
-      effort, freq, effReps, scalar, sets,
+      effort, freq, estRM, loadDriven, effReps, qfFloor: floor, dcBase, dc, sets,
       selectedSets, productiveSets, junkSets,
-      sessionStim, sessionDmg, recoveryDaysClamped,
+      sessionStim, sessionEffectiveSets, sessionAU, recoveryCost, recoveryDaysClamped,
       weeklyStimRaw, atrophyLossPerWeek, netWeeklyAU,
       sessPerWeek, restInterval, sessionSFR
     };
   }
 
   /**
-   * Zone classification — aligned to CB/WNS framework:
-   * - Undertraining: net AU too low to drive growth
-   * - Maintaining: enough to preserve but sub-threshold for growth
-   * - Gaining: productive growth zone (good SFR, enough net AU)
-   * - Gainmaxxing: maximum productive exposure
-   * - Wasteful: junk volume dominating or recovery exceeds stimulus
-   * - Risk: recovery time exceeds inter-session interval (overtraining marker)
+   * Main banner hierarchy:
+   * 1. Recovery Failure override
+   * 2. Detraining
+   * 3. Maintaining
+   * 4. Minimum Gains
+   * 5. Gains
+   * 6. GainsMaXXing
    */
   function classify(m) {
-    const { netWeeklyAU, recoveryDaysClamped, restInterval,
-            junkSets, selectedSets, sessionSFR } = m;
+    const junkRatio = m.selectedSets.length ? m.junkSets.length / m.selectedSets.length : 0;
 
-    const junkRatio = selectedSets.length ? junkSets.length / selectedSets.length : 0;
-    const recoverable = recoveryDaysClamped < restInterval;
-
-    // Main banner = adaptation outcome only.
-    // Junk volume and recovery failure are quality/recovery warnings, not normal outcome zones.
-    if (m.effReps === 0 || netWeeklyAU < 0.15) {
-      return zone('detraining', 'Detraining', 'Net stimulus is too low to reliably preserve tissue. Increase recruitment, frequency, or productive volume.', '#fb923c');
+    if (m.recoveryDaysClamped >= m.restInterval) {
+      return zone('recoveryFailure', 'Recovery Failure', 'Recovery estimate exceeds the programmed rest interval. Reduce sets, effort, or frequency before judging stimulus outcome.', '#f87171');
     }
-    if (netWeeklyAU < 1.3) {
-      return zone('maintaining', 'Maintaining', 'Enough signal to resist loss, but below the growth floor. Add frequency or productive work.', '#94a3b8');
+    if (m.effReps === 0 || m.netWeeklyAU < 0) {
+      return zone('detraining', 'Detraining', 'Net weekly AU is negative after atrophy loss. Increase recruitment, frequency, or productive volume.', '#fb923c');
     }
-    if (netWeeklyAU < 1.75) {
-      return zone('minimumGains', 'Minimum Gains', 'Crosses the minimum growth floor, but only barely. High SFR, low absolute exposure.', '#86efac');
+    if (m.netWeeklyAU < 1.0) {
+      return zone('maintaining', 'Maintaining', 'Enough signal to resist loss, but below a reliable growth dose. Frequency is usually the first lever.', '#94a3b8');
     }
-    if (netWeeklyAU >= 7.5 && sessionSFR >= 1.2 && junkRatio === 0 && recoverable) {
-      return zone('gainsmaxxing', 'GainsMaXXing', 'Highest clean productive exposure: high net weekly AU, clean SFR, and recoverable before the next session.', '#22c55e');
+    if (m.netWeeklyAU < 2.0) {
+      return zone('minimumGains', 'Minimum Gains', 'Crosses the growth floor, but absolute weekly exposure is still low.', '#86efac');
+    }
+    if (m.effort.key === '2' && m.netWeeklyAU >= 7.0 && m.sessionSFR >= 1.2 && junkRatio === 0) {
+      return zone('gainsmaxxing', 'GainsMaXXing', 'High net weekly STIM at the 2 RIR optimum, clean QF, and recoverable before the next session.', '#22c55e');
     }
     return zone('gains', 'Gains', 'Productive growth range. Net weekly AU clears the growth floor with manageable quality constraints.', '#4ade80');
   }
@@ -703,24 +701,64 @@
   function zone(key, name, copy, color) { return { key, name, copy, color }; }
 
   // ─────────────────────────────────────────────
-  // SELF-TEST — validates model against CB/WNS
+  // SELF-TEST — validates document formulas/invariants
   // ─────────────────────────────────────────────
   function selfTest() {
     const errors = [];
-
-    function test(label, state, expectZone) {
-      const m = calculate(state);
-      const z = classify(m);
-      if (z.key !== expectZone) {
-        errors.push(`FAIL [${label}]: expected zone=${expectZone}, got zone=${z.key} (netAU=${m.netWeeklyAU.toFixed(2)}, junkRatio=${(m.junkSets.length/Math.max(1,m.selectedSets.length)).toFixed(2)}, recovery=${m.recoveryDaysClamped.toFixed(2)}d)`);
-      }
-    }
-
-    const validZones = ['detraining', 'maintaining', 'minimumGains', 'gains', 'gainsmaxxing'];
+    const validZones = ['recoveryFailure', 'detraining', 'maintaining', 'minimumGains', 'gains', 'gainsmaxxing'];
     const zoneCounts = Object.fromEntries(validZones.map(k => [k, 0]));
     let totalCombos = 0;
 
-    // ── Numerical integrity + outcome-rule simulation: all combinations ──
+    function near(a, b, tol = 0.02) { return Math.abs(a - b) <= tol; }
+    function check(label, condition, msg) { if (!condition) errors.push(`${label}: ${msg}`); }
+
+    // Exact document anchors.
+    check('Base STIM 1 rep', near(BASE_STIM_BY_REP[1], 2.00), `got ${BASE_STIM_BY_REP[1]}`);
+    check('Base STIM 4 reps', near(BASE_STIM_BY_REP[4], 7.50), `got ${BASE_STIM_BY_REP[4]}`);
+    check('Base STIM 5 reps', near(BASE_STIM_BY_REP[5], 9.00), `got ${BASE_STIM_BY_REP[5]}`);
+    check('dc 1 rep @2RIR', near(DC_2RIR_BY_REP[1], 0.003, 0.0001), `got ${DC_2RIR_BY_REP[1]}`);
+    check('dc 4 reps @2RIR', near(DC_2RIR_BY_REP[4], 0.016, 0.0001), `got ${DC_2RIR_BY_REP[4]}`);
+    check('dc 5 reps @2RIR', near(DC_2RIR_BY_REP[5], 0.024, 0.0001), `got ${DC_2RIR_BY_REP[5]}`);
+
+    // WNS anchors from the master document frequency table.
+    const wns1x1 = calculate({ sets: 1, reps: 1, freqIdx: 4, effortIdx: 3 });
+    const wns1x4 = calculate({ sets: 4, reps: 1, freqIdx: 4, effortIdx: 3 });
+    const wns1x8 = calculate({ sets: 8, reps: 1, freqIdx: 4, effortIdx: 3 });
+    const wns7x1 = calculate({ sets: 1, reps: 1, freqIdx: 0, effortIdx: 3 });
+    const wns7x3 = calculate({ sets: 3, reps: 1, freqIdx: 0, effortIdx: 3 });
+    check('WNS 1×1 weekly', near(wns1x1.netWeeklyAU, -0.60, 0.02), `got ${wns1x1.netWeeklyAU.toFixed(3)}`);
+    check('WNS 1×4 weekly', near(wns1x4.netWeeklyAU, 0.40, 0.02), `got ${wns1x4.netWeeklyAU.toFixed(3)}`);
+    check('WNS 1×8 weekly', near(wns1x8.netWeeklyAU, 1.23, 0.02), `got ${wns1x8.netWeeklyAU.toFixed(3)}`);
+    check('WNS 7×1 weekly', near(wns7x1.netWeeklyAU, 7.00, 0.02), `got ${wns7x1.netWeeklyAU.toFixed(3)}`);
+    check('WNS 7×3 weekly', near(wns7x3.netWeeklyAU, 12.11, 0.03), `got ${wns7x3.netWeeklyAU.toFixed(3)}`);
+
+    // 5 × 4 reps @ 2 RIR document failure-analysis anchor: 35.100 CB STIM.
+    const fiveByFour2 = calculate({ sets: 5, reps: 4, freqIdx: 2, effortIdx: 3 });
+    check('5×4 @2RIR session STIM', near(fiveByFour2.sessionStim, 35.10, 0.05), `got ${fiveByFour2.sessionStim.toFixed(3)}`);
+
+    // 1-rep at 5 RIR on 6RM is load-driven and same base STIM as 1 RIR/2RIR at the rep level.
+    const oneRep5 = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 6 });
+    const oneRep1 = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 2 });
+    const oneRep2 = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 3 });
+    check('1 rep @5RIR load-driven STIM', near(oneRep5.sessionStim, 2.00, 0.01), `got ${oneRep5.sessionStim.toFixed(3)}`);
+    check('1 rep @5RIR equals 1RIR base STIM', near(oneRep5.sessionStim, oneRep1.sessionStim, 0.01), `${oneRep5.sessionStim.toFixed(3)} vs ${oneRep1.sessionStim.toFixed(3)}`);
+    check('1 rep @5RIR equals 2RIR base STIM', near(oneRep5.sessionStim, oneRep2.sessionStim, 0.01), `${oneRep5.sessionStim.toFixed(3)} vs ${oneRep2.sessionStim.toFixed(3)}`);
+
+    // 5 singles full rest vs 1 continuous set of 5 at same load: 10.00 vs 9.00.
+    const fiveSingles = calculate({ sets: 5, reps: 1, freqIdx: 2, effortIdx: 3 });
+    const oneSetFive = calculate({ sets: 1, reps: 5, freqIdx: 2, effortIdx: 3 });
+    check('5 singles STIM > 1×5 STIM', fiveSingles.sessionStim > oneSetFive.sessionStim, `${fiveSingles.sessionStim.toFixed(3)} vs ${oneSetFive.sessionStim.toFixed(3)}`);
+
+    // GainsMaXXing is only valid at the 2 RIR optimum.
+    const eightByTwo4RIR = classify(calculate({ sets: 8, reps: 2, freqIdx: 2, effortIdx: 5 }));
+    check('8×2 @4RIR cannot be GainsMaXXing', eightByTwo4RIR.key !== 'gainsmaxxing', `got ${eightByTwo4RIR.key}`);
+
+    const eightByTwo2RIR = classify(calculate({ sets: 8, reps: 2, freqIdx: 2, effortIdx: 3 }));
+    check('8×2 @2RIR can be GainsMaXXing candidate', ['gainsmaxxing', 'gains'].includes(eightByTwo2RIR.key), `got ${eightByTwo2RIR.key}`);
+
+    const eightByThree4RIR = calculate({ sets: 8, reps: 3, freqIdx: 2, effortIdx: 5 });
+    check('8×3 @4RIR fatigue-driven no effective reps', eightByThree4RIR.junkSets.length === 8 && classify(eightByThree4RIR).key === 'detraining', `junk=${eightByThree4RIR.junkSets.length}, zone=${classify(eightByThree4RIR).key}`);
+
     for (let s = 1; s <= 8; s++) {
       for (let r = 1; r <= 15; r++) {
         for (let f = 0; f <= 4; f++) {
@@ -734,91 +772,27 @@
             if (!validZones.includes(z.key)) errors.push(`Invalid zone key at s=${s} r=${r} f=${f} e=${e}: ${z.key}`);
             else zoneCounts[z.key]++;
 
-            if (m.effReps > 0) {
-              m.selectedSets.slice(0, Math.min(s, 3)).forEach((set, i) => {
-                if (set.isJunk) errors.push(`Early productive set misclassified as junk at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
-              });
+            if (m.recoveryDaysClamped >= m.restInterval && z.key !== 'recoveryFailure') {
+              errors.push(`Recovery failure not overriding banner at s=${s} r=${r} f=${f} e=${e}`);
+            }
+            if (z.key === 'recoveryFailure' && m.recoveryDaysClamped < m.restInterval) {
+              errors.push(`Recovery Failure shown without failed recovery at s=${s} r=${r} f=${f} e=${e}`);
             }
 
-            if (s <= 3 && m.effReps > 0 && m.junkSets.length > 0) {
-              errors.push(`Low-volume session has junk contamination at s=${s} r=${r} f=${f} e=${e}`);
-            }
+            m.selectedSets.forEach((set, i) => {
+              const shouldBeJunk = set.stim <= 0 || set.qf < m.qfFloor;
+              if (set.isJunk !== shouldBeJunk) {
+                errors.push(`Junk mismatch at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
+              }
+            });
 
-            if (z.key === 'detraining' && !(m.effReps === 0 || m.netWeeklyAU < 0.15)) {
-              errors.push(`Detraining zone without detraining condition at s=${s} r=${r} f=${f} e=${e}`);
-            }
-            if (z.key === 'maintaining' && !(m.effReps > 0 && m.netWeeklyAU >= 0.15 && m.netWeeklyAU < 1.3)) {
-              errors.push(`Maintaining threshold violation at s=${s} r=${r} f=${f} e=${e}`);
-            }
-            if (z.key === 'minimumGains' && !(m.netWeeklyAU >= 1.3 && m.netWeeklyAU < 1.75)) {
-              errors.push(`Minimum Gains threshold violation at s=${s} r=${r} f=${f} e=${e}`);
-            }
-            if (z.key === 'gainsmaxxing') {
-              const junkRatio = m.selectedSets.length ? m.junkSets.length / m.selectedSets.length : 0;
-              if (!(m.netWeeklyAU >= 7.5 && m.sessionSFR >= 1.2 && junkRatio === 0 && m.recoveryDaysClamped < m.restInterval)) {
-                errors.push(`GainsMaXXing without clean high-output condition at s=${s} r=${r} f=${f} e=${e}`);
+            for (let i = 0; i < m.sets.length - 1; i++) {
+              if (m.sets[i].qf < m.sets[i + 1].qf) {
+                errors.push(`QF increased within session at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
               }
             }
           }
         }
-      }
-    }
-
-    // ── CB-aligned anchor expectations ──
-    // REST_OPTIONS index map:
-    // 0 = 1 day rest  = 7×/wk
-    // 1 = 2 days rest = 3.5×/wk
-    // 2 = 3 days rest = 2.3×/wk
-    // 3 = 4 days rest = 1.75×/wk
-    // 4 = 7 days rest = 1×/wk
-
-    test('1×5 @ 2RIR every 3d', { sets: 1, reps: 5, freqIdx: 2, effortIdx: 3 }, 'minimumGains');
-    test('3×1 @ 2RIR every 3d', { sets: 3, reps: 1, freqIdx: 2, effortIdx: 3 }, 'maintaining');
-    test('3×2 @ 2RIR every 3d', { sets: 3, reps: 2, freqIdx: 2, effortIdx: 3 }, 'gains');
-    test('3×5 @ 2RIR every 3d', { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 }, 'gains');
-    test('1×5 @ 2RIR 1×/wk', { sets: 1, reps: 5, freqIdx: 4, effortIdx: 3 }, 'maintaining');
-    test('1×5 @ 5RIR 1×/wk', { sets: 1, reps: 5, freqIdx: 4, effortIdx: 6 }, 'detraining');
-    test('2×15 @ 5RIR 1×/wk', { sets: 2, reps: 15, freqIdx: 4, effortIdx: 6 }, 'detraining');
-
-    // ── CB: 1-3 sets should be productive when effective recruitment exists ──
-    for (let s = 1; s <= 3; s++) {
-      for (let r = 1; r <= 15; r++) {
-        const m = calculate({ sets: s, reps: r, freqIdx: 2, effortIdx: 3 }); // 2 RIR, every 3 days
-        if (m.effReps > 0 && m.junkSets.length > 0) {
-          errors.push(`Sets 1-3 at 2 RIR should have 0 junk sets. sets=${s} reps=${r} got junk=${m.junkSets.length}`);
-        }
-      }
-    }
-
-    // ── CB/WNS: tail sets should become junk at moderate loads ──
-    const m8 = calculate({ sets: 8, reps: 10, freqIdx: 2, effortIdx: 3 });
-    if (m8.junkSets.length < 2) {
-      errors.push(`8 sets @ moderate load should have ≥2 junk sets. Got junk=${m8.junkSets.length}`);
-    }
-
-    // ── SFR should be highest at Set 1 and decrease across the session ──
-    const mSFR = calculate({ sets: 8, reps: 5, freqIdx: 2, effortIdx: 3 });
-    for (let i = 0; i < 7; i++) {
-      if (mSFR.sets[i].sfr < mSFR.sets[i+1].sfr) {
-        errors.push(`SFR should decrease monotonically. Set ${i+1} SFR=${mSFR.sets[i].sfr.toFixed(3)} < Set ${i+2} SFR=${mSFR.sets[i+1].sfr.toFixed(3)}`);
-      }
-    }
-
-    // ── Recovery days should scale with sets ──
-    for (let s = 1; s < 8; s++) {
-      const m1 = calculate({ sets: s, reps: 5, freqIdx: 0, effortIdx: 0 }); // failure
-      const m2 = calculate({ sets: s+1, reps: 5, freqIdx: 0, effortIdx: 0 });
-      if (m2.recoveryDaysClamped <= m1.recoveryDaysClamped) {
-        errors.push(`Recovery days should increase with sets. ${s}→${s+1}: ${m1.recoveryDaysClamped.toFixed(2)}→${m2.recoveryDaysClamped.toFixed(2)}`);
-      }
-    }
-
-    // ── 2 RIR must always have lower damage than failure for same set count ──
-    for (let s = 1; s <= 8; s++) {
-      const mFail = calculate({ sets: s, reps: 5, freqIdx: 2, effortIdx: 0 });
-      const m2rir = calculate({ sets: s, reps: 5, freqIdx: 2, effortIdx: 3 });
-      if (m2rir.sessionDmg >= mFail.sessionDmg) {
-        errors.push(`2 RIR damage should always be < failure damage. sets=${s}`);
       }
     }
 
@@ -839,11 +813,12 @@
   const state = { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 };
 
   const ZONE_STYLES = {
-    detraining:    { bg: 'rgba(251,146,60,0.10)',   border: 'rgba(251,146,60,0.40)',   color: '#fb923c' },
-    maintaining:   { bg: 'rgba(148,163,184,0.08)',  border: 'rgba(148,163,184,0.32)',  color: '#cbd5e1' },
-    minimumGains:  { bg: 'rgba(134,239,172,0.08)',  border: 'rgba(134,239,172,0.35)',  color: '#86efac' },
-    gains:         { bg: 'rgba(74,222,128,0.08)',   border: 'rgba(74,222,128,0.38)',   color: '#4ade80' },
-    gainsmaxxing:  { bg: 'rgba(34,197,94,0.12)',    border: 'rgba(34,197,94,0.45)',    color: '#22c55e' },
+    recoveryFailure: { bg: 'rgba(248,113,113,0.12)',  border: 'rgba(248,113,113,0.48)',  color: '#fca5a5' },
+    detraining:      { bg: 'rgba(251,146,60,0.10)',   border: 'rgba(251,146,60,0.40)',   color: '#fb923c' },
+    maintaining:     { bg: 'rgba(148,163,184,0.08)',  border: 'rgba(148,163,184,0.32)',  color: '#cbd5e1' },
+    minimumGains:    { bg: 'rgba(134,239,172,0.08)',  border: 'rgba(134,239,172,0.35)',  color: '#86efac' },
+    gains:           { bg: 'rgba(74,222,128,0.08)',   border: 'rgba(74,222,128,0.38)',   color: '#4ade80' },
+    gainsmaxxing:    { bg: 'rgba(34,197,94,0.12)',    border: 'rgba(34,197,94,0.45)',    color: '#22c55e' },
   };
 
   // ─────────────────────────────────────────────
@@ -855,7 +830,6 @@
     const effort = EFFORT_OPTIONS[state.effortIdx];
     const style = ZONE_STYLES[z.key] || ZONE_STYLES.gains;
 
-    // Zone banner
     const banner = document.getElementById('zoneBanner');
     banner.style.background = style.bg;
     banner.style.borderColor = style.border;
@@ -866,7 +840,6 @@
     document.getElementById('zoneCopy').style.color = style.color;
     document.getElementById('zoneAU').style.color = style.color;
 
-    // Sliders
     document.getElementById('setsVal').textContent = state.sets;
     document.getElementById('repsVal').textContent = state.reps;
     const restOpt = REST_OPTIONS[state.freqIdx];
@@ -877,7 +850,6 @@
     document.getElementById('effortVal').style.borderColor = effort.color + '66';
     document.getElementById('effortVal').style.background = effort.color + '18';
 
-    // Effort buttons
     const grid = document.getElementById('effortGrid');
     Array.from(grid.children).forEach((btn, i) => {
       const e = EFFORT_OPTIONS[i];
@@ -890,40 +862,35 @@
       }
     });
 
-    // Stats
     document.getElementById('statStim').textContent = m.sessionStim.toFixed(1);
-    document.getElementById('statStimSub').textContent = `AU this session`;
+    document.getElementById('statStimSub').textContent = `STIM this session`;
 
     const recDays = m.recoveryDaysClamped;
-    const recLabel = recDays >= 4 ? 'High' : recDays >= 2.5 ? 'Moderate' : 'Low';
-    const recColor = recDays >= 4 ? '#f87171' : recDays >= 2.5 ? '#fbbf24' : '#4ade80';
+    const recLabel = recDays >= m.restInterval ? 'Recovery failure' : recDays >= 2.5 ? 'Moderate recovery' : 'Low recovery';
+    const recColor = recDays >= m.restInterval ? '#f87171' : recDays >= 2.5 ? '#fbbf24' : '#4ade80';
     const recEl = document.getElementById('statRec');
     recEl.textContent = recDays.toFixed(1) + 'd';
     recEl.style.color = recColor;
-    document.getElementById('statRecSub').textContent = `${recLabel} recovery`;
+    document.getElementById('statRecSub').textContent = recLabel;
 
     const sfrEl = document.getElementById('statSFR');
     const sfr = m.sessionSFR;
     sfrEl.textContent = sfr.toFixed(2);
-    sfrEl.style.color = sfr >= 1.5 ? '#4ade80' : sfr >= 0.9 ? '#fbbf24' : '#f87171';
+    sfrEl.style.color = sfr >= 15 ? '#4ade80' : sfr >= 6 ? '#fbbf24' : '#f87171';
 
-    // Set quality bars
     renderSetBars(m);
-
-    // Info box
-    renderInfo(m, z);
+    renderInfo(m);
   }
 
   function renderSetBars(m) {
     const container = document.getElementById('setBars');
     container.innerHTML = '';
-    const maxStim = Math.max(...m.sets.map(s => s.stim), 0.01);
 
     m.sets.forEach((s, i) => {
       const col = document.createElement('div');
       col.className = 'set-col';
 
-      const heightPct = Math.max(5, (s.stim / maxStim) * 100);
+      const heightPct = Math.max(5, s.qf * 100);
       const bar = document.createElement('div');
       bar.className = 'set-bar';
       bar.style.height = heightPct + '%';
@@ -946,46 +913,40 @@
     });
   }
 
-  function renderInfo(m, z) {
+  function renderInfo(m) {
     const wrap = document.getElementById('infoWrap');
     wrap.innerHTML = '';
 
     const msgs = [];
     const effort = EFFORT_OPTIONS[state.effortIdx];
 
-    // Failure / 0 RIR warning
     if (effort.key === 'FAIL' || effort.key === '0') {
-      msgs.push({ cls: 'warn-failure', title: effort.key === 'FAIL' ? 'Failure training' : '0 RIR', body: 'CB recovery chart: each set to failure requires ~0.6 days to clear. Damage cost is disproportionate to marginal stim gain over 2 RIR. Use as a planned low-frequency tactic only.' });
+      msgs.push({ cls: 'warn-failure', title: effort.key === 'FAIL' ? 'Failure training' : '0 RIR', body: 'Failure/0 RIR uses the document failure dc multiplier of 3.5×. QF collapses faster and recovery cost rises. 2 RIR remains the ceiling.' });
     }
 
-    // Junk volume warning
     if (m.junkSets.length > 0) {
       const junkNums = m.selectedSets
         .map((s, i) => s.isJunk ? i + 1 : null)
         .filter(Boolean)
         .join(', ');
-      msgs.push({ cls: 'warn-junk', title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`, body: `Set ${m.junkSets.length > 1 ? 'numbers' : 'number'} ${junkNums} falls below floor (${JUNK_SFR_FLOOR}). CB/WNS: junk is tail-volume contamination where marginal stimulus is too low relative to damage. Remove these sets or drop frequency.` });
+      msgs.push({ cls: 'warn-junk', title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`, body: `Set ${m.junkSets.length > 1 ? 'numbers' : 'number'} ${junkNums} falls below the QF floor (${m.qfFloor.toFixed(2)}). Junk is a QF-floor violation.` });
     }
 
-    // Low effective reps
-    if (m.effReps < 2 && m.effReps > 0) {
-      msgs.push({ cls: 'warn-junk', title: 'Low motor unit recruitment', body: 'Estimated effective reps < 2. High-threshold motor units are not being sufficiently recruited. Reduce RIR or increase load.' });
+    if (!m.loadDriven && m.effReps === 0) {
+      msgs.push({ cls: 'warn-junk', title: 'No effective reps', body: 'This is not ≤6RM load-driven work and is too far from failure for fatigue-driven recruitment. Increase load or reduce RIR while respecting the 2 RIR ceiling.' });
     }
 
-    // Recovery vs rest interval
-    const freq = FREQ_OPTIONS[state.freqIdx];
-    const restInterval = 7 / freq.sessPerWeek;
-    if (m.recoveryDaysClamped >= restInterval) {
-      msgs.push({ cls: 'warn-failure', title: 'Recovery failure', body: `Recovery demand (${m.recoveryDaysClamped.toFixed(1)}d) exceeds your ${restInterval.toFixed(1)}-day rest interval. Banner still shows stimulus outcome; this warning means the setup is not recoverable as programmed.` });
-    } else if (m.recoveryDaysClamped >= restInterval * 0.85) {
-      msgs.push({ cls: 'warn-junk', title: 'Recovery margin tight', body: `Recovery demand (${m.recoveryDaysClamped.toFixed(1)}d) is close to your ${restInterval.toFixed(1)}-day rest interval. Monitor Set 1 performance — degradation is an early overreaching signal.` });
+    if (m.recoveryDaysClamped >= m.restInterval) {
+      msgs.push({ cls: 'warn-failure', title: 'Recovery failure', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) exceeds your ${m.restInterval.toFixed(1)}-day rest interval. The banner is red because this setup is not repeatable as programmed.` });
+    } else if (m.recoveryDaysClamped >= m.restInterval * 0.85) {
+      msgs.push({ cls: 'warn-junk', title: 'Recovery margin tight', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) is close to your ${m.restInterval.toFixed(1)}-day rest interval. Set 1 degradation is the next-session warning signal.` });
     }
 
-    // Positive info
     if (msgs.length === 0) {
-      const sfrNote = m.sessionSFR >= 1.5 ? 'Excellent SFR.' : m.sessionSFR >= 1.0 ? 'Good SFR.' : 'Moderate SFR — consider adjusting.';
-      const atNote = m.atrophyLossPerWeek > 0.5 ? ` MPS window gap causing ${m.atrophyLossPerWeek.toFixed(1)} AU/wk atrophy loss — increase frequency to close it.` : '';
-      msgs.push({ cls: 'info-neutral', title: 'Model summary', body: `${sfrNote} Net stimulus ${m.netWeeklyAU.toFixed(1)} AU/wk after atrophy.${atNote} 2 RIR ceiling is mechanistically optimal for this framework.` });
+      const qfNote = m.junkSets.length === 0 ? 'Clean QF.' : 'QF tail contamination present.';
+      const modeNote = m.loadDriven ? 'Load-driven recruitment from rep 1.' : 'Fatigue-driven recruitment model.';
+      const atNote = m.atrophyLossPerWeek > 0 ? ` Atrophy loss subtracts ${m.atrophyLossPerWeek.toFixed(1)} AU/wk after the 48h window.` : ' No atrophy window loss at this frequency.';
+      msgs.push({ cls: 'info-neutral', title: 'Model summary', body: `${qfNote} ${modeNote} WNS session AU ${m.sessionAU.toFixed(2)} from ${m.sessionEffectiveSets.toFixed(1)} effective set${Math.abs(m.sessionEffectiveSets - 1) < 0.01 ? '' : 's'}. Net weekly AU = weekly WNS (${m.weeklyStimRaw.toFixed(1)}) − atrophy loss (${m.atrophyLossPerWeek.toFixed(1)}).${atNote}` });
     }
 
     msgs.forEach(({ cls, title, body }) => {
