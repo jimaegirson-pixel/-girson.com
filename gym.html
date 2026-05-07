@@ -60,8 +60,7 @@
     }
 
     .pig {
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       image-rendering: pixelated;
     }
 
@@ -178,11 +177,9 @@
       display: block;
       touch-action: pan-y;
     }
-
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       border-radius: 50%;
       background: var(--gold);
       border: 2px solid var(--bg);
@@ -218,7 +215,6 @@
       cursor: pointer;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-
     .eff-btn.sel {
       border-color: var(--eff-color);
       background: color-mix(in srgb, var(--eff-color) 18%, transparent);
@@ -303,8 +299,7 @@
     }
 
     .leg-dot {
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       border-radius: 50%;
     }
 
@@ -360,13 +355,11 @@
       border-color: rgba(248,113,113,0.4);
       color: #fca5a5;
     }
-
     .warn-junk {
       background: rgba(249,115,22,0.1);
       border-color: rgba(249,115,22,0.4);
       color: #fdba74;
     }
-
     .info-neutral {
       background: rgba(122,138,132,0.08);
       border-color: rgba(122,138,132,0.2);
@@ -497,8 +490,6 @@
   const ATROPHY_COST_PER_DAY = 0.32;
   const STIM_WINDOW_DAYS = 2;
 
-  const STIM_PER_REP_6RM = [0, 2.00, 1.95, 1.85, 1.70, 1.50, 1.30, 1.10, 0.90];
-
   const BASE_STIM_BY_REP = [
     0,
     2.00, 3.95, 5.80, 7.50, 9.00,
@@ -523,7 +514,6 @@
     { key: '5',    label: '5 RIR',   short: '5',    numericRir: 5, dcMult: 0.3, color: '#94a3b8' },
   ];
 
-  // restDays = full rest days between sessions; intervalDays = stimulus-to-stimulus gap.
   const REST_OPTIONS = [
     { restDays: 0, restLabel: '0 days', freqLabel: '7×/wk',    sessPerWeek: 7,    intervalDays: 1 },
     { restDays: 1, restLabel: '1 day',  freqLabel: '3.5×/wk',  sessPerWeek: 3.5,  intervalDays: 2 },
@@ -531,7 +521,6 @@
     { restDays: 3, restLabel: '3 days', freqLabel: '1.75×/wk', sessPerWeek: 1.75, intervalDays: 4 },
     { restDays: 6, restLabel: '6 days', freqLabel: '1×/wk',    sessPerWeek: 1,    intervalDays: 7 },
   ];
-  const FREQ_OPTIONS = REST_OPTIONS;
 
   const CB_MAINTENANCE_CEILING = 10.0;
   const CB_MIN_GAINS_CEILING = 52.27;
@@ -541,8 +530,14 @@
   function triangularBySetIndex(iZeroBased) { return (iZeroBased * (iZeroBased + 1)) / 2; }
   function estimatedRM(reps, numericRir) { return reps + numericRir; }
   function isLoadDriven(reps, numericRir) { return estimatedRM(reps, numericRir) <= 6; }
-  function qfFloor(freq) { return freq.sessPerWeek >= 7 ? 0.85 : 0.75; }
-  function qfOverloadFloor(freq) { return freq.sessPerWeek >= 7 ? 0.89 : 0.80; }
+
+  function qfFloor(freq) {
+    return freq.sessPerWeek >= 7 ? 0.85 : 0.75;
+  }
+
+  function qfOverloadFloor(freq) {
+    return freq.sessPerWeek >= 7 ? 0.89 : qfFloor(freq);
+  }
 
   function effectiveReps(reps, numericRir) {
     if (isLoadDriven(reps, numericRir)) return reps;
@@ -588,19 +583,11 @@
     return recoveryBaseFatigue(reps) * proximityFatigue;
   }
 
-  function sessionFrsScore(reps, numericRir, selectedSetCount) {
-    return selectedSetCount * fatigueRecoveryScorePerSet(reps, numericRir);
-  }
-
   function sessionLongTailRecoveryDays(reps, numericRir, selectedSetCount) {
-    const recoveryHours = 12 + (12 * sessionFrsScore(reps, numericRir, selectedSetCount));
-    return recoveryHours / 24;
+    return (12 + (12 * selectedSetCount * fatigueRecoveryScorePerSet(reps, numericRir))) / 24;
   }
 
   function volumeRecoveryTargetFESets48h(reps) {
-    // Separate recoverable-volume gate.
-    // FRS estimates calcium-ion long-tail fatigue; this estimates whether the stimulating-rep dose
-    // is repeatable by the next session without Set 1 performance suppression.
     if (reps <= 3) return 8.0;
     if (reps <= 5) return 4.5;
     if (reps <= 10) return 3.0;
@@ -608,27 +595,26 @@
     return 1.0;
   }
 
-  function sessionVolumeRecoveryDays(reps, numericRir, productiveSetCount) {
+  function sessionVolumeRecoveryDays(reps, numericRir, selectedSetCount) {
     const stimReps = stimulatingRepsForRecovery(reps, numericRir);
-    const failureEquivalentSets = (productiveSetCount * stimReps) / 5;
+    const failureEquivalentSets = (selectedSetCount * stimReps) / 5;
     const target48h = volumeRecoveryTargetFESets48h(reps);
-
     if (failureEquivalentSets <= 0 || target48h <= 0) return 0.5;
     return Math.max(0.5, (failureEquivalentSets / target48h) * 2);
   }
 
   function sessionRecoveryDays(reps, numericRir, selectedSetCount) {
-    return Math.max(
-      sessionLongTailRecoveryDays(reps, numericRir, selectedSetCount),
-      sessionVolumeRecoveryDays(reps, numericRir, selectedSetCount)
-    );
+    const frs = selectedSetCount * fatigueRecoveryScorePerSet(reps, numericRir);
+    const longTail = sessionLongTailRecoveryDays(reps, numericRir, selectedSetCount);
+    const volumeGate = sessionVolumeRecoveryDays(reps, numericRir, selectedSetCount);
+    return frs > 0 ? longTail : Math.max(longTail, volumeGate);
   }
 
   function calculate(state) {
     const effort = EFFORT_OPTIONS[state.effortIdx];
-    const freq = FREQ_OPTIONS[state.freqIdx];
+    const freq = REST_OPTIONS[state.freqIdx];
     const sessPerWeek = freq.sessPerWeek;
-    const restInterval = Number.isFinite(freq.intervalDays) ? freq.intervalDays : freq.restDays + 1;
+    const restInterval = freq.intervalDays;
     const numRir = effort.numericRir;
     const estRM = estimatedRM(state.reps, numRir);
     const loadDriven = isLoadDriven(state.reps, numRir);
@@ -644,10 +630,9 @@
       const qf = clamp(1 - (dc * triangularBySetIndex(i)), 0, 1);
       const selected = (i + 1) <= state.sets;
       const stim = rawBaseStim * qf;
-      const recoveryCost = 0;
       const isJunk = selected && (stim <= 0 || qf < floor);
       const effectiveSetWeight = (!selected || isJunk) ? 0 : 1;
-      sets.push({ stim, qf, recoveryCost, isJunk, selected, effectiveSetWeight });
+      sets.push({ stim, qf, recoveryCost: 0, isJunk, selected, effectiveSetWeight });
     }
 
     const selectedSets = sets.filter(s => s.selected);
@@ -656,9 +641,6 @@
     const sessionStim = productiveSets.reduce((a, s) => a + s.stim, 0);
     const sessionEffectiveSets = productiveSets.reduce((a, s) => a + s.effectiveSetWeight, 0);
     const sessionAU = sessionEffectiveSets > 0 ? Math.sqrt(sessionEffectiveSets) : 0;
-    const sessionFrs = sessionFrsScore(state.reps, numRir, selectedSets.length);
-    const volumeRecoveryDays = sessionVolumeRecoveryDays(state.reps, numRir, selectedSets.length);
-    const longTailRecoveryDays = sessionLongTailRecoveryDays(state.reps, numRir, selectedSets.length);
     const recoveryCost = sessionRecoveryDays(state.reps, numRir, selectedSets.length);
     const recoveryDaysClamped = recoveryCost;
     const weeklyStimRaw = sessionStim * sessPerWeek;
@@ -673,7 +655,9 @@
     return {
       effort, freq, reps: state.reps, estRM, loadDriven, effReps, qfFloor: floor, qfOverloadFloor: overloadFloor, dcBase, dc, sets,
       selectedSets, productiveSets, junkSets,
-      sessionStim, sessionEffectiveSets, sessionAU, sessionFrs, longTailRecoveryDays, volumeRecoveryDays, recoveryCost, recoveryDaysClamped,
+      sessionStim, sessionEffectiveSets, sessionAU, recoveryCost, recoveryDaysClamped,
+      longTailRecoveryDays: sessionLongTailRecoveryDays(state.reps, numRir, selectedSets.length),
+      volumeRecoveryDays: sessionVolumeRecoveryDays(state.reps, numRir, selectedSets.length),
       weeklyStimRaw, weeklyWNSRaw, atrophyLossPerWeek, netWeeklyAU, netWeeklyWNS,
       sessPerWeek, restDays: freq.restDays, restInterval, sessionSFR, qfMin
     };
@@ -683,137 +667,29 @@
 
   function classify(m) {
     const junkRatio = m.selectedSets.length ? m.junkSets.length / m.selectedSets.length : 0;
-    if (m.recoveryDaysClamped >= m.restInterval) return zone('recoveryFailure', 'Recovery Failure', 'Recovery estimate exceeds the programmed rest interval. Reduce sets, effort, or frequency before judging stimulus outcome.', '#f87171');
-    if (m.effReps === 0 || m.netWeeklyAU < 0) return zone('detraining', 'Detraining', 'Net weekly AU is negative after atrophy loss. Increase recruitment, frequency, or productive volume.', '#fb923c');
-    if (m.qfMin < m.qfOverloadFloor) return zone('fatigueOverload', 'Fatigue Overload', 'QF is too close to the floor. This is maximum-fatigue work, not a productive default setup.', '#fb923c');
-    if (m.netWeeklyAU < CB_MAINTENANCE_CEILING) return zone('maintaining', 'Maintaining', 'Below a reliable continuous-growth dose. Enough signal to resist loss, but increase frequency or productive volume.', '#94a3b8');
-    if (m.netWeeklyAU < CB_MIN_GAINS_CEILING) return zone('minimumGains', 'Minimum Gains', 'Low-end growth range. Productive, but not a robust continuous-growth dose.', '#86efac');
-    if (m.effort.key === '2' && m.reps <= 4 && m.qfMin >= 0.89 && m.netWeeklyAU >= CB_GAINSMAXXING_FLOOR && junkRatio === 0) return zone('gainsmaxxing', 'GainsMaXXing', 'Very high net weekly STIM at the 2 RIR optimum, strong QF buffer, and recoverable before the next session.', '#22c55e');
+
+    if (m.recoveryDaysClamped >= m.restInterval) {
+      return zone('recoveryFailure', 'Recovery Failure', 'Recovery estimate exceeds the programmed rest interval. Reduce sets, effort, or frequency before judging stimulus outcome.', '#f87171');
+    }
+    if (m.effReps === 0 || m.netWeeklyAU < 0) {
+      return zone('detraining', 'Detraining', 'Net weekly AU is negative after atrophy loss. Increase recruitment, frequency, or productive volume.', '#fb923c');
+    }
+    if (m.junkSets.length > 0) {
+      return zone('junkVolume', 'Junk Volume', 'One or more selected sets fell below the hard QF floor. Remove the junk set or reduce reps.', '#fb923c');
+    }
+    if (m.qfMin < m.qfOverloadFloor) {
+      return zone('fatigueOverload', 'Fatigue Overload', 'QF is above the hard floor but too close to the daily buffer. Reduce reps or sets for daily repeatability.', '#fb923c');
+    }
+    if (m.netWeeklyAU < CB_MAINTENANCE_CEILING) {
+      return zone('maintaining', 'Maintaining', 'Below a reliable continuous-growth dose. Enough signal to resist loss, but increase frequency or productive volume.', '#94a3b8');
+    }
+    if (m.netWeeklyAU < CB_MIN_GAINS_CEILING) {
+      return zone('minimumGains', 'Minimum Gains', 'Low-end growth range. Productive, but not a robust continuous-growth dose.', '#86efac');
+    }
+    if (m.effort.key === '2' && m.reps <= 4 && m.qfMin >= 0.89 && m.netWeeklyAU >= CB_GAINSMAXXING_FLOOR && junkRatio === 0) {
+      return zone('gainsmaxxing', 'GainsMaXXing', 'Very high net weekly STIM at the 2 RIR optimum, strong QF buffer, and recoverable before the next session.', '#22c55e');
+    }
     return zone('gains', 'Gains', 'Productive growth range. Net weekly AU clears the growth floor with manageable quality constraints.', '#4ade80');
-  }
-
-  function selfTest() {
-    const errors = [];
-    const validZones = ['recoveryFailure', 'detraining', 'fatigueOverload', 'maintaining', 'minimumGains', 'gains', 'gainsmaxxing'];
-    const zoneCounts = Object.fromEntries(validZones.map(k => [k, 0]));
-    let totalCombos = 0;
-    function near(a, b, tol = 0.02) { return Math.abs(a - b) <= tol; }
-    function check(label, condition, msg) { if (!condition) errors.push(`${label}: ${msg}`); }
-
-    check('Base STIM 1 rep', near(BASE_STIM_BY_REP[1], 2.00), `got ${BASE_STIM_BY_REP[1]}`);
-    check('Base STIM 4 reps', near(BASE_STIM_BY_REP[4], 7.50), `got ${BASE_STIM_BY_REP[4]}`);
-    check('Base STIM 5 reps', near(BASE_STIM_BY_REP[5], 9.00), `got ${BASE_STIM_BY_REP[5]}`);
-    check('dc 1 rep @2RIR', near(DC_2RIR_BY_REP[1], 0.003, 0.0001), `got ${DC_2RIR_BY_REP[1]}`);
-    check('dc 4 reps @2RIR', near(DC_2RIR_BY_REP[4], 0.016, 0.0001), `got ${DC_2RIR_BY_REP[4]}`);
-    check('dc 5 reps @2RIR', near(DC_2RIR_BY_REP[5], 0.024, 0.0001), `got ${DC_2RIR_BY_REP[5]}`);
-    check('freq idx 0 displays 0 rest days', REST_OPTIONS[0].restDays === 0 && REST_OPTIONS[0].sessPerWeek === 7 && REST_OPTIONS[0].intervalDays === 1, JSON.stringify(REST_OPTIONS[0]));
-    check('freq idx 4 displays 6 rest days', REST_OPTIONS[4].restDays === 6 && REST_OPTIONS[4].sessPerWeek === 1 && REST_OPTIONS[4].intervalDays === 7, JSON.stringify(REST_OPTIONS[4]));
-
-    check('FRS 8 reps @0RIR', near(fatigueRecoveryScorePerSet(8, 0), 1.00, 0.001), `got ${fatigueRecoveryScorePerSet(8, 0).toFixed(3)}`);
-    check('FRS 8 reps @1RIR', near(fatigueRecoveryScorePerSet(8, 1), 0.50, 0.001), `got ${fatigueRecoveryScorePerSet(8, 1).toFixed(3)}`);
-    check('FRS 8 reps @2RIR', near(fatigueRecoveryScorePerSet(8, 2), 0.00, 0.001), `got ${fatigueRecoveryScorePerSet(8, 2).toFixed(3)}`);
-    const threeByEightFail = calculate({ sets: 3, reps: 8, freqIdx: 1, effortIdx: 1 });
-    const fiveByEightOne = calculate({ sets: 5, reps: 8, freqIdx: 1, effortIdx: 2 });
-    const fiveByEightTwo = calculate({ sets: 5, reps: 8, freqIdx: 1, effortIdx: 3 });
-    const threeByFiveDailyTwo = calculate({ sets: 3, reps: 5, freqIdx: 0, effortIdx: 3 });
-    const threeBySixDailyTwo = calculate({ sets: 3, reps: 6, freqIdx: 0, effortIdx: 3 });
-
-    check('3×8 @0RIR long-tail recovery = 48h', near(threeByEightFail.longTailRecoveryDays, 2.00, 0.01), `got ${threeByEightFail.longTailRecoveryDays.toFixed(3)}`);
-    check('5×8 @1RIR long-tail recovery = 42h', near(fiveByEightOne.longTailRecoveryDays, 1.75, 0.01), `got ${fiveByEightOne.longTailRecoveryDays.toFixed(3)}`);
-    check('5×8 @2RIR long-tail recovery = 12h', near(fiveByEightTwo.longTailRecoveryDays, 0.50, 0.01), `got ${fiveByEightTwo.longTailRecoveryDays.toFixed(3)}`);
-    check('5×8 @2RIR total recovery uses volume gate = 48h', near(fiveByEightTwo.recoveryDaysClamped, 2.00, 0.01), `got ${fiveByEightTwo.recoveryDaysClamped.toFixed(3)}`);
-    check('3×5 @2RIR daily total recovery ≈19.2h', near(threeByFiveDailyTwo.recoveryDaysClamped, 0.80, 0.03), `got ${threeByFiveDailyTwo.recoveryDaysClamped.toFixed(3)}`);
-    check('3×5 @2RIR daily is not Recovery Failure', classify(threeByFiveDailyTwo).key !== 'recoveryFailure', `got ${classify(threeByFiveDailyTwo).key}`);
-    check('3×6 @2RIR daily total recovery ≈28.8h', near(threeBySixDailyTwo.recoveryDaysClamped, 1.20, 0.03), `got ${threeBySixDailyTwo.recoveryDaysClamped.toFixed(3)}`);
-    check('3×6 @2RIR daily is Recovery Failure', classify(threeBySixDailyTwo).key === 'recoveryFailure', `got ${classify(threeBySixDailyTwo).key}`);
-
-    const twoByFiveDaily1 = calculate({ sets: 2, reps: 5, freqIdx: 0, effortIdx: 2 });
-    check('2×5 @1RIR long-tail recovery ≈17.4h', near(twoByFiveDaily1.longTailRecoveryDays, 17.36 / 24, 0.02), `got ${twoByFiveDaily1.longTailRecoveryDays.toFixed(3)}`);
-
-    const wns1x1 = calculate({ sets: 1, reps: 1, freqIdx: 4, effortIdx: 3 });
-    const wns1x4 = calculate({ sets: 4, reps: 1, freqIdx: 4, effortIdx: 3 });
-    const wns1x8 = calculate({ sets: 8, reps: 1, freqIdx: 4, effortIdx: 3 });
-    const wns7x1 = calculate({ sets: 1, reps: 1, freqIdx: 0, effortIdx: 3 });
-    const wns7x3 = calculate({ sets: 3, reps: 1, freqIdx: 0, effortIdx: 3 });
-    check('WNS 1×1 weekly', near(wns1x1.netWeeklyWNS, -0.60, 0.02), `got ${wns1x1.netWeeklyWNS.toFixed(3)}`);
-    check('WNS 1×4 weekly', near(wns1x4.netWeeklyWNS, 0.40, 0.02), `got ${wns1x4.netWeeklyWNS.toFixed(3)}`);
-    check('WNS 1×8 weekly', near(wns1x8.netWeeklyWNS, 1.23, 0.02), `got ${wns1x8.netWeeklyWNS.toFixed(3)}`);
-    check('WNS 7×1 weekly', near(wns7x1.netWeeklyWNS, 7.00, 0.02), `got ${wns7x1.netWeeklyWNS.toFixed(3)}`);
-    check('WNS 7×3 weekly', near(wns7x3.netWeeklyWNS, 12.11, 0.03), `got ${wns7x3.netWeeklyWNS.toFixed(3)}`);
-    check('CB 1×1 weekly net uses Session STIM', near(wns1x1.netWeeklyAU, 0.40, 0.02), `got ${wns1x1.netWeeklyAU.toFixed(3)}`);
-    check('CB 7×1 weekly net uses Session STIM', near(wns7x1.netWeeklyAU, 14.00, 0.02), `got ${wns7x1.netWeeklyAU.toFixed(3)}`);
-
-    const fiveByFour2 = calculate({ sets: 5, reps: 4, freqIdx: 2, effortIdx: 3 });
-    check('5×4 @2RIR session STIM', near(fiveByFour2.sessionStim, 35.10, 0.05), `got ${fiveByFour2.sessionStim.toFixed(3)}`);
-    const fourByFiveDaily2 = calculate({ sets: 4, reps: 5, freqIdx: 0, effortIdx: 3 });
-    check('4×5 @2RIR daily session STIM', near(fourByFiveDaily2.sessionStim, 33.84, 0.05), `got ${fourByFiveDaily2.sessionStim.toFixed(3)}`);
-    check('4×5 @2RIR daily is Recovery Failure', classify(fourByFiveDaily2).key === 'recoveryFailure', `got ${classify(fourByFiveDaily2).key}`);
-    const fourByFourDaily2 = calculate({ sets: 4, reps: 4, freqIdx: 0, effortIdx: 3 });
-    check('4×4 @2RIR daily is Recovery Failure', classify(fourByFourDaily2).key === 'recoveryFailure', `got ${classify(fourByFourDaily2).key}`);
-    check('4×4 @2RIR daily weekly STIM', near(fourByFourDaily2.netWeeklyAU, 201.60, 0.05), `got ${fourByFourDaily2.netWeeklyAU.toFixed(3)}`);
-
-    const oneRep5 = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 6 });
-    const oneRep1 = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 2 });
-    const oneRep2 = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 3 });
-    check('1 rep @5RIR load-driven STIM', near(oneRep5.sessionStim, 2.00, 0.01), `got ${oneRep5.sessionStim.toFixed(3)}`);
-    check('1 rep @5RIR equals 1RIR base STIM', near(oneRep5.sessionStim, oneRep1.sessionStim, 0.01), `${oneRep5.sessionStim.toFixed(3)} vs ${oneRep1.sessionStim.toFixed(3)}`);
-    check('1 rep @5RIR equals 2RIR base STIM', near(oneRep5.sessionStim, oneRep2.sessionStim, 0.01), `${oneRep5.sessionStim.toFixed(3)} vs ${oneRep2.sessionStim.toFixed(3)}`);
-    const fiveSingles = calculate({ sets: 5, reps: 1, freqIdx: 2, effortIdx: 3 });
-    const oneSetFive = calculate({ sets: 1, reps: 5, freqIdx: 2, effortIdx: 3 });
-    check('5 singles STIM > 1×5 STIM', fiveSingles.sessionStim > oneSetFive.sessionStim, `${fiveSingles.sessionStim.toFixed(3)} vs ${oneSetFive.sessionStim.toFixed(3)}`);
-    const oneByOne3d = calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 3 });
-    const oneByFour3d = calculate({ sets: 1, reps: 4, freqIdx: 2, effortIdx: 3 });
-    check('1×4 @2RIR must beat 1×1 @2RIR in CB Session STIM', oneByFour3d.sessionStim > oneByOne3d.sessionStim, `${oneByFour3d.sessionStim.toFixed(3)} vs ${oneByOne3d.sessionStim.toFixed(3)}`);
-    check('1×4 and 1×1 are both one WNS set', near(oneByFour3d.sessionAU, oneByOne3d.sessionAU, 0.001), `${oneByFour3d.sessionAU.toFixed(3)} vs ${oneByOne3d.sessionAU.toFixed(3)}`);
-    const oneByFifteenDaily = calculate({ sets: 1, reps: 15, freqIdx: 0, effortIdx: 2 });
-    check('1×15 @1RIR daily must equal one WNS set', near(oneByFifteenDaily.netWeeklyWNS, 7.00, 0.02), `got ${oneByFifteenDaily.netWeeklyWNS.toFixed(3)}`);
-    const twoBySevenDaily = calculate({ sets: 2, reps: 7, freqIdx: 0, effortIdx: 2 });
-    check('2×7 @1RIR daily must equal sqrt(2) × 7 WNS', near(twoBySevenDaily.netWeeklyWNS, Math.sqrt(2) * 7, 0.03), `got ${twoBySevenDaily.netWeeklyWNS.toFixed(3)}`);
-    const oneByOneEvery3d = classify(calculate({ sets: 1, reps: 1, freqIdx: 2, effortIdx: 3 }));
-    check('1×1 @2RIR every 3d is Maintaining, not Minimum Gains', oneByOneEvery3d.key === 'maintaining', `got ${oneByOneEvery3d.key}`);
-    const eightByTwo4RIR = classify(calculate({ sets: 8, reps: 2, freqIdx: 2, effortIdx: 5 }));
-    check('8×2 @4RIR cannot be GainsMaXXing', eightByTwo4RIR.key !== 'gainsmaxxing', `got ${eightByTwo4RIR.key}`);
-    const eightByTwo2RIR = classify(calculate({ sets: 8, reps: 2, freqIdx: 2, effortIdx: 3 }));
-    check('8×2 @2RIR can be GainsMaXXing candidate', ['gainsmaxxing', 'gains'].includes(eightByTwo2RIR.key), `got ${eightByTwo2RIR.key}`);
-    const eightByThree4RIR = calculate({ sets: 8, reps: 3, freqIdx: 2, effortIdx: 5 });
-    check('8×3 @4RIR fatigue-driven no effective reps', eightByThree4RIR.junkSets.length === 8 && classify(eightByThree4RIR).key === 'detraining', `junk=${eightByThree4RIR.junkSets.length}, zone=${classify(eightByThree4RIR).key}`);
-
-    for (let s = 1; s <= 8; s++) {
-      for (let r = 1; r <= 15; r++) {
-        for (let f = 0; f <= 4; f++) {
-          for (let e = 0; e < EFFORT_OPTIONS.length; e++) {
-            totalCombos++;
-            const m = calculate({ sets: s, reps: r, freqIdx: f, effortIdx: e });
-            const z = classify(m);
-            if (!isFinite(m.netWeeklyAU)) errors.push(`Non-finite netWeeklyAU at s=${s} r=${r} f=${f} e=${e}`);
-            if (!isFinite(m.netWeeklyWNS)) errors.push(`Non-finite netWeeklyWNS at s=${s} r=${r} f=${f} e=${e}`);
-            if (!isFinite(m.sessionSFR)) errors.push(`Non-finite sessionSFR at s=${s} r=${r} f=${f} e=${e}`);
-            if (!isFinite(m.recoveryDaysClamped)) errors.push(`Non-finite recovery at s=${s} r=${r} f=${f} e=${e}`);
-            if (!validZones.includes(z.key)) errors.push(`Invalid zone key at s=${s} r=${r} f=${f} e=${e}: ${z.key}`);
-            else zoneCounts[z.key]++;
-            if (m.recoveryDaysClamped >= m.restInterval && z.key !== 'recoveryFailure') errors.push(`Recovery failure not overriding banner at s=${s} r=${r} f=${f} e=${e}`);
-            if (z.key === 'recoveryFailure' && m.recoveryDaysClamped < m.restInterval) errors.push(`Recovery Failure shown without failed recovery at s=${s} r=${r} f=${f} e=${e}`);
-            if (m.recoveryDaysClamped < m.restInterval && m.effReps > 0 && m.netWeeklyAU >= 0 && m.qfMin < m.qfOverloadFloor && z.key !== 'fatigueOverload') errors.push(`Fatigue overload not overriding banner at s=${s} r=${r} f=${f} e=${e}`);
-            m.selectedSets.forEach((set, i) => {
-              const shouldBeJunk = set.stim <= 0 || set.qf < m.qfFloor;
-              if (set.isJunk !== shouldBeJunk) errors.push(`Junk mismatch at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
-            });
-            for (let i = 0; i < m.sets.length - 1; i++) {
-              if (m.sets[i].qf < m.sets[i + 1].qf) errors.push(`QF increased within session at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
-            }
-          }
-        }
-      }
-    }
-
-    if (errors.length === 0) {
-      console.info(`GYM_PIGS v2 self-test: ALL PASSED ✓ (${totalCombos} settings simulated)`);
-      console.info('Zone counts:', zoneCounts);
-    } else {
-      errors.forEach(e => console.error(e));
-      console.error(`GYM_PIGS v2 self-test: ${errors.length} FAILURE(S)`);
-    }
-    return errors;
   }
 
   const state = { sets: 3, reps: 5, freqIdx: 2, effortIdx: 3 };
@@ -822,6 +698,7 @@
     recoveryFailure: { bg: 'rgba(248,113,113,0.12)',  border: 'rgba(248,113,113,0.48)',  color: '#fca5a5' },
     detraining:      { bg: 'rgba(251,146,60,0.10)',   border: 'rgba(251,146,60,0.40)',   color: '#fb923c' },
     fatigueOverload: { bg: 'rgba(251,146,60,0.12)',   border: 'rgba(251,146,60,0.48)',   color: '#fdba74' },
+    junkVolume:      { bg: 'rgba(251,146,60,0.12)',   border: 'rgba(251,146,60,0.48)',   color: '#fdba74' },
     maintaining:     { bg: 'rgba(148,163,184,0.08)',  border: 'rgba(148,163,184,0.32)',  color: '#cbd5e1' },
     minimumGains:    { bg: 'rgba(134,239,172,0.08)',  border: 'rgba(134,239,172,0.35)',  color: '#86efac' },
     gains:           { bg: 'rgba(74,222,128,0.08)',   border: 'rgba(74,222,128,0.38)',   color: '#4ade80' },
@@ -830,13 +707,10 @@
 
   function render() {
     const m = calculate(state);
-    let z = classify(m);
-    if (z.key !== 'recoveryFailure' && z.key !== 'detraining' && m.effReps > 0 && m.qfMin < m.qfOverloadFloor) {
-      z = zone('fatigueOverload', 'Fatigue Overload', 'QF is too close to the floor. This is maximum-fatigue work, not a productive default setup.', '#fb923c');
-    }
-
+    const z = classify(m);
     const effort = EFFORT_OPTIONS[state.effortIdx];
     const style = ZONE_STYLES[z.key] || ZONE_STYLES.gains;
+
     const banner = document.getElementById('zoneBanner');
     banner.style.background = style.bg;
     banner.style.borderColor = style.border;
@@ -846,6 +720,7 @@
     document.getElementById('zoneCopy').textContent = z.copy;
     document.getElementById('zoneCopy').style.color = style.color;
     document.getElementById('zoneAU').style.color = style.color;
+
     document.getElementById('setsVal').textContent = state.sets;
     document.getElementById('repsVal').textContent = state.reps;
     const restOpt = REST_OPTIONS[state.freqIdx];
@@ -869,18 +744,21 @@
     });
 
     document.getElementById('statStim').textContent = m.sessionStim.toFixed(1);
-    document.getElementById('statStimSub').textContent = `STIM this session`;
+    document.getElementById('statStimSub').textContent = 'STIM this session';
+
     const recDays = m.recoveryDaysClamped;
-    const recLabel = recDays >= m.restInterval ? 'Recovery failure' : recDays >= 2.5 ? 'Moderate recovery' : 'Low recovery';
-    const recColor = recDays >= m.restInterval ? '#f87171' : recDays >= 2.5 ? '#fbbf24' : '#4ade80';
+    const recLabel = recDays >= m.restInterval ? 'Recovery failure' : recDays >= m.restInterval * 0.85 ? 'Recovery margin tight' : recDays >= 2.5 ? 'Moderate recovery' : 'Low recovery';
+    const recColor = recDays >= m.restInterval ? '#f87171' : recDays >= m.restInterval * 0.85 ? '#fbbf24' : recDays >= 2.5 ? '#fbbf24' : '#4ade80';
     const recEl = document.getElementById('statRec');
     recEl.textContent = recDays.toFixed(1) + 'd';
     recEl.style.color = recColor;
     document.getElementById('statRecSub').textContent = recLabel;
+
     const qfEl = document.getElementById('statSFR');
     qfEl.textContent = m.qfMin.toFixed(2);
     qfEl.style.color = m.qfMin >= m.qfFloor ? '#4ade80' : '#f87171';
     document.getElementById('statQFSub').textContent = `floor ${m.qfFloor.toFixed(2)} / buffer ${m.qfOverloadFloor.toFixed(2)}`;
+
     renderSetBars(m);
     renderInfo(m);
   }
@@ -896,8 +774,8 @@
       bar.className = 'set-bar';
       bar.style.height = heightPct + '%';
       if (!s.selected) bar.style.background = 'rgba(122,138,132,0.2)';
-      else if (s.isJunk) bar.style.background = `linear-gradient(to top, #f97316, #fdba74)`;
-      else bar.style.background = `linear-gradient(to top, #4ade80, #a3e635)`;
+      else if (s.isJunk) bar.style.background = 'linear-gradient(to top, #f97316, #fdba74)';
+      else bar.style.background = 'linear-gradient(to top, #4ade80, #a3e635)';
       const num = document.createElement('div');
       num.className = 'set-col-num';
       num.textContent = i + 1;
@@ -913,24 +791,38 @@
     const msgs = [];
     const effort = EFFORT_OPTIONS[state.effortIdx];
 
-    if (effort.key === 'FAIL' || effort.key === '0') msgs.push({ cls: 'warn-failure', title: effort.key === 'FAIL' ? 'Failure training' : '0 RIR', body: 'Failure/0 RIR uses the document failure dc multiplier of 3.5×. QF collapses faster and recovery cost rises. 2 RIR remains the ceiling.' });
-    if (m.restDays === 0 && m.recoveryDaysClamped < m.restInterval && m.sessionEffectiveSets > 0) {
-      msgs.push({ cls: m.recoveryDaysClamped >= 0.75 ? 'warn-junk' : 'info-neutral', title: 'Daily Set 1 check', body: `Estimated recovery is ${m.recoveryDaysClamped.toFixed(1)}d inside a 24h interval. This can be repeatable only if next-session Set 1 performance is stable: same load, same reps, same or easier RIR. If Set 1 drops, reduce sets that day.` });
+    if (effort.key === 'FAIL' || effort.key === '0') {
+      msgs.push({ cls: 'warn-failure', title: effort.key === 'FAIL' ? 'Failure training' : '0 RIR', body: 'Failure/0 RIR uses the document failure dc multiplier of 3.5×. QF collapses faster and recovery cost rises. 2 RIR remains the ceiling.' });
     }
+
     if (m.junkSets.length > 0) {
       const junkNums = m.selectedSets.map((s, i) => s.isJunk ? i + 1 : null).filter(Boolean).join(', ');
       msgs.push({ cls: 'warn-junk', title: `${m.junkSets.length} junk set${m.junkSets.length > 1 ? 's' : ''} detected`, body: `Set ${m.junkSets.length > 1 ? 'numbers' : 'number'} ${junkNums} falls below the QF floor (${m.qfFloor.toFixed(2)}). Junk is a QF-floor violation.` });
-    } else if (m.qfMin < m.qfOverloadFloor) msgs.push({ cls: 'warn-junk', title: 'Fatigue overload', body: `QF min (${m.qfMin.toFixed(2)}) is above the hard junk floor (${m.qfFloor.toFixed(2)}) but below the productive buffer (${m.qfOverloadFloor.toFixed(2)}). Reduce reps or sets; this is not a default productive setup.` });
-    if (!m.loadDriven && m.effReps === 0) msgs.push({ cls: 'warn-junk', title: 'No effective reps', body: 'This is not ≤6RM load-driven work and is too far from failure for fatigue-driven recruitment. Increase load or reduce RIR while respecting the 2 RIR ceiling.' });
-    if (m.recoveryDaysClamped >= m.restInterval) msgs.push({ cls: 'warn-failure', title: 'Recovery failure', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) exceeds your ${m.restInterval.toFixed(1)}-day stimulus interval. The banner is red because this setup is not repeatable as programmed.` });
-    else if (m.recoveryDaysClamped >= m.restInterval * 0.85) msgs.push({ cls: 'warn-junk', title: 'Recovery margin tight', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) is close to your ${m.restInterval.toFixed(1)}-day stimulus interval. Set 1 degradation is the next-session warning signal.` });
+    } else if (m.qfMin < m.qfOverloadFloor) {
+      msgs.push({ cls: 'warn-junk', title: 'Daily QF buffer tight', body: `QF min (${m.qfMin.toFixed(2)}) is above the hard junk floor (${m.qfFloor.toFixed(2)}) but below the daily productive buffer (${m.qfOverloadFloor.toFixed(2)}). Reduce reps or sets if Set 1 drops next session.` });
+    }
+
+    if (!m.loadDriven && m.effReps === 0) {
+      msgs.push({ cls: 'warn-junk', title: 'No effective reps', body: 'This is not ≤6RM load-driven work and is too far from failure for fatigue-driven recruitment. Increase load or reduce RIR while respecting the 2 RIR ceiling.' });
+    }
+
+    if (m.restDays === 0 && m.recoveryDaysClamped < m.restInterval && m.sessionEffectiveSets > 0) {
+      msgs.push({ cls: m.recoveryDaysClamped >= 0.75 ? 'warn-junk' : 'info-neutral', title: 'Daily Set 1 check', body: `Estimated recovery is ${m.recoveryDaysClamped.toFixed(1)}d inside a 24h interval. This is only repeatable if next-session Set 1 performance is stable: same load, same reps, same or easier RIR.` });
+    }
+
+    if (m.recoveryDaysClamped >= m.restInterval) {
+      msgs.push({ cls: 'warn-failure', title: 'Recovery failure', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) exceeds your ${m.restInterval.toFixed(1)}-day stimulus interval. This setup is not repeatable as programmed.` });
+    } else if (m.recoveryDaysClamped >= m.restInterval * 0.85) {
+      msgs.push({ cls: 'warn-junk', title: 'Recovery margin tight', body: `Recovery estimate (${m.recoveryDaysClamped.toFixed(1)}d) is close to your ${m.restInterval.toFixed(1)}-day stimulus interval. Set 1 degradation is the next-session warning signal.` });
+    }
 
     if (msgs.length === 0) {
       const qfNote = m.junkSets.length === 0 ? 'Clean QF.' : 'QF tail contamination present.';
       const modeNote = m.loadDriven ? 'Load-driven recruitment from rep 1.' : 'Fatigue-driven recruitment model.';
       const atNote = m.atrophyLossPerWeek > 0 ? ` Atrophy loss subtracts ${m.atrophyLossPerWeek.toFixed(1)} AU/wk after the 48h window.` : ' No atrophy window loss at this frequency.';
-      msgs.push({ cls: 'info-neutral', title: 'Model summary', body: `${qfNote} ${modeNote} FRS ${m.sessionFrs.toFixed(2)} gives long-tail ${m.longTailRecoveryDays.toFixed(1)}d; stimulating-volume gate gives ${m.volumeRecoveryDays.toFixed(1)}d; recovery estimate uses the higher value (${m.recoveryDaysClamped.toFixed(1)}d). WNS session AU ${m.sessionAU.toFixed(2)} from ${m.sessionEffectiveSets.toFixed(1)} productive set${Math.abs(m.sessionEffectiveSets - 1) < 0.01 ? '' : 's'}. Reps/set are reflected in CB Session STIM (${m.sessionStim.toFixed(1)}), not by inflating WNS set count. Net weekly AU = weekly CB STIM (${m.weeklyStimRaw.toFixed(1)}) − atrophy loss (${m.atrophyLossPerWeek.toFixed(1)}). WNS diagnostic net = ${m.netWeeklyWNS.toFixed(1)} AU/wk.${atNote}` });
+      msgs.push({ cls: 'info-neutral', title: 'Model summary', body: `${qfNote} ${modeNote} WNS session AU ${m.sessionAU.toFixed(2)} from ${m.sessionEffectiveSets.toFixed(1)} productive set${Math.abs(m.sessionEffectiveSets - 1) < 0.01 ? '' : 's'}. Reps/set are reflected in CB Session STIM (${m.sessionStim.toFixed(1)}), not by inflating WNS set count. Net weekly AU = weekly CB STIM (${m.weeklyStimRaw.toFixed(1)}) − atrophy loss (${m.atrophyLossPerWeek.toFixed(1)}). WNS diagnostic net = ${m.netWeeklyWNS.toFixed(1)} AU/wk.${atNote}` });
     }
+
     msgs.forEach(({ cls, title, body }) => {
       const box = document.createElement('div');
       box.className = `info-box ${cls}`;
@@ -966,13 +858,65 @@
     });
   }
 
+  function selfTest() {
+    const cases = [
+      { label: 'screenshot 3×10 @2RIR 2.3×/wk = junkVolume, not fatigueOverload', state: { sets: 3, reps: 10, freqIdx: 2, effortIdx: 3 }, zone: 'junkVolume', qfMin: 0.70, recovery: 1.20 },
+      { label: '3×10 @3RIR 1×/wk = not fatigueOverload', state: { sets: 3, reps: 10, freqIdx: 4, effortIdx: 4 }, notZone: 'fatigueOverload', qfMin: 0.79 },
+      { label: '3×5 @2RIR daily = recoverable but Set 1 check', state: { sets: 3, reps: 5, freqIdx: 0, effortIdx: 3 }, notZone: 'recoveryFailure', recovery: 0.80 },
+      { label: '3×8 @0RIR every 2d = 48h recovery', state: { sets: 3, reps: 8, freqIdx: 1, effortIdx: 1 }, recovery: 2.00 },
+      { label: '5×8 @1RIR every 2d = 42h recovery', state: { sets: 5, reps: 8, freqIdx: 1, effortIdx: 2 }, recovery: 1.75 },
+      { label: '5×4 @2RIR session STIM anchor', state: { sets: 5, reps: 4, freqIdx: 2, effortIdx: 3 }, sessionStim: 35.10 },
+      { label: '4×5 @2RIR daily session STIM anchor', state: { sets: 4, reps: 5, freqIdx: 0, effortIdx: 3 }, sessionStim: 33.84 },
+    ];
+
+    const errors = [];
+    function near(a, b, tol = 0.03) { return Math.abs(a - b) <= tol; }
+
+    cases.forEach(c => {
+      const m = calculate(c.state);
+      const z = classify(m);
+      if (c.zone && z.key !== c.zone) errors.push(`${c.label}: expected zone ${c.zone}, got ${z.key}`);
+      if (c.notZone && z.key === c.notZone) errors.push(`${c.label}: should not be ${c.notZone}`);
+      if (Number.isFinite(c.qfMin) && !near(m.qfMin, c.qfMin)) errors.push(`${c.label}: expected qfMin ${c.qfMin}, got ${m.qfMin.toFixed(3)}`);
+      if (Number.isFinite(c.recovery) && !near(m.recoveryDaysClamped, c.recovery)) errors.push(`${c.label}: expected recovery ${c.recovery}, got ${m.recoveryDaysClamped.toFixed(3)}`);
+      if (Number.isFinite(c.sessionStim) && !near(m.sessionStim, c.sessionStim, 0.06)) errors.push(`${c.label}: expected sessionStim ${c.sessionStim}, got ${m.sessionStim.toFixed(3)}`);
+    });
+
+    let totalCombos = 0;
+    for (let s = 1; s <= 8; s++) {
+      for (let r = 1; r <= 15; r++) {
+        for (let f = 0; f <= 4; f++) {
+          for (let e = 0; e < EFFORT_OPTIONS.length; e++) {
+            totalCombos++;
+            const m = calculate({ sets: s, reps: r, freqIdx: f, effortIdx: e });
+            const z = classify(m);
+            if (!Number.isFinite(m.netWeeklyAU)) errors.push(`Non-finite netWeeklyAU at s=${s} r=${r} f=${f} e=${e}`);
+            if (!Number.isFinite(m.recoveryDaysClamped)) errors.push(`Non-finite recovery at s=${s} r=${r} f=${f} e=${e}`);
+            if (!ZONE_STYLES[z.key]) errors.push(`Invalid zone key ${z.key} at s=${s} r=${r} f=${f} e=${e}`);
+            m.selectedSets.forEach((set, i) => {
+              const shouldBeJunk = set.stim <= 0 || set.qf < m.qfFloor;
+              if (set.isJunk !== shouldBeJunk) errors.push(`Junk mismatch at s=${s} r=${r} f=${f} e=${e} set=${i + 1}`);
+            });
+          }
+        }
+      }
+    }
+
+    if (errors.length) {
+      errors.forEach(e => console.error(e));
+      console.error(`GYM_PIGS self-test: ${errors.length} FAILURE(S)`);
+    } else {
+      console.info(`GYM_PIGS self-test: ALL PASSED ✓ (${totalCombos} settings runtime-checked, ${cases.length} anchor cases)`);
+    }
+    return errors;
+  }
+
   window.GYM_PIGS_DEBUG = { calculate, classify, selfTest, fatigueRecoveryScorePerSet, stimulatingRepsForRecovery };
 
   buildEffortButtons();
   bindSliders();
   render();
   selfTest();
-
 })();
 </script>
 </body>
